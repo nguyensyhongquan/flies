@@ -1,5 +1,6 @@
 Create table Users(
 	[user_id] int identity(1,1) primary key,
+	username varchar(100) not null unique ,
 	email varchar(100) not null unique ,
 	passwordhash varchar(255) not null,
 	fullname varchar(100) ,
