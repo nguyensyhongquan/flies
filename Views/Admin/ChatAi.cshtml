@@ -1,0 +1,31 @@
+﻿
+@{
+    ViewData["Title"] = "ChatAi";
+	Layout = "~/Views/Shared/Admin.cshtml";
+}
+
+
+
+<div class="AIcontainer">
+    <h1 class="main-title">Chat AI Example</h1>
+    <div class="chat-container">
+        <div class="chat-title">Chat với AI</div>
+
+        <!-- Khu vực hiển thị tin nhắn -->
+        <div class="chat-messages" id="chatMessages">
+            <div class="message user">Xin chào AI!</div>
+            <div class="message ai">CCCCCCCCCCCCCCC</div>
+        </div>
+
+
+        <div class="input-with-button">
+            <input type="text"
+                   id="userInput"
+                   placeholder="What's your mind..." />
+            <button id="sendBtn">
+
+                ➤
+            </button>
+        </div>
+    </div>
+</div>

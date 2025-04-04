@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using FliesWebsite.Models;
+using FliesProject.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FliesWebsite.Controllers
+namespace FliesProject.Controllers
 {
     public class HomeController : Controller
     {
@@ -17,7 +17,10 @@ namespace FliesWebsite.Controllers
         {
             return View();
         }
-
+        public IActionResult Index1()
+        {
+            return View();
+        }
         public IActionResult Privacy()
         {
             return View();

@@ -1,0 +1,331 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\C##WEb\\FliesProject\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\views\\home\\index1.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:views\\home\\index1.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\views\\user\\home.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:views\\user\\home.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\views\\home\\home.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:views\\home\\home.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\fliesproject.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:fliesproject.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\views\\admin\\chatai.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:views\\admin\\chatai.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\views\\shared\\admin.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:views\\shared\\admin.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\controllers\\admin\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:controllers\\admin\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\views\\shared\\error.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:views\\shared\\error.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\views\\shared\\admin.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:views\\shared\\admin.cshtml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\views\\shared\\_layout.cshtml.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:views\\shared\\_layout.cshtml.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\wwwroot\\css\\style.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:wwwroot\\css\\style.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\views\\home\\privacy.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:views\\home\\privacy.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|d:\\c##web\\fliesproject\\views\\shared\\_validationscriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{D57CF424-4B6A-47B1-94AA-DA6664D6F2E2}|FliesProject.csproj|solutionrelative:views\\shared\\_validationscriptspartial.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Index1.cshtml",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Views\\Home\\Index1.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Index1.cshtml",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Views\\Home\\Index1.cshtml*",
+              "RelativeToolTip": "Views\\Home\\Index1.cshtml*",
+              "ViewState": "AgIAAHYAAAAAAAAAAAAowJkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-02T08:41:39.821Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Home.cshtml",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Views\\Home\\Home.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Home.cshtml",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Views\\Home\\Home.cshtml",
+              "RelativeToolTip": "Views\\Home\\Home.cshtml",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAAAJkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-02T08:39:33.94Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Admin.cshtml",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Views\\Shared\\Admin.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\Admin.cshtml",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Views\\Shared\\Admin.cshtml",
+              "RelativeToolTip": "Views\\Shared\\Admin.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAALIBAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-26T16:03:39.771Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "Admin.cshtml.cs",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Views\\Shared\\Admin.cshtml.cs",
+              "RelativeDocumentMoniker": "Views\\Shared\\Admin.cshtml.cs",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Views\\Shared\\Admin.cshtml.cs",
+              "RelativeToolTip": "Views\\Shared\\Admin.cshtml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-26T16:09:46.314Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Controllers\\HomeController.cs*",
+              "RelativeToolTip": "Controllers\\HomeController.cs*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-26T16:04:12.412Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-26T16:47:00.936Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Home.cshtml",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Views\\User\\Home.cshtml",
+              "RelativeDocumentMoniker": "Views\\User\\Home.cshtml",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Views\\User\\Home.cshtml",
+              "RelativeToolTip": "Views\\User\\Home.cshtml",
+              "ViewState": "AgIAAHYAAAAAAAAAAAAowJkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-04-02T08:35:36.463Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "FliesProject.csproj",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\FliesProject.csproj",
+              "RelativeDocumentMoniker": "FliesProject.csproj",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\FliesProject.csproj",
+              "RelativeToolTip": "FliesProject.csproj",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-03-27T16:39:13.518Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Index.cshtml",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAAEgAAAAAAAAAAAAAANUBAABSAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-26T16:02:32.836Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-26T16:09:54.551Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Controllers\\Admin\\AdminController.cs",
+              "RelativeDocumentMoniker": "Controllers\\Admin\\AdminController.cs",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Controllers\\Admin\\AdminController.cs",
+              "RelativeToolTip": "Controllers\\Admin\\AdminController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-26T16:06:10.589Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "ChatAi.cshtml",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Views\\Admin\\ChatAi.cshtml",
+              "RelativeDocumentMoniker": "Views\\Admin\\ChatAi.cshtml",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Views\\Admin\\ChatAi.cshtml",
+              "RelativeToolTip": "Views\\Admin\\ChatAi.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-26T16:08:27.781Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Error.cshtml",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Views\\Shared\\Error.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\Error.cshtml",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Views\\Shared\\Error.cshtml",
+              "RelativeToolTip": "Views\\Shared\\Error.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-26T16:47:10.081Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "_ViewImports.cshtml",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Views\\_ViewImports.cshtml",
+              "RelativeDocumentMoniker": "Views\\_ViewImports.cshtml",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Views\\_ViewImports.cshtml",
+              "RelativeToolTip": "Views\\_ViewImports.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-26T16:22:39.212Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "_ViewStart.cshtml",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Views\\_ViewStart.cshtml",
+              "RelativeDocumentMoniker": "Views\\_ViewStart.cshtml",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Views\\_ViewStart.cshtml",
+              "RelativeToolTip": "Views\\_ViewStart.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-26T16:34:28.873Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "_Layout.cshtml.css",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Views\\Shared\\_Layout.cshtml.css",
+              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml.css",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Views\\Shared\\_Layout.cshtml.css",
+              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-03-26T16:34:40.929Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "style.css",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\wwwroot\\css\\style.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\style.css",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\wwwroot\\css\\style.css",
+              "RelativeToolTip": "wwwroot\\css\\style.css",
+              "ViewState": "AgIAANhnAAAAAAAAAACIPc9oAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2025-03-26T16:15:04.517Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "_ValidationScriptsPartial.cshtml",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_ValidationScriptsPartial.cshtml",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Views\\Shared\\_ValidationScriptsPartial.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_ValidationScriptsPartial.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-26T16:22:32.531Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "Privacy.cshtml",
+              "DocumentMoniker": "D:\\C##WEb\\FliesProject\\Views\\Home\\Privacy.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Privacy.cshtml",
+              "ToolTip": "D:\\C##WEb\\FliesProject\\Views\\Home\\Privacy.cshtml",
+              "RelativeToolTip": "Views\\Home\\Privacy.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-03-26T16:19:16.836Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
