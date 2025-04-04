@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 ﻿var builder = WebApplication.CreateBuilder(args);
+=======
+var builder = WebApplication.CreateBuilder(args);
+>>>>>>> b503f00f649fa22ce292f2d9d69441ecf3dd73f2
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -25,6 +29,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+<<<<<<< HEAD
 //using FliesProject.Models.AImodel;
 
 //public class Program()
@@ -60,3 +65,5 @@ app.Run();
 //    }
 
 //}
+=======
+>>>>>>> b503f00f649fa22ce292f2d9d69441ecf3dd73f2
