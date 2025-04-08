@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using FliesProject.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace FliesProject.Models;
+namespace FliesProject.Data;
 
 public partial class FiliesContext : DbContext
 {
@@ -45,7 +46,7 @@ public partial class FiliesContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=LAPTOP-0QQ0S8QL;Database=Filies; TrustServerCertificate=True;User Id=sa;password=quanchin123");
+        => optionsBuilder.UseSqlServer("Server=LAPTOP-0QQ0S8QL;Database=Filies;User Id=sa;Password=quanchin123;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -405,9 +406,16 @@ public partial class FiliesContext : DbContext
         {
             entity.HasKey(e => e.UserId).HasName("PK__Users__B9BE370FA027A31E");
 
+            entity.HasIndex(e => e.PhoneNumber, "UQ__Users__85FB4E38CD92FC1E").IsUnique();
+
             entity.HasIndex(e => e.Email, "UQ__Users__AB6E6164AA7705F0").IsUnique();
 
+            entity.HasIndex(e => e.Username, "UQ__Users__F3DBC5729881F0EA").IsUnique();
+
             entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.Address)
+                .HasMaxLength(100)
+                .HasColumnName("_address");
             entity.Property(e => e.AvatarUrl)
                 .HasMaxLength(255)
                 .IsUnicode(false)
@@ -415,6 +423,9 @@ public partial class FiliesContext : DbContext
             entity.Property(e => e.Balance)
                 .HasDefaultValue(0.00m)
                 .HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.Birthday)
+                .HasColumnType("datetime")
+                .HasColumnName("birthday");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
@@ -426,11 +437,18 @@ public partial class FiliesContext : DbContext
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("fullname");
+            entity.Property(e => e.Gender)
+                .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength();
             entity.Property(e => e.LastLogin).HasColumnType("datetime");
             entity.Property(e => e.Passwordhash)
                 .HasMaxLength(255)
                 .IsUnicode(false)
                 .HasColumnName("passwordhash");
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(20)
+                .IsUnicode(false);
             entity.Property(e => e.Role).HasMaxLength(50);
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
@@ -438,6 +456,10 @@ public partial class FiliesContext : DbContext
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+            entity.Property(e => e.Username)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("username");
         });
 
         modelBuilder.Entity<UserCourseProgress>(entity =>

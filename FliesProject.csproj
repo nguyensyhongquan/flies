@@ -72,10 +72,7 @@
 
   <ItemGroup>
     <Folder Include="AIBot\" />
-    <Folder Include="NewFolder\" />
-    <Folder Include="wwwroot\css\admin\" />
-    <Folder Include="wwwroot\css\mentor\" />
-    <Folder Include="wwwroot\css\user\" />
+    <Folder Include="Services\" />
     <Folder Include="wwwroot\js\admin\" />
     <Folder Include="wwwroot\js\mentor\" />
     <Folder Include="wwwroot\js\user\" />

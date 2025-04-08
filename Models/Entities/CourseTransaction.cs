@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FliesProject.Models;
+namespace FliesProject.Models.Entities;
 
 public partial class CourseTransaction
 {

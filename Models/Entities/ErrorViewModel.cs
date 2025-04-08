@@ -1,4 +1,4 @@
-namespace FliesProject.Models
+namespace FliesProject.Models.Entities
 {
     public class ErrorViewModel
     {

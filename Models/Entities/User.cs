@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FliesProject.Models;
+namespace FliesProject.Models.Entities;
 
 public partial class User
 {
@@ -26,6 +26,16 @@ public partial class User
     public DateTime? LastLogin { get; set; }
 
     public string? Status { get; set; }
+
+    public string? Gender { get; set; }
+
+    public string Username { get; set; } = null!;
+
+    public DateTime? Birthday { get; set; }
+
+    public string? Address { get; set; }
+
+    public string? PhoneNumber { get; set; }
 
     public virtual ICollection<Course> Courses { get; set; } = new List<Course>();
 
