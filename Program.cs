@@ -25,7 +25,7 @@ builder.Services.AddDbContext<FiliesContext>(options =>
 var app = builder.Build();
 
 // Code thử nghiệm thêm user trong một scope
-using (var scope = app.Services.CreateScope())
+/*using (var scope = app.Services.CreateScope())
 {
     // Resolve IUserRepository
     var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
@@ -55,7 +55,7 @@ using (var scope = app.Services.CreateScope())
     Console.WriteLine("dhwajbjjbjbjbjbjbjbjbjbjbjbjbjbb32111111111");
 
     Console.WriteLine($"User created with ID: {createdUser.UserId}");
-}
+}*/
 
 // Phần cấu hình HTTP request pipeline của ứng dụng web
 if (!app.Environment.IsDevelopment())

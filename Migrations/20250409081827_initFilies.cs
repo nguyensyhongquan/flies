@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FliesProject.Migrations
 {
     /// <inheritdoc />
-    public partial class InitFilies : Migration
+    public partial class initFilies : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -46,7 +46,12 @@ namespace FliesProject.Migrations
                     CreatedAt = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
                     UpdatedAt = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
                     LastLogin = table.Column<DateTime>(type: "datetime", nullable: true),
-                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true, defaultValue: "active")
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true, defaultValue: "active"),
+                    Gender = table.Column<string>(type: "char(1)", unicode: false, fixedLength: true, maxLength: 1, nullable: true),
+                    username = table.Column<string>(type: "varchar(100)", unicode: false, maxLength: 100, nullable: false),
+                    birthday = table.Column<DateTime>(type: "datetime", nullable: true),
+                    _address = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -464,9 +469,22 @@ namespace FliesProject.Migrations
                 column: "enrollement_id");
 
             migrationBuilder.CreateIndex(
+                name: "UQ__Users__85FB4E38CD92FC1E",
+                table: "Users",
+                column: "PhoneNumber",
+                unique: true,
+                filter: "[PhoneNumber] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "UQ__Users__AB6E6164AA7705F0",
                 table: "Users",
                 column: "email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "UQ__Users__F3DBC5729881F0EA",
+                table: "Users",
+                column: "username",
                 unique: true);
         }
 

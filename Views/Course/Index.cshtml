@@ -6,37 +6,33 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_MentorLayout.cshtml";
 }
-<head>
-    <link rel="stylesheet" href="~/css/mentor/mentor.css">
-   
-</head>
-<body>
-    <main class="col-10 p-4">
-        <!-- Home Page -->
-        <div id="homePage">
-            <div class="card bg-body-secondary p-3 mb-4">
-                <div class="d-flex align-items-center">
-                    <img src="@Url.Content(Model.User.AvatarUrl ?? "~/images/profile.png")"
-                         alt="Profile"
-                         class="profile-img"
-                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;" />
 
-                    <div class="ms-3 flex-grow-1">
-                        <h4>@Model.User.Fullname</h4>
-                        <small class="text-muted">@Model.User.Role</small>
-                        <p class="mb-0">A passionate developer who loves coding and learning new technologies.</p>
-                    </div>
+<div class="card mb-4 p-3 border-0 shadow-sm custom-profile-card">
+    <div class="d-flex align-items-center">
+        <!-- Avatar nhỏ bên trái -->
+        <img src="@Url.Content(Model.User.AvatarUrl ?? "~/images/profile.png")"
+             alt="Avatar"
+             class="avatar-img me-3" />
 
-                    <button class="btn btn-primary">Update</button>
-                </div>
-            </div>
-
-            <h1>My Course</h1>
-            <div class="row" id="courseList"></div>
+        <!-- Thông tin người dùng -->
+        <div class="flex-grow-1">
+            <h5 class="fw-bold mb-1">@Model.User.Fullname</h5>
+            <small class="text-muted">@Model.User.Role</small>
         </div>
+    </div>
+</div>
+
+            <!-- Course Section -->
+            <h2 class="mb-3">Khóa học của tôi</h2>
+            <div class="row" id="courseList">
+             
+            </div>
+        </div>
+      
+
     </main>
-</body>
-   
+
+
 
 
 

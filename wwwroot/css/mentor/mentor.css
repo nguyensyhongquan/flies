@@ -13,13 +13,40 @@ header {
     transform: scale(1.1);
 }
 
-/* Sidebar */
-.sidebar {
-    height: 100vh;
-    position: sticky;
-    top: 0;
-    font-size:medium;
-    font-weight: bold;
+.custom-profile-card {
+    background-color: #f5f8fa;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #dee2e6;
+}
+
+.avatar-container {
+    height: 100%;
+    display: flex;
+    align-items: stretch;
+}
+
+.avatar-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+}
+
+.info-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.custom-profile-card {
+    background-color: #f8f9fa; /* nền nhẹ */
+    border-radius: 16px;
+    border: 1px solid #dee2e6;
+}
+.custom-profile-card:hover {
+    background-color: #e9f3ff;
+    transition: 0.3s;
 }
 
 .btn-toggle {

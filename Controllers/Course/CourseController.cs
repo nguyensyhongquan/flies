@@ -17,7 +17,7 @@ namespace FliesProject.Controllers.Course
         }
         public IActionResult Index()
         {
-            var user = _context.Users.FirstOrDefault(u => u.UserId == 3); // test
+            var user = _context.Users.FirstOrDefault(u => u.UserId == 1); // test
             var courses = _context.Courses.Where(c => c.CreatedBy == user.UserId).ToList();
 
             var viewModel = new CourseUserViewModel
