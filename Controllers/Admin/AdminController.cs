@@ -6,7 +6,7 @@ namespace FliesProject.Controllers.Admin
     public class AdminController : Controller
     {
         // GET: AdminController
-        public ActionResult Index()
+        public ActionResult Home()
         {
             return View();
         }
@@ -82,6 +82,13 @@ namespace FliesProject.Controllers.Admin
             {
                 return View();
             }
+        }
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("UserName");
+
+            return RedirectToAction("Home", "Account");
         }
     }
 }
