@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using FliesProject.Models;
+using FliesProject.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FliesProject.Controllers

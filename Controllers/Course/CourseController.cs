@@ -1,5 +1,6 @@
-﻿using FliesProject.Models;
-using FliesProject.Models.ViewModels;
+﻿using FliesProject.Data;
+using FliesProject.Models;
+using FliesProject.Models.Entities.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,7 +44,7 @@ namespace FliesProject.Controllers.Course
         // POST: CourseController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(FliesProject.Models.Course course, IFormFile ImageFile)
+        public async Task<IActionResult> Create(FliesProject.Models.Entities.Course course, IFormFile ImageFile)
         {
             if (ModelState.IsValid)
             {

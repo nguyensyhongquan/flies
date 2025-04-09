@@ -54,6 +54,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="C:\Users\LENOVO\OneDrive\Máy tính\Program.cs" Link="Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="bootstrap" Version="5.3.3" />
     <PackageReference Include="EngDict.NET" Version="1.0.1" />
     <PackageReference Include="Gemini.NET" Version="3.0.0" />

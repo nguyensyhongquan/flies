@@ -1,4 +1,4 @@
-﻿namespace FliesProject.Models.ViewModels
+﻿namespace FliesProject.Models.Entities.ViewModels
 {
     public class CourseUserViewModel
     {
