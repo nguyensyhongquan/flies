@@ -1,0 +1,87 @@
+﻿@model FliesProject.Models.ViewModels.CourseUserViewModel
+
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_MentorLayout.cshtml";
+}
+<head>
+    <link rel="stylesheet" href="~/css/mentor/mentor.css">
+   
+</head>
+<body>
+    <main class="col-10 p-4">
+        <!-- Home Page -->
+        <div id="homePage">
+            <div class="card bg-body-secondary p-3 mb-4">
+                <div class="d-flex align-items-center">
+                    <img src="@Url.Content(Model.User.AvatarUrl ?? "~/images/profile.png")"
+                         alt="Profile"
+                         class="profile-img"
+                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;" />
+
+                    <div class="ms-3 flex-grow-1">
+                        <h4>@Model.User.Fullname</h4>
+                        <small class="text-muted">@Model.User.Role</small>
+                        <p class="mb-0">A passionate developer who loves coding and learning new technologies.</p>
+                    </div>
+
+                    <button class="btn btn-primary">Update</button>
+                </div>
+            </div>
+
+            <h1>My Course</h1>
+            <div class="row" id="courseList"></div>
+        </div>
+    </main>
+</body>
+   
+
+
+
+
+
+@* <div class="row">
+    <div class="col-md-4">
+        <form asp-action="Index">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CoursesPicture" class="control-label"></label>
+                <input asp-for="CoursesPicture" class="form-control" />
+                <span asp-validation-for="CoursesPicture" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CreatedBy" class="control-label"></label>
+                <select asp-for="CreatedBy" class ="form-control" asp-items="ViewBag.CreatedBy"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Timelimit" class="control-label"></label>
+                <input asp-for="Timelimit" class="form-control" />
+                <span asp-validation-for="Timelimit" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div> *@
+

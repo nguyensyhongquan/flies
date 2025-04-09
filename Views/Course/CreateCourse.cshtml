@@ -1,0 +1,114 @@
+﻿@model FliesProject.Models.Course
+
+
+@{
+    ViewData["Title"] = "CreateCourse";
+    Layout = "~/Views/Shared/_MentorLayout.cshtml";
+}
+<div id="addCoursePage">
+    <form asp-action="Create" asp-controller="Course" enctype="multipart/form-data" method="post">
+        <div class="add-course-container d-flex gap-4">
+            <!-- Upload image -->
+            <div class="image-upload-container">
+                <label class="image-upload-box">
+                    <input type="file" name="ImageFile" accept="image/*" />
+                    <span>Upload Image</span>
+                </label>
+            </div>
+
+            <!-- Course form -->
+            <div class="add-course-form">
+                <h2>Add Course</h2>
+
+          @*       <div class="form-group">
+                    <label asp-for="Category">Course Category</label>
+                    <select asp-for="Category" class="form-control">
+                        <option value="programming">Programming</option>
+                        <option value="design">Design</option>
+                        <option value="data-science">Data Science</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Href">Course URL</label>
+                    <input asp-for="Href" class="form-control" />
+                </div> *@
+
+                <div class="form-group">
+                    <label asp-for="Title">Course Title</label>
+                    <input asp-for="Title" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Timelimit">Course Timelimit</label>
+                    <input asp-for="Timelimit" class="form-control" type="number" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Price">Course Price</label>
+                    <input asp-for="Price" class="form-control" type="number" />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Description">Course Description</label>
+                    <textarea asp-for="Description" class="form-control"></textarea>
+                </div>
+
+                <div class="buttons-container">
+                    <button type="button" class="btn btn-secondary" onclick="window.location.href='@Url.Action("Index", "Course")'">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+  @* <h1>CreateCourse</h1>
+
+  <h4>Course</h4>
+  <hr />
+  <div class="row">
+      <div class="col-md-4">
+          <form asp-action="CreateCourse">
+              <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+              <div class="form-group">
+                  <label asp-for="Title" class="control-label"></label>
+                  <input asp-for="Title" class="form-control" />
+                  <span asp-validation-for="Title" class="text-danger"></span>
+              </div>
+              <div class="form-group">
+                  <label asp-for="Description" class="control-label"></label>
+                  <input asp-for="Description" class="form-control" />
+                  <span asp-validation-for="Description" class="text-danger"></span>
+              </div>
+              <div class="form-group">
+                  <label asp-for="CoursesPicture" class="control-label"></label>
+                  <input asp-for="CoursesPicture" class="form-control" />
+                  <span asp-validation-for="CoursesPicture" class="text-danger"></span>
+              </div>
+              <div class="form-group">
+                  <label asp-for="CreatedBy" class="control-label"></label>
+                  <select asp-for="CreatedBy" class ="form-control" asp-items="ViewBag.CreatedBy"></select>
+              </div>
+              <div class="form-group">
+                  <label asp-for="Timelimit" class="control-label"></label>
+                  <input asp-for="Timelimit" class="form-control" />
+                  <span asp-validation-for="Timelimit" class="text-danger"></span>
+              </div>
+              <div class="form-group">
+                  <label asp-for="Price" class="control-label"></label>
+                  <input asp-for="Price" class="form-control" />
+                  <span asp-validation-for="Price" class="text-danger"></span>
+              </div>
+              <div class="form-group">
+                  <input type="submit" value="Create" class="btn btn-primary" />
+              </div>
+          </form>
+      </div>
+  </div>
+
+  <div>
+      <a asp-action="Index">Back to List</a>
+  </div>
+
+ *@
