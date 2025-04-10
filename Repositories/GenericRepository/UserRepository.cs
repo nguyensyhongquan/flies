@@ -34,8 +34,8 @@ namespace FliesProject.Repositories.GenericRepository
 
             // Lưu thay đổi và lấy số dòng được ảnh hưởng
            // var rowsAffected = await _context.SaveChangesAsync();
-            Debug.WriteLine($"Rows affected: {rowsAffected}");
-           Debug.WriteLine("dhwajbjjbjbjbjbjbjbjbjbjbjbjbjbb");
+           // Debug.WriteLine($"Rows affected: {rowsAffected}");
+           //Debug.WriteLine("dhwajbjjbjbjbjbjbjbjbjbjbjbjbjbb");
 
             return user;
         }

@@ -9,9 +9,10 @@ using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Cấu hình DbContext với chuỗi kết nối (đảm bảo cấu hình FliesProjectContext có trong appsettings.json)
-builder.Services.AddDbContext<FiliesContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("FliesProjectContext")));
+// Add DbContext
+builder.Services.AddDbContext<FliesProject.Data.FiliesContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 // Đăng ký IUserRepository và UserRepository vào DI container (nếu chưa đăng ký)
 builder.Services.AddScoped<IUserRepository, UserRepository>();
