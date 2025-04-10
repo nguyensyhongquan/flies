@@ -76,14 +76,14 @@
         </div>
     </header>
     <div class="container">
-        <!-- Phần 1: Quảng cáo -->
+        <!-- Phần 1: Quảng cá-->
         <section class="banner">
             <div class="banner-text">
                 <h2>Chào mừng bạn đến với website của chúng tôi!</h2>
                 <p>Hãy Tham Gia Ngay Các Khóa Học Của Dinosaur Để Có Thêm Kiến Thức Về Tiếng Anh</p>
             </div>
-            <div class="~/images/user/banner.png">
-                <img src="banner.png" alt="Quảng cáo">
+            <div class="banner-image">
+                <img src="~/images/user/banner.png" alt="Quảng cáo">
             </div>
         </section>
 
@@ -96,7 +96,7 @@
             <div class="profile-middle">
                 <div class="profile-item">
                     <label for="courseName">Khóa Học:</label>
-                    <span id="courseName">@Model.Courses.FirstOrDefault()?.Title</span>
+                    <span id="courseName">@ViewBag.LatestCourseTitle</span>
                 </div>
                 <div class="profile-item">
                     <label for="coursesJoined">Khóa Học Đã Tham Gia:</label>

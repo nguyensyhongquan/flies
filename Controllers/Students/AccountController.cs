@@ -1,5 +1,5 @@
 ﻿using FliesProject.Data;
-using FliesProject.Repositories.IGenericRepository;
+using FliesProject.Service;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,7 +31,6 @@ namespace FliesProject.Controllers.Students
                 return RedirectToAction("Home", "Account");
             }
 
-            // Assuming _userService is a service that fetches user data
             var user = _userService.GetUserByUsername(username);
 
             if (user == null)
@@ -40,15 +39,23 @@ namespace FliesProject.Controllers.Students
             }
 
             _dbContext.Entry(user)
-                      .Collection(u => u.Courses)
-            .Load();
-
-            _dbContext.Entry(user)
                       .Collection(u => u.EnrollementStudents)
+                      .Query()
+                      .Include(e => e.Course) // Include để lấy thông tin khóa học
                       .Load();
+
+            // Lấy title của khóa học có StartedAt mới nhất trong các Enrollment
+            var latestCourseTitle = user.EnrollementStudents
+                .Where(e => e.Course != null)
+                .OrderByDescending(e => e.StartedAt)
+                .FirstOrDefault()?.Course?.Title;
+
+            ViewBag.LatestCourseTitle = latestCourseTitle;
 
             return View(user);
         }
+
+
         [HttpPost]
         public IActionResult Logout()
         {
