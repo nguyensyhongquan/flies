@@ -33,7 +33,7 @@ namespace FliesProject.Repositories.GenericRepository
             _context.Users.Add(user);
 
             // Lưu thay đổi và lấy số dòng được ảnh hưởng
-            var rowsAffected = await _context.SaveChangesAsync();
+           // var rowsAffected = await _context.SaveChangesAsync();
             Debug.WriteLine($"Rows affected: {rowsAffected}");
            Debug.WriteLine("dhwajbjjbjbjbjbjbjbjbjbjbjbjbjbb");
 
