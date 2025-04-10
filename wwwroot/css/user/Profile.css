@@ -1,0 +1,254 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    height: 200vh;
+    width: 80%;
+    margin: auto;
+    font-family: Arial, sans-serif;
+    margin-top: 0px;
+}
+
+/* Phần 1: Quảng cáo */
+.banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #F36F21;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
+.banner-text {
+    color: #ffffff;
+    flex: 1;
+    margin-left: 200px;
+}
+
+.banner-image img {
+    width: 80px;
+    border-radius: 10px;
+    margin-right: 100px;
+}
+
+/* Phần 2: Thông tin người dùng */
+.profile-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 0px;
+    position: relative;
+    flex-wrap: wrap;
+}
+
+.profile-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Đảm bảo mọi thứ căn giữa */
+    justify-content: center;
+    margin-left: 70px;
+    max-width: 150px; /* Hạn chế chiều rộng */
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.user-name {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.profile-middle {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.profile-right {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-right: 20px;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+    background: white;
+    color: black;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 220px;
+    border: 2px solid black;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 15px;
+}
+
+    .btn i {
+        width: 25px;
+        text-align: center;
+        font-size: 18px;
+        margin-right: 10px;
+    }
+
+    .btn.logout {
+        background: #F36F21;
+        color: white;
+    }
+
+.edit-section {
+    align-items: center;
+    width: 100%;
+    text-align: center;
+    font-size: 16px;
+    font-style: italic;
+    margin-top: 20px;
+    margin-right: 50px;
+}
+
+    .edit-section span::before {
+        content: "“";
+    }
+
+    .edit-section span::after {
+        content: "”";
+    }
+
+.edit-button {
+    background: none;
+    border: none;
+    color: blue;
+    cursor: pointer;
+    font-weight: bold;
+    font-style: italic;
+}
+
+/* Phần 3: Dashboard */
+.dashboard {
+    display: flex;
+    border: 3px solid black;
+    border-radius: 30px;
+    overflow: hidden;
+}
+
+.section {
+    border-right: 1px solid black;
+    border-left: 1px solid black;
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    background-color: white;
+    color: black;
+    transition: transform 0.3s, background-color 0.3s;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+    .section:last-child {
+        border-right: none;
+    }
+
+    .section:first-child {
+        border-left: none;
+    }
+
+    .section:hover {
+        transform: scale(1.1);
+        background-color: #F36F21;
+        position: relative;
+        z-index: 1;
+    }
+
+
+
+/* Phần 4: Thông tin cá nhân */
+.info-section {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-info {
+    background: #ffc107;
+}
+
+    .edit-info i {
+        margin-right: 5px;
+        font-size: 16px;
+    }
+
+hr {
+    height: 2px;
+    background-color: black;
+    border: none;
+    margin: 10px 0;
+}
+
+.info-content {
+    border: 2px solid black;
+    border-radius: 10px;
+    padding: 50px;
+    width: 60%;
+    margin: 60px auto;
+    background: #f9f9f9;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    border-bottom: 1px solid gray;
+}
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+.info-label {
+    font-weight: bold;
+    flex: 1;
+    text-align: left;
+}
+
+.info-value {
+    flex: 1;
+    text-align: right;
+}
