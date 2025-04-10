@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FliesProject.Models.Entities;
+using FliesProject.Extensions;
 namespace FliesProject.Controllers.Admin
 {
     public class AdminController : Controller
@@ -14,7 +15,7 @@ namespace FliesProject.Controllers.Admin
             _userRepository = userRepository;
         }
         // GET: AdminController
-        public ActionResult Index()
+        public ActionResult Home()
         {
             return View();
         }
@@ -29,6 +30,8 @@ namespace FliesProject.Controllers.Admin
         }
         public ActionResult AddStudent()
         {
+            //ViewData["ErrorMessage"] = null;
+
             return View("~/Views/Admin/AddStudent.cshtml");
         }
         [HttpPost]
@@ -43,7 +46,7 @@ namespace FliesProject.Controllers.Admin
                 if (await _userRepository.IsEmailExists(email))
                 {
                     Console.WriteLine("lỗi email");
-                    ViewData["ErrorMessage"] = "Email đã tồn tại trong hệ thống!";
+                    TempData.SetErrorMessage("Email");
                     return View("~/Views/Admin/AddStudent.cshtml");
                 }
 
@@ -51,7 +54,7 @@ namespace FliesProject.Controllers.Admin
                 if(await _userRepository.IsUsernameExists(username))
                 {
                     Console.WriteLine("lỗi username");
-                    ViewData["ErrorMessage"] = "Tên đăng nhập đã tồn tại trong hệ thống!";
+                    TempData.SetErrorMessage("Username đã tồn tại trong hệ thống!");
                     return View("~/Views/Admin/AddStudent.cshtml");
                 }
 
@@ -59,7 +62,7 @@ namespace FliesProject.Controllers.Admin
                 if (!DateOnly.TryParse(birthday, out DateOnly parsedBirthday))
                 {
                     Console.WriteLine("lỗi ngày sinh");
-                    ViewData["ErrorMessage"] = "Ngày sinh không hợp lệ!";
+                    TempData.SetErrorMessage("Ngày sinh không hợp lý");
                     return View("~/Views/Admin/AddStudent.cshtml");
                 }
 
@@ -67,7 +70,7 @@ namespace FliesProject.Controllers.Admin
                 if (!decimal.TryParse(balance, out decimal parsedBalance))
                 {
                     Console.WriteLine("lỗi số dư");
-                    ViewData["ErrorMessage"] = "Số dư không hợp lệ!";
+                    TempData.SetErrorMessage("Số dư  không hợp lý");
                     return View("~/Views/Admin/AddStudent.cshtml");
                 }
 
@@ -78,7 +81,7 @@ namespace FliesProject.Controllers.Admin
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
-                ViewData["ErrorMessage"] = "Đã xảy ra lỗi trong quá trình thêm sinh viên!";
+                TempData.SetErrorMessage("Xảy ra cm gi loi roi Quan oi");
                 return View("~/Views/Admin/AddStudent.cshtml");
             }
         }
@@ -160,6 +163,13 @@ namespace FliesProject.Controllers.Admin
             {
                 return View();
             }
+        }
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Remove("UserName");
+
+            return RedirectToAction("Home", "Account");
         }
     }
 }

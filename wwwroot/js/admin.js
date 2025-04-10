@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Xử lý thông báo lỗi từ server
-    const errorMessage = '@ViewData["ErrorMessage"]';
+    const errorMessage = '@(TempData["ErrorMessage"] ?? "").trim()';
     if (errorMessage) {
         Swal.fire({
             icon: 'error',

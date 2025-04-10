@@ -1,36 +1,82 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using FliesProject.Models;
 using FliesProject.Models.Entities;
+using FliesProject.Repositories.IGenericRepository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FliesProject.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IUserService _userService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IUserService userService)
         {
-            _logger = logger;
+            _userService = userService;
         }
-
-        public IActionResult Index()
+        public IActionResult Home()
         {
             return View();
         }
-        public IActionResult Index1()
+        public IActionResult Login([FromBody] User model)
         {
-            return View();
-        }
-        public IActionResult Privacy()
-        {
-            return View();
+            try
+            {
+                Console.WriteLine($"Received JSON: {Newtonsoft.Json.JsonConvert.SerializeObject(model)}");
+                Console.WriteLine($"Received Username: {model.Username}");
+                Console.WriteLine($"Received Password: {model.Passwordhash}");
+
+                var user = _userService.GetUserByUsername(model.Username);
+
+                if (user != null && user.Passwordhash == model.Passwordhash)
+                {
+                    if (HttpContext.Session != null)
+                    {
+                        HttpContext.Session.SetString("UserRole", user.Role);
+                        HttpContext.Session.SetString("UserName", user.Username);
+                        HttpContext.Session.SetString("UserAvatar", user.AvatarUrl);
+
+                        string homepageUrl = user.Role.ToLower() switch
+                        {
+                            "admin" => "/Admin/Home",
+                            "mentor" => "/Mentor/Home",
+                            "student" => "/Account/Home",
+                            _ => "/Home"
+                        };
+
+                        return Json(new
+                        {
+                            success = true,
+                            username = user.Username,
+                            role = user.Role,
+                            avatar = user.AvatarUrl,
+                            homepageUrl = homepageUrl
+                        });
+                    }
+                    else
+                    {
+                        return StatusCode(500, new { success = false, message = "Session is not available" });
+                    }
+                }
+
+                return Json(new { success = false, message = "Invalid credentials" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error in Login: {ex}");
+                return StatusCode(500, new { success = false, message = "Internal Server Error", error = ex.Message });
+            }
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpGet]
+        public IActionResult CheckLoginStatus()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var username = HttpContext.Session.GetString("UserName");
+            if (!string.IsNullOrEmpty(username))
+            {
+                return Json(new { isLoggedIn = true, username = username });
+            }
+            return Json(new { isLoggedIn = false });
         }
     }
 }

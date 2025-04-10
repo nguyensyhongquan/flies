@@ -57,6 +57,7 @@
     <PackageReference Include="bootstrap" Version="5.3.3" />
     <PackageReference Include="EngDict.NET" Version="1.0.1" />
     <PackageReference Include="Gemini.NET" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -75,7 +76,6 @@
     <Folder Include="Services\" />
     <Folder Include="wwwroot\js\admin\" />
     <Folder Include="wwwroot\js\mentor\" />
-    <Folder Include="wwwroot\js\user\" />
   </ItemGroup>
 
 </Project>

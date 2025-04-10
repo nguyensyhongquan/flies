@@ -1,0 +1,87 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    height: 200vh;
+    width: 100%;
+    margin: auto;
+    font-family: Arial, sans-serif;
+    margin-top: 0px;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column; /* Ensure container uses flexbox */
+    z-index: 0;
+}
+
+    /* Hide the container when the hidden class is applied */
+    .container.hidden {
+        display: none; /* Hides the container */
+    }
+
+/* Phần 1: Quảng cáo */
+.banner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 700px;
+    background: url('anhnennhom.jpg') no-repeat center center/cover;
+    position: relative;
+    z-index: 1;
+}
+
+.banner-text {
+    color: #F36F21;
+    text-align: center;
+    font-size: 50px;
+    font-weight: bold;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+/* Banner chính */
+.banner2 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 400px;
+    background-color: #FFF0EB;
+    position: relative;
+    z-index: 1;
+}
+
+/* Container chứa hai dòng chữ */
+.banner-content {
+    display: flex;
+    flex-direction: column; /* Xếp chồng các dòng chữ theo chiều dọc */
+    align-items: center; /* Căn giữa theo chiều ngang */
+    gap: 10px; /* Tạo khoảng cách giữa hai dòng chữ */
+}
+
+/* Kiểu chữ cho dòng đầu tiên */
+.banner2-text {
+    color: black;
+    text-align: center;
+    font-size: 25px;
+    font-weight: bold;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+}
+
+/* Kiểu chữ cho dòng thứ hai */
+.banner-text {
+    color: black;
+    text-align: center;
+    font-size: 50px;
+    font-weight: bold;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+}

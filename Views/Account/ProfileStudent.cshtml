@@ -1,0 +1,199 @@
+﻿@{
+    Layout = null;
+    @model FliesProject.Models.Entities.User
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Student</title>
+    <link rel="stylesheet" href="~/css/user/Profile.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/user/Header.css" asp-append-version="true">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+</head>
+<body>
+    <header>
+        <div class="header">
+            <div class="header-left">
+                <img src="~/images/user/logo.jpg" alt="Logo" class="logo">
+                <div class="search-container">
+                    <i class="fa fa-search search-icon"></i>
+                    <input type="text" class="search-box" placeholder="Tìm kiếm khóa học bạn mong muốn...">
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="auth-links" id="authLinks">
+                    <a href="javascript:void(0);" id="loginLink">Đăng nhập</a>
+                    <a href="javascript:void(0);" id="signupLink">Đăng ký</a>
+                </div>
+                <a href="#" class="google-login" id="googleLogin">
+                    <i class="fab fa-google"></i> Login with Google
+                </a>
+                <div class="user-info" id="userInfo" style="display: none;">
+                    <div class="user-avatar-container">
+                        <i class="bi bi-bell notification-icon">
+                            <span id="notificationCount" class="notification-badge">3</span>
+                        </i>
+                        <img src="~/images/avatar.jpg" alt="Avatar" class="user-avatar">
+                        <span id="userName" class="user-name"></span>
+                    </div>
+                    <div class="logout-container">
+                        <button id="logoutButton" class="logout-button">Đăng xuất</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-bar">
+            <a asp-area="" asp-controller="Account" asp-action="Home"><i class="fas fa-home"></i> Home</a>
+            <div class="dropdown">
+                <a href="#"><i class="fas fa-book"></i> Khóa Học Dinosaur <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                    <a href="#">Lựa chọn 1</a>
+                    <a href="#">Lựa chọn 2</a>
+                    <a href="#">Lựa chọn 3</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#"><i class="fas fa-pencil-alt"></i> Luyện Writing AI, Reading, Listening <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                    <a href="#">Lựa chọn 1</a>
+                    <a href="#">Lựa chọn 2</a>
+                    <a href="#">Lựa chọn 3</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#"><i class="fas fa-file-alt"></i> Bài Mẫu 8.0 + <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                    <a href="#">Lựa chọn 1</a>
+                    <a href="#">Lựa chọn 2</a>
+                    <a href="#">Lựa chọn 3</a>
+                </div>
+            </div>
+            <a asp-area="" asp-controller="Account" asp-action="Dinosaur"><i class="fas fa-info-circle"></i> Dinosaur là gì ?</a>
+        </div>
+    </header>
+    <div class="container">
+        <!-- Phần 1: Quảng cáo -->
+        <section class="banner">
+            <div class="banner-text">
+                <h2>Chào mừng bạn đến với website của chúng tôi!</h2>
+                <p>Hãy Tham Gia Ngay Các Khóa Học Của Dinosaur Để Có Thêm Kiến Thức Về Tiếng Anh</p>
+            </div>
+            <div class="~/images/user/banner.png">
+                <img src="banner.png" alt="Quảng cáo">
+            </div>
+        </section>
+
+        <!-- Phần 2: Thông tin người dùng -->
+        <section class="profile-section">
+            <div class="profile-left">
+                <img src="@Model.AvatarUrl" alt="Avatar" class="avatar">
+                <p class="user-name">@Model.Fullname</p>
+            </div>
+            <div class="profile-middle">
+                <div class="profile-item">
+                    <label for="courseName">Khóa Học:</label>
+                    <span id="courseName">@Model.Courses.FirstOrDefault()?.Title</span>
+                </div>
+                <div class="profile-item">
+                    <label for="coursesJoined">Khóa Học Đã Tham Gia:</label>
+                    <span id="coursesJoined">@Model.EnrollementStudents.Count</span>
+                </div>
+                <div class="profile-item">
+                    <label for="joinDate">Ngày tham gia:</label>
+                    <span id="joinDate">@Model.CreatedAt?.ToString("dd/MM/yyyy")</span>
+                </div>
+                <div class="profile-item">
+                    <label for="status">Trạng thái:</label>
+                    <span id="status">@Model.Status</span>
+                </div>
+                <div class="profile-item">
+                    <label for="balance">Số Dư:</label>
+                    <span id="balance">@Model.Balance?.ToString("0.##")</span>
+                </div>
+            </div>
+            <div class="profile-right">
+                <button class="btn"><i class="fas fa-image"></i> Thay đổi Avatar</button>
+                <button class="btn"><i class="fas fa-lock"></i> Thay đổi Mật khẩu</button>
+                <a href="home.html" style="text-decoration: none;">
+                    <button class="btn logout">
+                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    </button>
+                </a>
+            </div>
+            <div class="edit-section">
+                <span>Never gonna give you up</span>
+                <button class="edit-button">[Sửa]</button>
+            </div>
+        </section>
+
+        <!-- Phần 3: Dashboard -->
+        <div class="dashboard">
+            <div class="section">
+                <a href="profile.html" style="text-decoration: none;">Thông Tin Cá Nhân</a>
+            </div>
+            <div class="section">
+                <a href="lskhoahoc.html" style="text-decoration: none;">Khóa Học</a>
+            </div>
+            <div class="section">
+                <a href="chungchi.html" style="text-decoration: none;">Chứng Chỉ</a>
+            </div>
+            <div class="section">
+                <a href="giaodich.html" style="text-decoration: none;">Lịch Sử Giao Dịch</a>
+            </div>
+        </div>
+
+        <!-- Phần 4: Thông tin cá nhân -->
+        <section class="info-section">
+            <div class="info-header">
+                <h3>Thông Tin Cá Nhân</h3>
+                <button class="btn edit-info">
+                    <i class="fas fa-edit"></i> Chỉnh sửa Thông Tin
+                </button>
+            </div>
+            <hr>
+            <div class="info-content">
+                <div class="info-row">
+                    <span class="info-label">Họ và Tên:</span>
+                    <span class="info-value">@Model.Fullname</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Ngày Sinh:</span>
+                    <span class="info-value">@Model.Birthday?.ToString("dd/MM/yyyy")</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Giới Tính:</span>
+                    <span class="info-value">
+                        @{
+                            var genderDisplay = Model.Gender switch
+                            {
+                                "M" => "Male",
+                                "F" => "Female",
+                                "O" => "Other",
+                                _ => "Unknown"
+                            };
+                        }
+                        @genderDisplay
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Địa Chỉ:</span>
+                    <span class="info-value">@Model.Address</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Số Điện Thoại:</span>
+                    <span class="info-value">@Model.PhoneNumber</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value">@Model.Email</span>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script src="~/js/user/Header.js"></script>
+</body>
+</html>
