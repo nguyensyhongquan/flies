@@ -33,9 +33,9 @@ namespace FliesProject.Repositories.GenericRepository
             _context.Users.Add(user);
 
             // Lưu thay đổi và lấy số dòng được ảnh hưởng
-            var rowsAffected = await _context.SaveChangesAsync();
-            Debug.WriteLine($"Rows affected: {rowsAffected}");
-           Debug.WriteLine("dhwajbjjbjbjbjbjbjbjbjbjbjbjbjbb");
+           // var rowsAffected = await _context.SaveChangesAsync();
+           // Debug.WriteLine($"Rows affected: {rowsAffected}");
+           //Debug.WriteLine("dhwajbjjbjbjbjbjbjbjbjbjbjbjbjbb");
 
             return user;
         }
@@ -90,6 +90,22 @@ namespace FliesProject.Repositories.GenericRepository
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync();
             }
+        }
+        /// <summary>
+        /// Check xem email đã tồn tại hay chưa
+        /// </summary>
+        public async Task<bool> IsEmailExists(string email)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+            return user != null;
+        }
+        /// <summary>
+        /// Check xem username đã tồn tại hay chưa
+        /// </summary>
+        public async Task<bool> IsUsernameExists(string username)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == username.ToLower());
+            return user != null;
         }
     }
 }

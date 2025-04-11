@@ -2,7 +2,7 @@ jQuery(".form-valide").validate({
     rules: {
         "val-username": {
             required: !0,
-            minlength: 3
+            minlength: 8
         },
         "val-email": {
             required: !0,
@@ -40,7 +40,7 @@ jQuery(".form-valide").validate({
         },
         "val-phoneus": {
             required: !0,
-            phoneUS: !0
+            pattern: /^0\d{8,9}$/
         },
         "val-digits": {
             required: !0,
@@ -61,7 +61,7 @@ jQuery(".form-valide").validate({
     messages: {
         "val-username": {
             required: "Please enter a username",
-            minlength: "Your username must consist of at least 3 characters"
+            minlength: "Your username must consist of at least 8 characters"
         },
         "val-email": "Please enter a valid email address",
         "val-password": {
@@ -79,7 +79,11 @@ jQuery(".form-valide").validate({
         "val-skill": "Please select a skill!",
         "val-currency": "Please enter a price!",
         "val-website": "Please enter your website!",
-        "val-phoneus": "Please enter a US phone!",
+        "val-phoneus": {
+            required: "Please enter a phone number!",
+            pattern: "Phone number must start with 0 and contain 9 to 10 digits"
+        }
+        ,
         "val-digits": "Please enter only digits!",
         "val-number": "Please enter a number!",
         "val-range": "Please enter a number between 1 and 5!",

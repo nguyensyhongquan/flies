@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using FliesProject.Models;
 using FliesProject.Models.Entities;
 using FliesProject.Repositories.IGenericRepository;
 using Microsoft.AspNetCore.Mvc;

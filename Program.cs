@@ -18,37 +18,62 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+
 builder.Services.AddHttpContextAccessor(); // Cần thiết để sử dụng HttpContext.Session
-builder.Services.AddDbContext<FiliesContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<FiliesContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddControllersWithViews().AddCookieTempDataProvider();
+builder.Services.AddRazorPages();
 builder.Services.AddScoped<UserService>();
-builder.Services.AddControllersWithViews();
 builder.Services.AddControllers().AddNewtonsoftJson();
-
 var app = builder.Build();
 
-// 🔹 Cấu hình Middleware: Phải gọi `UseSession()` trước `UseAuthorization()`
-if (app.Environment.IsDevelopment())
+
+
+// Code thử nghiệm thêm user trong một scope
+using (var scope = app.Services.CreateScope())
 {
-    app.UseDeveloperExceptionPage();
+    // Resolve IUserRepository
+    var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+
+
+
+
+
+
+
+
+
+    // 🔹 Cấu hình Middleware: Phải gọi `UseSession()` trước `UseAuthorization()`
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseDeveloperExceptionPage();
+    }
+    else
+
+    {
+        app.UseExceptionHandler("/Home/Error");
+        app.UseHsts();
+    }
+
+    app.UseHttpsRedirection();
+    app.UseStaticFiles();
+
+    app.UseRouting();
+
+    app.UseSession();
+
+    app.UseAuthorization();
+    app.MapRazorPages();
+    app.MapControllerRoute(
+        name: "default",
+
+
+
+
+        pattern: "{controller=Account}/{action=Home}/{id?}");
+
+    app.Run();
 }
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseSession();
-
-app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Account}/{action=Home}/{id?}");
-app.Run();

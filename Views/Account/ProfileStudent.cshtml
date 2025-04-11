@@ -1,5 +1,6 @@
 ﻿@{
     Layout = null;
+    @model FliesProject.Models.Entities.User
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -89,29 +90,29 @@
         <!-- Phần 2: Thông tin người dùng -->
         <section class="profile-section">
             <div class="profile-left">
-                <img src="avatar.jpg" alt="Avatar" class="avatar">
-                <p class="user-name">Đoàn Hồng Quân</p>
+                <img src="@Model.AvatarUrl" alt="Avatar" class="avatar">
+                <p class="user-name">@Model.Fullname</p>
             </div>
             <div class="profile-middle">
                 <div class="profile-item">
                     <label for="courseName">Khóa Học:</label>
-                    <span id="courseName">Tiếng Anh Cơ Bản</span>
+                    <span id="courseName">@Model.Courses.FirstOrDefault()?.Title</span>
                 </div>
                 <div class="profile-item">
                     <label for="coursesJoined">Khóa Học Đã Tham Gia:</label>
-                    <span id="coursesJoined">10</span>
+                    <span id="coursesJoined">@Model.EnrollementStudents.Count</span>
                 </div>
                 <div class="profile-item">
                     <label for="joinDate">Ngày tham gia:</label>
-                    <span id="joinDate">01/01/2023</span>
+                    <span id="joinDate">@Model.CreatedAt?.ToString("dd/MM/yyyy")</span>
                 </div>
                 <div class="profile-item">
                     <label for="status">Trạng thái:</label>
-                    <span id="status">Hoạt động</span>
+                    <span id="status">@Model.Status</span>
                 </div>
                 <div class="profile-item">
                     <label for="balance">Số Dư:</label>
-                    <span id="balance">1 tỏi</span>
+                    <span id="balance">@Model.Balance?.ToString("0.##")</span>
                 </div>
             </div>
             <div class="profile-right">
@@ -157,27 +158,38 @@
             <div class="info-content">
                 <div class="info-row">
                     <span class="info-label">Họ và Tên:</span>
-                    <span class="info-value">Đoàn Hồng Quân</span>
+                    <span class="info-value">@Model.Fullname</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Ngày Sinh:</span>
-                    <span class="info-value">12/04/2000</span>
+                    <span class="info-value">@Model.Birthday?.ToString("dd/MM/yyyy")</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Giới Tính:</span>
-                    <span class="info-value">Nam</span>
+                    <span class="info-value">
+                        @{
+                            var genderDisplay = Model.Gender switch
+                            {
+                                "M" => "Male",
+                                "F" => "Female",
+                                "O" => "Other",
+                                _ => "Unknown"
+                            };
+                        }
+                        @genderDisplay
+                    </span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Địa Chỉ:</span>
-                    <span class="info-value">Đà Nẵng</span>
+                    <span class="info-value">@Model.Address</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Số Điện Thoại:</span>
-                    <span class="info-value">0396353593</span>
+                    <span class="info-value">@Model.PhoneNumber</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Email:</span>
-                    <span class="info-value">quan@gmail.com</span>
+                    <span class="info-value">@Model.Email</span>
                 </div>
             </div>
         </section>
