@@ -1,9 +1,4 @@
-﻿
- logoutButton.addEventListener("click", () => {
-     isLoggedIn = false;
-     updateUI();
- });
-document.querySelector(".user-avatar").addEventListener("click", function (event) {
+﻿document.querySelector(".user-avatar").addEventListener("click", function (event) {
     window.location.href = "/Account/ProfileStudent";
 });
 
@@ -115,19 +110,3 @@ function switchPopup(closeId, openId) {
     closePopup(closeId);
     document.getElementById(openId).style.display = 'flex';
 }
-
-document.getElementById("sendOtpBtn").addEventListener("click", function () {
-    alert("OTP đã được gửi đến email của bạn!");
-});
-document.getElementById("signupBtn").addEventListener("click", function () {
-    let password = document.getElementById("signupPassword").value;
-    let confirmPassword = document.getElementById("confirmPassword").value;
-    if (password !== confirmPassword) {
-        alert("Mật khẩu nhập lại không khớp!");
-    }
-});
-document.querySelectorAll(".review-btn").forEach(button => {
-    button.addEventListener("click", function () {
-        alert("Bạn đã nhấn nút Review!");
-    });
-});

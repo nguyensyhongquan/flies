@@ -41,10 +41,9 @@ namespace FliesProject.Controllers.Students
             _dbContext.Entry(user)
                       .Collection(u => u.EnrollementStudents)
                       .Query()
-                      .Include(e => e.Course) // Include để lấy thông tin khóa học
+                      .Include(e => e.Course)
                       .Load();
 
-            // Lấy title của khóa học có StartedAt mới nhất trong các Enrollment
             var latestCourseTitle = user.EnrollementStudents
                 .Where(e => e.Course != null)
                 .OrderByDescending(e => e.StartedAt)
@@ -63,6 +62,49 @@ namespace FliesProject.Controllers.Students
 
             return RedirectToAction("Home", "Account");
         }
+        [HttpPost]
+        public IActionResult UpdateProfile(string fullName, string birthday, string gender, string phone, string address)
+        {
+            var username = HttpContext.Session.GetString("UserName");
+
+            if (string.IsNullOrEmpty(username))
+            {
+                return Json(new { success = false, message = "User not logged in" });
+            }
+
+            var user = _userService.GetUserByUsername(username);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "User not found" });
+            }
+
+            // Parse birthday (DateTime)
+            DateTime parsedBirthday;
+            if (!DateTime.TryParseExact(birthday, "yyyy-MM-dd", null, System.Globalization.DateTimeStyles.None, out parsedBirthday))
+            {
+                return Json(new { success = false, message = "Invalid date format" });
+            }
+
+            user.Fullname = fullName;
+            user.Birthday = parsedBirthday;
+            user.Gender = gender;
+            user.PhoneNumber = phone;
+            user.Address = address;
+
+            try
+            {
+                _dbContext.Users.Update(user);
+                _dbContext.SaveChanges();
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Update failed: " + ex.Message });
+            }
+        }
+
+
     }
 
 }
