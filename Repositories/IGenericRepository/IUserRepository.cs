@@ -20,5 +20,9 @@ namespace FliesProject.Repositories.IGenericRepository
 
    
         Task DeleteUserAsync(int id);
+        Task<bool> IsEmailExists(string email);
+        Task<bool> IsUsernameExists(string username);
+
+
     }
 }

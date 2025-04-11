@@ -1,7 +1,4 @@
-﻿@*
-
-*@
-@{
+﻿@{
     Layout = null;
 }
 <!DOCTYPE html>
@@ -10,8 +7,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Chủ</title>
-    <link rel="stylesheet" href="~/css/styles.css">
-    <link rel="stylesheet" href="~/css/header.css">
+    <link rel="stylesheet" href="~/css/user/Dino.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/user/Header.css" asp-append-version="true">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
@@ -20,7 +17,7 @@
     <header>
         <div class="header">
             <div class="header-left">
-                <img src="logo.jpg" alt="Logo" class="logo">
+                <img src="~/images/user/logo.jpg" alt="Logo" class="logo">
                 <div class="search-container">
                     <i class="fa fa-search search-icon"></i>
                     <input type="text" class="search-box" placeholder="Tìm kiếm khóa học bạn mong muốn...">
@@ -36,16 +33,20 @@
                 </a>
                 <div class="user-info" id="userInfo" style="display: none;">
                     <div class="user-avatar-container">
-                        <i class="bi bi-bell notification-icon"></i>
-                        <img src="logo.jpg" alt="Avatar" class="user-avatar">
-                        <span id="userName" class="user-name">Tên Tài Khoản</span>
+                        <i class="bi bi-bell notification-icon">
+                            <span id="notificationCount" class="notification-badge">3</span>
+                        </i>
+                        <img src="~/images/avatar.jpg" alt="Avatar" class="user-avatar">
+                        <span id="userName" class="user-name"></span>
                     </div>
-                    <button id="logoutButton" class="logout-button">Đăng xuất</button>
+                    <div class="logout-container">
+                        <button id="logoutButton" class="logout-button">Đăng xuất</button>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="nav-bar">
-            <a href="home.html"><i class="fas fa-home"></i> Home</a>
+            <a asp-area="" asp-controller="Account" asp-action="Home"><i class="fas fa-home"></i> Home</a>
             <div class="dropdown">
                 <a href="#"><i class="fas fa-book"></i> Khóa Học Dinosaur <i class="fas fa-chevron-down"></i></a>
                 <div class="dropdown-content">
@@ -70,7 +71,7 @@
                     <a href="#">Lựa chọn 3</a>
                 </div>
             </div>
-            <a href="dinosaur.html"><i class="fas fa-info-circle"></i> Dinosaur là gì ?</a>
+            <a asp-area="" asp-controller="Account" asp-action="Dinosaur"><i class="fas fa-info-circle"></i> Dinosaur là gì ?</a>
         </div>
     </header>
 
@@ -81,7 +82,7 @@
             <h2 id="popupTitle">Đăng nhập</h2>
             <input type="text" id="username" placeholder="Tên đăng nhập" />
             <input type="password" id="password" placeholder="Mật khẩu" />
-            <button id="submitBtn">Đăng nhập</button>
+            <button id="submitBtn" onclick="login()">Đăng nhập</button>
             <div style="margin-top: 10px; text-align: center;">
                 <span onclick="switchPopup('authPopup', 'signupPopup')" style="cursor: pointer; color: #0066B3;">
                     Chưa có tài khoản? Quên mật khẩu
@@ -115,38 +116,26 @@
         </div>
     </div>
     <div class="container">
-        <div class="left-container">
-            <div class="left-box">
-                <div class="box1">
-                    <span>
-                        Nền tảng
-                        tự luyện IELTS  tại nhà hoàn toàn miễn phí
-                    </span>
-                    <img src="luachon.png" class="rou" alt="Main Image">
-                </div>
+        <!-- Phần 1: Quảng cáo -->
+        <div class="banner">
+            <div class="banner-text">
+                <h2>Dinosaur Là Gì?</h2>
             </div>
         </div>
-        <div class="right-container">
-            <span>Lựa chọn kỹ năng để luyện tập </span>
-            <div class="right-boxes">
-                <div class="box">
-                    <span>Luyện viết writing task 1</span>
-                    <img src="viet1.png" alt="Image 1">
+        <!-- Phần 2: Gì Đó -->
+        <div class="banner2">
+            <div class="banner-content">
+                <div class="banner2-text">
+                    YouPass đang trên đường phát triển thành nơi có tất cả mọi thứ
+                    để bạn hoàn toàn có thể tự ôn luyện IELTS tại nhà.
                 </div>
-                <div class="box">
-                    <span>Luyện viết writing task 2</span>
-                    <img src="viet2.png" alt="Image 2">
-                </div>
-                <div class="box">
-                    <span>Reading</span>
-                    <img src="doc.png" alt="Image 3">
-                </div>
-                <div class="box">
-                    <span>Listening</span>
-                    <img src="nghe.png" alt="Image 4">
+                <div class="banner-text">
+                    Việc duy nhất bạn cần ra khỏi
+                    nhà là đi đến IDP hoặc BC để thi
                 </div>
             </div>
         </div>
     </div>
+    <script src="~/js/user/Header.js"></script>
 </body>
 </html>

@@ -1,64 +1,53 @@
 using FliesProject.Data;
-using FliesProject.Models.Entities;
 using FliesProject.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using FliesProject.Repositories.GenericRepository;
 using FliesProject.Repositories.IGenericRepository;
 using System.Diagnostics;
+using FliesProject.Services;
+using FliesProject.Models.Entities;
+using Org.BouncyCastle.Crypto.Generators;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Cấu hình DbContext với chuỗi kết nối (đảm bảo cấu hình FliesProjectContext có trong appsettings.json)
-builder.Services.AddDbContext<FiliesContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("FliesProjectContext")));
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IDatabaseService, DatabaseService>();
+builder.Services.AddScoped<IChatAnalyzerService, ChatAnalyzerService>();
+//builder.Services.AddScoped<IAIService, AIService>();
+// 🔹 Cấu hình Session
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // ⏳ Thời gian session hết hạn
+    options.Cookie.HttpOnly = true; // 🔐 Bảo mật cookie session
+    options.Cookie.IsEssential = true;
+});
 
-// Đăng ký IUserRepository và UserRepository vào DI container (nếu chưa đăng ý)
+builder.Services.AddHttpContextAccessor(); // Cần thiết để sử dụng HttpContext.Session
+builder.Services.AddDbContext<FiliesContext>(options =>
+
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
-
-builder.Services.AddControllersWithViews();
-
-builder.Services.AddDbContext<FiliesContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));  
-
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddControllersWithViews().AddCookieTempDataProvider();
+builder.Services.AddRazorPages();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddControllers().AddNewtonsoftJson();
 var app = builder.Build();
 
-// Code thử nghiệm thêm user trong một scope
-/*using (var scope = app.Services.CreateScope())
+
+
+// 🔹 Cấu hình Middleware: Phải gọi `UseSession()` trước `UseAuthorization()`
+if (app.Environment.IsDevelopment())
 {
-    // Resolve IUserRepository
-    var userRepository = scope.ServiceProvider.GetRequiredService<IUserRepository>();
+    app.UseDeveloperExceptionPage();
+}
+else
 
-    // Tạo đối tượng User mới
-    var newUser = new User
-    {
-        Email = "nguyensyhongquan130703@gmail.com",
-        // Ban đầu, Passwordhash chứa mật khẩu dạng plain text
-        Passwordhash = "quanchin123",
-        Fullname = "Nguyen Sy Hong Quan",
-        AvatarUrl = "https://fliesenglish2025.blob.core.windows.net/avater/pngwing.com.png",
-        Role = "admin",
-        Balance = 0.00m,
-        Gender = "M",
-        Username = "quanvs2003",
-        Birthday = new DateTime(2003, 7, 13),
-        Address = "Nghe An",
-        PhoneNumber = "0343413939",
-        CreatedAt = DateTime.Now,
-        UpdatedAt = DateTime.Now,
-        Status = "active"
-    };
-
-    // Gọi CreateUserAsync để thêm user, phương thức này sẽ tự hash mật khẩu bên trong
-    var createdUser = await userRepository.CreateUserAsync(newUser);
-    Console.WriteLine("dhwajbjjbjbjbjbjbjbjbjbjbjbjbjbb32111111111");
-
-    Console.WriteLine($"User created with ID: {createdUser.UserId}");
-}*/
-
-// Phần cấu hình HTTP request pipeline của ứng dụng web
-if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
@@ -69,10 +58,16 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
+app.UseSession();
 
+app.UseAuthorization();
+app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
+
+
+    pattern: "{controller=Account}/{action=Home}/{id?}");
 
 app.Run();

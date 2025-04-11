@@ -91,5 +91,21 @@ namespace FliesProject.Repositories.GenericRepository
                 await _context.SaveChangesAsync();
             }
         }
+        /// <summary>
+        /// Check xem email đã tồn tại hay chưa
+        /// </summary>
+        public async Task<bool> IsEmailExists(string email)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
+            return user != null;
+        }
+        /// <summary>
+        /// Check xem username đã tồn tại hay chưa
+        /// </summary>
+        public async Task<bool> IsUsernameExists(string username)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username.ToLower() == username.ToLower());
+            return user != null;
+        }
     }
 }
