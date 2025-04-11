@@ -414,8 +414,6 @@ public partial class FiliesContext : DbContext
         {
             entity.HasKey(e => e.UserId).HasName("PK__Users__B9BE370FA027A31E");
 
-            entity.HasIndex(e => e.PhoneNumber, "UQ__Users__85FB4E38CD92FC1E").IsUnique();
-
             entity.HasIndex(e => e.Email, "UQ__Users__AB6E6164AA7705F0").IsUnique();
 
             entity.HasIndex(e => e.Username, "UQ__Users__F3DBC5729881F0EA").IsUnique();

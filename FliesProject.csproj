@@ -55,8 +55,9 @@
 
   <ItemGroup>
     <PackageReference Include="bootstrap" Version="5.3.3" />
+    <PackageReference Include="Dapper" Version="2.1.28" />
     <PackageReference Include="EngDict.NET" Version="1.0.1" />
-    <PackageReference Include="Gemini.NET" Version="3.0.0" />
+    <PackageReference Include="Gemini.NET" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -68,12 +69,15 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+    <PackageReference Include="MySql.Data" Version="8.4.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Npgsql" Version="8.0.3" />
+    <PackageReference Include="OpenAI" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="AIBot\" />
-    <Folder Include="Services\" />
+    <Folder Include="Models\Events\" />
     <Folder Include="wwwroot\js\admin\" />
     <Folder Include="wwwroot\js\mentor\" />
   </ItemGroup>

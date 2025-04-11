@@ -1,14 +1,19 @@
 using FliesProject.Data;
-using FliesProject.Models.Entities;
 using FliesProject.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using FliesProject.Repositories.GenericRepository;
 using FliesProject.Repositories.IGenericRepository;
 using System.Diagnostics;
+using FliesProject.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IDatabaseService, DatabaseService>();
+builder.Services.AddScoped<IChatAnalyzerService, ChatAnalyzerService>();
+//builder.Services.AddScoped<IAIService, AIService>();
 // 🔹 Cấu hình Session
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

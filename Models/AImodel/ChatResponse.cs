@@ -2,7 +2,10 @@
 {
     public class ChatResponse
     {
-        public required string MessageInMarkdown { get; set; }
-        public List<string> Suggestions { get; set; } = [];
+        public string Message { get; set; }
+        public string? ChartData { get; set; }
+        public string? ChartType { get; set; }
+        public bool IsError { get; set; }
+        public string? ErrorMessage { get; set; }
     }
 }
