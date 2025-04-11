@@ -83,7 +83,6 @@
     <Folder Include="wwwroot\css\user\" />
     <Folder Include="wwwroot\js\admin\" />
     <Folder Include="wwwroot\js\mentor\" />
-    <Folder Include="wwwroot\js\user\" />
     <Folder Include="wwwroot\mentor\" />
     <Folder Include="wwwroot\Uploads\" />
   </ItemGroup>
