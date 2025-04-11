@@ -1,6 +1,6 @@
 ﻿using FliesProject.Models.Entities;
 
-namespace FliesProject.Repositories.IGenericRepository
+namespace FliesProject.Service
 {
     public interface IUserService
     {

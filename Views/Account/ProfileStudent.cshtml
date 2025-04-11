@@ -37,7 +37,7 @@
                         <i class="bi bi-bell notification-icon">
                             <span id="notificationCount" class="notification-badge">3</span>
                         </i>
-                        <img src="~/images/avatar.jpg" alt="Avatar" class="user-avatar">
+                        <img src="~/images/user/avatar.jpg" alt="Avatar" class="user-avatar">
                         <span id="userName" class="user-name"></span>
                     </div>
                     <div class="logout-container">
@@ -76,14 +76,14 @@
         </div>
     </header>
     <div class="container">
-        <!-- Phần 1: Quảng cáo -->
+        <!-- Phần 1: Quảng cá-->
         <section class="banner">
             <div class="banner-text">
                 <h2>Chào mừng bạn đến với website của chúng tôi!</h2>
                 <p>Hãy Tham Gia Ngay Các Khóa Học Của Dinosaur Để Có Thêm Kiến Thức Về Tiếng Anh</p>
             </div>
-            <div class="~/images/user/banner.png">
-                <img src="banner.png" alt="Quảng cáo">
+            <div class="banner-image">
+                <img src="~/images/user/banner.png" alt="Quảng cáo">
             </div>
         </section>
 
@@ -96,7 +96,7 @@
             <div class="profile-middle">
                 <div class="profile-item">
                     <label for="courseName">Khóa Học:</label>
-                    <span id="courseName">@Model.Courses.FirstOrDefault()?.Title</span>
+                    <span id="courseName">@ViewBag.LatestCourseTitle</span>
                 </div>
                 <div class="profile-item">
                     <label for="coursesJoined">Khóa Học Đã Tham Gia:</label>
@@ -150,7 +150,7 @@
         <section class="info-section">
             <div class="info-header">
                 <h3>Thông Tin Cá Nhân</h3>
-                <button class="btn edit-info">
+                <button class="btn edit-info" onclick="openPopup('editProfilePopup')">
                     <i class="fas fa-edit"></i> Chỉnh sửa Thông Tin
                 </button>
             </div>
@@ -170,9 +170,9 @@
                         @{
                             var genderDisplay = Model.Gender switch
                             {
-                                "M" => "Male",
-                                "F" => "Female",
-                                "O" => "Other",
+                                "M" => "Nam",
+                                "F" => "Nữ",
+                                "O" => "Khác",
                                 _ => "Unknown"
                             };
                         }
@@ -194,6 +194,52 @@
             </div>
         </section>
     </div>
+    <div class="popup" id="editProfilePopup" style="display: none;">
+        <div class="popup-content large">
+            <button class="close-btn" onclick="closePopup('editProfilePopup')">&times;</button>
+            <h2>Chỉnh sửa thông tin</h2>
+
+            <label for="editFullname">Họ và tên:</label>
+            <input type="text" id="editFullname" placeholder="Nhập họ và tên" />
+
+            <label for="editBirthday">Ngày sinh:</label>
+            <input type="date" id="editBirthday" />
+
+            <div class="gender-group">
+                <label class="gender-label">Giới tính:</label>
+                <div class="gender-options">
+                    <input type="radio" name="gender" id="genderMale" value="M" />
+                    <label for="genderMale">Nam</label>
+
+                    <input type="radio" name="gender" id="genderFemale" value="F" />
+                    <label for="genderFemale">Nữ</label>
+
+                    <input type="radio" name="gender" id="genderOther" value="O" />
+                    <label for="genderOther">Khác</label>
+                </div>
+            </div>
+
+            <label for="editPhone">Số điện thoại:</label>
+            <input type="text" id="editPhone" placeholder="Nhập số điện thoại" />
+
+            <label for="editAddress">Địa chỉ:</label>
+            <input type="text" id="editAddress" placeholder="Nhập địa chỉ" />
+
+            <button onclick="saveProfile()">Lưu thay đổi</button>
+        </div>
+    </div>
+    <script src="~/js/user/profile.js"></script>
     <script src="~/js/user/Header.js"></script>
+    <script>
+        const currentUser = {
+            fullName: '@Model.Fullname',
+            birthday: '@Model.Birthday?.ToString("yyyy-MM-dd")',
+            gender: '@Model.Gender',
+            phone: '@Model.PhoneNumber',
+            address: '@Model.Address'
+        };
+
+        console.log("CurrentUser from Razor:", currentUser);
+    </script>
 </body>
 </html>

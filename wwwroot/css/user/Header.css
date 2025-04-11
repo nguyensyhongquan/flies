@@ -370,7 +370,7 @@ html, body {
 }
 
 .otp-container {
-    display: flex;
+    display: flex;  
     gap: 10px;
     align-items: center;
 }

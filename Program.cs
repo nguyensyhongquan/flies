@@ -3,9 +3,10 @@ using FliesProject.Models.Entities;
 using FliesProject.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using FliesProject.Repositories.GenericRepository;
-using FliesProject.Repositories.IGenericRepository;
 using System.Diagnostics;
+using FliesProject.Service;
+using FliesProject.Repositories.IGenericRepository;
+using FliesProject.Repositories.GenericRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IUserService, UserService>();
