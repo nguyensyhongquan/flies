@@ -8,15 +8,37 @@ using System.Diagnostics;
 using FliesProject.Services;
 using FliesProject.Models.Entities;
 using Org.BouncyCastle.Crypto.Generators;
+using FliesProject.AIBot;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
+
+
+
+
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IDatabaseService, DatabaseService>();
 builder.Services.AddScoped<IChatAnalyzerService, ChatAnalyzerService>();
-//builder.Services.AddScoped<IAIService, AIService>();
+builder.Services.AddScoped<IAIService, AIService>();
+builder.Services.AddScoped<IIntentClassificationService, IntentClassificationService>();
+builder.Services.AddScoped<IChatModule, GeneralChatModule>();
+builder.Services.AddScoped<IChatModule, DatabaseChatModule>();
+builder.Services.AddScoped<Generator>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    // Lấy Gemin ApiKey từ cấu hình
+    string apiKey = config["Gemini:ApiKey"];
+    return new Generator(apiKey);
+});
+builder.Services.Configure<DatabaseChatModule>(builder.Configuration.GetSection("DatabaseChatModule"));
+builder.Services.AddScoped<IChatModule, DatabaseChatModule>();
+builder.Services.AddScoped<ChatRouterService>();
 // 🔹 Cấu hình Session
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -37,6 +59,14 @@ builder.Services.AddControllersWithViews().AddCookieTempDataProvider();
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddControllers().AddNewtonsoftJson();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
 var app = builder.Build();
 
 
@@ -64,10 +94,12 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
-
-
-
-
     pattern: "{controller=Account}/{action=Home}/{id?}");
 
+
+app.UseCors("AllowAll");
+app.MapControllers();
+
 app.Run();
+
+

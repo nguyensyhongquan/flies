@@ -1,4 +1,4 @@
-﻿  @{
+﻿﻿@{
     Layout = null;
 }
 <!DOCTYPE html>
@@ -96,23 +96,32 @@
         <div class="popup-content">
             <button class="close-btn" onclick="closePopup('signupPopup')">&times;</button>
             <h2>Đăng ký</h2>
-            <input type="text" id="signupUsername" placeholder="Tên đăng nhập" />
-            <input type="email" id="signupEmail" placeholder="Email" />
+            @* IMPORTANT: This form needs to post to the correct controller action - Removed class="popup" from form *@
+            <form asp-controller="Account" asp-action="Register" method="post" id="signupForm">
+                @* Add AntiForgeryToken for security *@
+                @Html.AntiForgeryToken()
 
-            <div class="otp-container">
-                <input type="text" id="otpInput" placeholder="Nhập OTP (6 số)" maxlength="6" />
-                <button id="sendOtpBtn">Gửi OTP</button>
-            </div>
+                @* Use placeholder attributes like the example.
+                Input names MUST match the RegisterViewModel properties (Username, Email, Password, ConfirmPassword) *@
+                <input name="Username" type="text" placeholder="Tên đăng nhập" required />
+                @* Add validation message placeholders if needed, or rely on summary *@
 
-            <input type="password" id="signupPassword" placeholder="Mật khẩu" />
-            <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu" />
-            <button id="signupBtn">Đăng ký</button>
+                <input name="Email" type="email" placeholder="Email" required />
 
-            <div class="switch-text">
-                <span onclick="switchPopup('signupPopup', 'authPopup')" style="cursor: pointer; color: #0066B3;">
-                    Đã có tài khoản? Quên mật khẩu
-                </span>
-            </div>
+                <input name="Password" type="password" placeholder="Mật khẩu" required />
+
+                <input name="ConfirmPassword" type="password" placeholder="Nhập lại mật khẩu" required />
+
+                <button type="submit">Đăng ký</button>
+
+                <div class="switch-text">
+                    <span onclick="switchPopup('signupPopup', 'authPopup')" style="cursor: pointer; color: #0066B3;">
+                        Đã có tài khoản? Đăng nhập
+                    </span>
+                </div>
+                @* Optional: Display validation summary inside the popup *@
+                @* <div asp-validation-summary="ModelOnly" class="text-danger mt-2"></div> *@
+            </form>
         </div>
     </div>
     <div class="container">

@@ -76,7 +76,7 @@ namespace FliesProject.Controllers
                     }
                     else
                     {
-                        var correctIndex = int.TryParse(isCorrects, out int index) ? index : 0;
+               
                         for (int i = 0; i < answers.Count; i++)
                         {
                             var answer = new QuizAnswer

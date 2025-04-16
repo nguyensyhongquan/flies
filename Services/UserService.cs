@@ -1,8 +1,7 @@
 ﻿using FliesProject.Data;
 using FliesProject.Models.Entities;
-using FliesProject.Repositories.IGenericRepository;
 
-namespace FliesProject.Repositories.GenericRepository
+namespace FliesProject.Services
 {
     public class UserService : IUserService
     {

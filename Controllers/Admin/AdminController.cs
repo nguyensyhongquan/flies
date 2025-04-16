@@ -20,6 +20,11 @@ namespace FliesProject.Controllers.Admin
         {
             return View();
         }
+        public ActionResult Test()
+        {
+            Console.WriteLine("Running to the ChatView ....................");
+            return View();
+        }
         public async Task<ActionResult> Student()
         {
             var StudentList = await _studentRepository.GetAllStudent();
