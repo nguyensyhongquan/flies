@@ -1,4 +1,6 @@
-﻿@{
+﻿
+
+@{
     Layout = null;
 }
 <!DOCTYPE html>
@@ -48,11 +50,12 @@
         <div class="nav-bar">
             <a asp-area="" asp-controller="Account" asp-action="Home"><i class="fas fa-home"></i> Home</a>
             <div class="dropdown">
-                <a href="#"><i class="fas fa-book"></i> Khóa Học Dinosaur <i class="fas fa-chevron-down"></i></a>
+                <a asp-area="" asp-controller="Course" asp-action="CourseOverview"><i class="fas fa-book"></i> Khóa Học Dinosaur <i class="fas fa-chevron-down"></i></a>
                 <div class="dropdown-content">
                     <a href="#">Lựa chọn 1</a>
                     <a href="#">Lựa chọn 2</a>
                     <a href="#">Lựa chọn 3</a>
+
                 </div>
             </div>
             <div class="dropdown">
@@ -98,11 +101,6 @@
             <h2>Đăng ký</h2>
             <input type="text" id="signupUsername" placeholder="Tên đăng nhập" />
             <input type="email" id="signupEmail" placeholder="Email" />
-
-            <div class="otp-container">
-                <input type="text" id="otpInput" placeholder="Nhập OTP (6 số)" maxlength="6" />
-                <button id="sendOtpBtn">Gửi OTP</button>
-            </div>
 
             <input type="password" id="signupPassword" placeholder="Mật khẩu" />
             <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu" />

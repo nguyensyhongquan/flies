@@ -7,9 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Controllers\NewFolder1\**" />
     <Compile Remove="Services\**" />
+    <Content Remove="Controllers\NewFolder1\**" />
     <Content Remove="Services\**" />
+    <EmbeddedResource Remove="Controllers\NewFolder1\**" />
     <EmbeddedResource Remove="Services\**" />
+    <None Remove="Controllers\NewFolder1\**" />
     <None Remove="Services\**" />
   </ItemGroup>
 

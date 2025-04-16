@@ -1,0 +1,251 @@
+﻿/* Custom styles for YouPass Premium */
+
+:root {
+    --primary-color: #f2663b;
+    --secondary-color: #3b547d;
+    --accent-color: #efac33;
+    --background-color: #faf7f5;
+    --text-color: #333;
+    --light-gray: #cad1d5;
+    --success-color: #33be9e;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+/* Header styles */
+.navbar-brand img {
+    height: 40px;
+}
+
+.hero-section {
+    background-color: var(--background-color);
+    padding: 60px 0;
+}
+
+.youpass-card {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+    background-color: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .youpass-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+.course-card {
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+    .course-card .card-header {
+        padding: 0;
+    }
+
+    .course-card .course-image {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+    }
+
+    .course-card .card-body {
+        padding: 20px;
+    }
+
+.btn-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    font-weight: 500 !important;
+    padding: 8px 20px !important;
+    border-radius: 6px !important;
+}
+
+    .btn-primary:hover {
+        background-color: #e05a33 !important;
+        border-color: #e05a33 !important;
+    }
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+    .btn-secondary:hover {
+        background-color: #304569;
+        border-color: #304569;
+    }
+
+.feature-section {
+    padding: 50px 0;
+}
+
+.instructor-card {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.instructor-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 3px solid var(--primary-color);
+}
+
+.section-heading {
+    position: relative;
+    margin-bottom: 40px;
+    color: var(--secondary-color);
+    font-weight: 700;
+}
+
+    .section-heading:after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background-color: var(--primary-color);
+    }
+
+.feature-icon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.testimonial-section {
+    background-color: #fff;
+    padding: 60px 0;
+}
+
+.footer {
+    background-color: var(--secondary-color);
+    color: #fff;
+    padding: 50px 0 20px;
+}
+
+.footer-logo {
+    height: 50px;
+    margin-bottom: 20px;
+}
+
+.social-icons a {
+    color: #fff;
+    font-size: 1.5rem;
+    margin-right: 15px;
+}
+
+.footer-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+    .footer-link:hover {
+        color: #fff;
+    }
+
+.copyright {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Course list section */
+.course-list-section {
+    padding: 50px 0;
+}
+
+.course-list-heading {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.guarantee-badge {
+    background-color: var(--success-color);
+    color: white;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.rating-stars {
+    color: var(--accent-color);
+}
+
+.instructor-section {
+    background-color: #fff;
+    padding: 60px 0;
+}
+
+.learning-section {
+    padding: 60px 0;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.learning-card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 30px;
+    color: var(--text-color);
+    height: 100%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 30px 0;
+    }
+
+    .section-heading {
+        font-size: 1.8rem;
+    }
+}
+
+/* Custom style for feature cards */
+.framework-section {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 60px 0;
+    margin: 50px 0;
+}
+
+/* Chat floating button */
+.floating-chat {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+    .floating-chat .chat-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        text-decoration: none;
+    }
+
+        .floating-chat .chat-btn i {
+            font-size: 1.5rem;
+        }

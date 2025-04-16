@@ -179,11 +179,11 @@ namespace FliesProject.Controllers.Students
             catch (Exception ex)
             {
                 return Json(new { success = false, message = "Update failed: " + ex.Message });
-
             }
         }
-    } 
+    }
 }
 
             
     
+
