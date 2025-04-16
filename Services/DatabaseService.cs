@@ -4,23 +4,25 @@ using Npgsql;
 using MySql.Data.MySqlClient;
 using Dapper;
 using System.Data.Common;
+using System.Configuration;
 
 namespace FliesProject.Services
 {
     public class DatabaseService : IDatabaseService
     {
         private readonly ILogger<DatabaseService> _logger;
-
-        public DatabaseService(ILogger<DatabaseService> logger)
+        private readonly string _defaultConnectionString;
+        public DatabaseService(ILogger<DatabaseService> logger, IConfiguration configuration)
         {
             _logger = logger;
+            _defaultConnectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
         public async Task<(bool success, string message)> TestConnection(string databaseType, string connectionString)
         {
             try
             {
-                using var connection = CreateConnection(databaseType, connectionString);
+                using var connection = CreateConnection("sqlserver", _defaultConnectionString);
                 if (connection is DbConnection dbConnection)
                 {
                     await dbConnection.OpenAsync();
@@ -42,7 +44,8 @@ namespace FliesProject.Services
         {
             try
             {
-                using var connection = CreateConnection(databaseType, connectionString);
+                using var connection = CreateConnection("sqlserver", _defaultConnectionString);
+
                 if (connection is DbConnection dbConnection)
                 {
                     await dbConnection.OpenAsync();

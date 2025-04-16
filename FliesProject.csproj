@@ -57,7 +57,6 @@
     <PackageReference Include="bootstrap" Version="5.3.3" />
     <PackageReference Include="Dapper" Version="2.1.28" />
     <PackageReference Include="EngDict.NET" Version="1.0.1" />
-    <PackageReference Include="Gemini.NET" Version="3.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -76,7 +75,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="AIBot\" />
+    <Folder Include="AIBot\API Models\API Request\" />
     <Folder Include="Models\Events\" />
     <Folder Include="wwwroot\js\admin\" />
     <Folder Include="wwwroot\js\mentor\" />
