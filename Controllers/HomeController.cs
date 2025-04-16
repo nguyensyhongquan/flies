@@ -1,7 +1,10 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
 using FliesProject.Models;
 using FliesProject.Models.Entities;
 using FliesProject.Repositories.IGenericRepository;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FliesProject.Controllers
@@ -32,6 +35,7 @@ namespace FliesProject.Controllers
                 {
                     if (HttpContext.Session != null)
                     {
+                        HttpContext.Session.SetString("UserId", user.UserId.ToString());
                         HttpContext.Session.SetString("UserRole", user.Role);
                         HttpContext.Session.SetString("UserName", user.Username);
                         HttpContext.Session.SetString("UserAvatar", user.AvatarUrl);

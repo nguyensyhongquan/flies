@@ -29,6 +29,19 @@ namespace FliesProject.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Quiz quiz, List<string> answers, string isCorrects, List<string> isCorrectsMultiple, string writingSample)
         {
+            if (quiz.QuizType != "TrueFalse")
+            {
+                ModelState.Remove("isCorrects");
+            }
+            if (quiz.QuizType != "Writing")
+            {
+                ModelState.Remove("writingSample");
+            }
+            if (quiz.QuizType != "MultipleChoice") // Adjust if multiple-choice has a specific type
+            {
+                ModelState.Remove("isCorrectsMultiple");
+            }
+
             if (ModelState.IsValid)
             {
                 quiz.CreatedAt = DateTime.Now;
@@ -63,6 +76,7 @@ namespace FliesProject.Controllers
                     }
                     else
                     {
+                        var correctIndex = int.TryParse(isCorrects, out int index) ? index : 0;
                         for (int i = 0; i < answers.Count; i++)
                         {
                             var answer = new QuizAnswer
