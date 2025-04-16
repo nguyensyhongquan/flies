@@ -1,0 +1,98 @@
+﻿@model FliesProject.Models.Entities.Quiz
+
+@{
+    ViewData["Title"] = "Create Quiz";
+    Layout = "~/Views/Shared/_MentorLayout.cshtml";
+}
+
+<div class="quiz-container w3-container">
+    <h2>Create Quiz</h2>
+
+    <!-- Quiz Type Selection -->
+    <div class="w3-margin-bottom">
+        <label class="w3-label">Select Quiz Type</label>
+        <select id="quizTypeSelect" class="quiz-type-select">
+            <option value="">-- Choose a type --</option>
+            <option value="TrueFalse">True/False</option>
+            <option value="SingleChoice">Single Choice</option>
+            <option value="MultipleChoice">Multiple Choice</option>
+            <option value="Writing">Writing</option>
+        </select>
+    </div>
+
+    <!-- Quiz Creation Form -->
+    <form asp-action="Create" method="post" id="quizForm" class="w3-hide">
+        <input type="hidden" asp-for="QuizType" id="quizTypeInput" />
+        <input type="hidden" asp-for="CreatedAt" value="@DateTime.Now" />
+
+        <div class="w3-margin-bottom">
+            <label asp-for="Title" class="w3-label">Quiz Title</label>
+            <input asp-for="Title" class="quiz-input" required />
+            <span asp-validation-for="Title" class="validation-error"></span>
+        </div>
+
+        <div class="w3-margin-bottom">
+            <label asp-for="Content" class="w3-label">Question</label>
+            <textarea asp-for="Content" class="quiz-textarea" required></textarea>
+            <span asp-validation-for="Content" class="validation-error"></span>
+        </div>
+
+        <div id="answersContainer" class="quiz-answers">
+            <!-- Answers will be dynamically populated here -->
+        </div>
+
+        <div class="w3-margin-top">
+            <button type="submit" class="quiz-button w3-green">Save</button>
+            <a asp-controller="Course" asp-action="Index" class="quiz-button w3-gray">Back</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function () {
+            $('#quizTypeSelect').change(function () {
+                var quizType = $(this).val();
+                $('#quizTypeInput').val(quizType);
+                $('#quizForm').removeClass('w3-hide');
+                $('#answersContainer').empty();
+
+                if (quizType === 'TrueFalse') {
+                    $('#answersContainer').html(`
+                                <h4>Answers</h4>
+                                <div class="answer-row">
+                                    <input type="hidden" name="answers[0]" value="True" />
+                                    <label><input type="radio" name="isCorrects" value="0" required /> True (Correct)</label>
+                                </div>
+                                <div class="answer-row">
+                                    <input type="hidden" name="answers[1]" value="False" />
+                                    <label><input type="radio" name="isCorrects" value="1" /> False (Correct)</label>
+                                </div>
+                            `);
+                } else if (quizType === 'SingleChoice' || quizType === 'MultipleChoice') {
+                    var inputType = quizType === 'SingleChoice' ? 'radio' : 'checkbox';
+                    var answersHtml = '<h4>Answers</h4>';
+                    for (var i = 0; i < 4; i++) {
+                        answersHtml += `
+                                    <div class="answer-row">
+                                        <input type="text" name="answers[${i}]" class="quiz-input" placeholder="Answer ${i + 1}" required />
+                                        <label><input type="${inputType}" name="isCorrects[${i}]" value="true" /> Correct</label>
+                                    </div>
+                                `;
+                    }
+                    $('#answersContainer').html(answersHtml);
+                } else if (quizType === 'Writing') {
+                    $('#answersContainer').html(`
+                                <h4>Sample Answer</h4>
+                                <textarea name="writingSample" class="quiz-textarea" required></textarea>
+                            `);
+                } else {
+                    $('#quizForm').addClass('w3-hide');
+                }
+            });
+        });
+    </script>
+}

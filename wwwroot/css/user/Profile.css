@@ -1,4 +1,4 @@
-﻿* {
+﻿﻿* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -252,3 +252,117 @@ hr {
     flex: 1;
     text-align: right;
 }
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 320px;
+    text-align: center;
+    position: relative;
+}
+
+    .popup-content h2 {
+        margin-bottom: 15px;
+    }
+
+.popup input {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.popup button {
+    width: 60%;
+    padding: 10px;
+    background-color: #F36F21;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+    .popup button:hover {
+        background-color: #D75C15;
+    }
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    text-align: center;
+    line-height: 1;
+}
+
+.popup-content .close-btn {
+    width: 30px !important;
+    height: 30px !important;
+}
+
+.close-btn:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    color: #F36F21;
+    border-radius: 50%;
+}
+
+.popup-content.large {
+    width: 400px;
+}
+
+.popup-content label {
+    display: block;
+    text-align: left;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+}
+
+.gender-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.gender-label {
+    width: 80px;
+    font-weight: bold;
+}
+
+.gender-options {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+}
+
+    .gender-options input[type="radio"] {
+        margin-right: 5px;
+    }

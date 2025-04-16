@@ -48,6 +48,7 @@ public partial class FiliesContext : DbContext
     public virtual DbSet<UserCourseProgress> UserCourseProgresses { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+
     {
         if (!optionsBuilder.IsConfigured)
         {
@@ -55,6 +56,7 @@ public partial class FiliesContext : DbContext
             optionsBuilder.UseSqlServer(connectionString);
         }
     }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

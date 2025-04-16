@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace FliesProject.Models.Entities;
 
@@ -15,8 +16,11 @@ public partial class Course
 
     public int CreatedBy { get; set; }
 
+    [Range(0, int.MaxValue, ErrorMessage = "Timelimit must be a positive number")]
     public int? Timelimit { get; set; }
 
+
+    [Range(0, double.MaxValue, ErrorMessage = "Price must be a positive number")]
     public decimal? Price { get; set; }
 
     public DateTime? CreatedAt { get; set; }

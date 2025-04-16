@@ -1,0 +1,51 @@
+﻿@model FliesProject.Models.Entities.ViewModels.CourseUserViewModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_MentorLayout.cshtml";
+}
+
+<div class="card mb-4 p-3 border-0 shadow-sm custom-profile-card">
+    <div class="d-flex align-items-center">
+        <img src="@Url.Content(Model.User.AvatarUrl ?? "~/images/profile.png")"
+             alt="Avatar"
+             class="avatar-img me-3" />
+        <div class="flex-grow-1">
+            <h5 class="fw-bold mb-1">@Model.User.Fullname</h5>
+            <small class="text-muted">@Model.User.Role</small>
+        </div>
+    </div>
+</div>
+
+<h2 class="mb-3">Khóa học của tôi</h2>hjk;l
+<div class="row" id="courseList">
+    @if (Model.Courses != null && Model.Courses.Any())
+    {
+        @foreach (var course in Model.Courses)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    @if (!string.IsNullOrEmpty(course.CoursesPicture))
+                    {
+                        <img src="@Url.Content(course.CoursesPicture)" class="card-img-top" alt="@course.Title" style="height: 200px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <img src="~/images/course.jpg" class="card-img-top" alt="No image" style="height: 200px; object-fit: cover;" />
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@course.Title</h5>
+                        <p class="card-text">@course.Description</p>
+                        <p class="card-text"><strong>Price:</strong> @course.Price</p>
+                        <p class="card-text"><strong>Timelimit:</strong> @course.Timelimit hours</p>
+                        <a href="@Url.Action("Details", "Course", new { id = course.CourseId })" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No courses available.</p>
+    }
+</div>

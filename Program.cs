@@ -6,12 +6,20 @@ using FliesProject.Repositories.GenericRepository;
 using FliesProject.Repositories.IGenericRepository;
 using System.Diagnostics;
 using FliesProject.Services;
+using FliesProject.Models.Entities;
+using Org.BouncyCastle.Crypto.Generators;
 using FliesProject.AIBot;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
+
+
+
+
+
+
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IChatService, ChatService>();
@@ -63,15 +71,6 @@ var app = builder.Build();
 
 
 
-
-
-
-
-
-
-
-
-
 // 🔹 Cấu hình Middleware: Phải gọi `UseSession()` trước `UseAuthorization()`
 if (app.Environment.IsDevelopment())
 {
@@ -97,7 +96,10 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Home}/{id?}");
 
+
 app.UseCors("AllowAll");
 app.MapControllers();
 
 app.Run();
+
+
