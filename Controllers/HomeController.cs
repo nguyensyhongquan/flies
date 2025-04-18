@@ -1,25 +1,23 @@
 ﻿using System.Diagnostics;
-<<<<<<< HEAD
 using System.Security.Claims;
-using FliesProject.Models;
-using FliesProject.Models.Entities;
-using FliesProject.Repositories.IGenericRepository;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-=======
 using System.Security.Cryptography;
 using System.Text;
 using FliesProject.Models.Entities;
 using FliesProject.Services;
->>>>>>> 2d020b2293f5a670218f888ba12485a9fb876ee1
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using FliesProject.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FliesProject.Controllers
 {
+    
     public class HomeController : Controller
     {
         private readonly IUserService _userService;
 
+        
         public HomeController(IUserService userService)
         {
             _userService = userService;
@@ -39,43 +37,11 @@ namespace FliesProject.Controllers
                 var user = _userService.GetUserByUsername(model.Username);
                 if (user == null)
                 {
-<<<<<<< HEAD
-                    if (HttpContext.Session != null)
-                    {
-                        HttpContext.Session.SetString("UserId", user.UserId.ToString());
-                        HttpContext.Session.SetString("UserRole", user.Role);
-                        HttpContext.Session.SetString("UserName", user.Username);
-                        HttpContext.Session.SetString("UserAvatar", user.AvatarUrl);
-
-                        string homepageUrl = user.Role.ToLower() switch
-                        {
-                            "admin" => "/Admin/Home",
-                            "mentor" => "/Course/Index",
-                            "student" => "/Account/Home",
-                            _ => "/Home"
-                        };
-
-                        return Json(new
-                        {
-                            success = true,
-                            username = user.Username,
-                            role = user.Role,
-                            avatar = user.AvatarUrl,
-                            homepageUrl = homepageUrl
-                        });
-                    }
-                    else
-                    {
-                        return StatusCode(500, new { success = false, message = "Session is not available" });
-                    }
-=======
                     return Json(new { success = false, message = "Invalid credentials" });
->>>>>>> 2d020b2293f5a670218f888ba12485a9fb876ee1
                 }
 
                 // Băm mật khẩu được gửi lên
                 string hashedInputPassword = HashPassword(model.Passwordhash);
-
                 Console.WriteLine($"Hashed Input Password: {hashedInputPassword}");
                 Console.WriteLine($"Stored PasswordHash: {user.Passwordhash}");
 
@@ -91,14 +57,36 @@ namespace FliesProject.Controllers
                     return StatusCode(500, new { success = false, message = "Session is not available" });
                 }
 
+                HttpContext.Session.SetString("UserId", user.UserId.ToString());
                 HttpContext.Session.SetString("UserRole", user.Role ?? "");
                 HttpContext.Session.SetString("UserName", user.Username ?? "");
                 HttpContext.Session.SetString("UserAvatar", user.AvatarUrl ?? "");
 
+                // Thiết lập claims cho xác thực
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Role, user.Role ?? "")
+        };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = true, // Đặt true nếu muốn cookie lưu lâu dài sau khi đóng trình duyệt
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+                };
+
+                // Sử dụng phương thức đồng bộ thay vì await
+                HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties).GetAwaiter().GetResult();
+
                 string homepageUrl = (user.Role ?? "").ToLower() switch
                 {
                     "admin" => "/Admin/Home",
-                    "mentor" => "/Mentor/Home",
+                    "mentor" => "/Course/Index",
                     "student" => "/Account/Home",
                     _ => "/Home"
                 };
@@ -118,7 +106,6 @@ namespace FliesProject.Controllers
                 return StatusCode(500, new { success = false, message = "Internal Server Error", error = ex.Message });
             }
         }
-
         private string HashPassword(string password)
         {
             using (var sha256 = SHA256.Create())

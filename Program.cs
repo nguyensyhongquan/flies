@@ -9,17 +9,12 @@ using FliesProject.Services;
 using FliesProject.Models.Entities;
 using Org.BouncyCastle.Crypto.Generators;
 using FliesProject.AIBot;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
-
-
-
-
-
-
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IChatService, ChatService>();
@@ -48,12 +43,21 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Home/Login";         // Điều chỉnh từ /Account/Login thành /Home/Login
+                                                   //   options.AccessDeniedPath = "/Home/AccessDenied";  // Điều chỉnh tương tự
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+    });
+
 builder.Services.AddHttpContextAccessor(); // Cần thiết để sử dụng HttpContext.Session
 builder.Services.AddDbContext<FiliesContext>(options =>
 
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddControllersWithViews().AddCookieTempDataProvider();
 builder.Services.AddRazorPages();
@@ -89,6 +93,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseSession();
+app.UseAuthentication();
 
 app.UseAuthorization();
 app.MapRazorPages();

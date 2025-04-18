@@ -74,16 +74,33 @@
                             `);
                 } else if (quizType === 'SingleChoice' || quizType === 'MultipleChoice') {
                     var inputType = quizType === 'SingleChoice' ? 'radio' : 'checkbox';
+                    var nameAttr = quizType === 'SingleChoice' ? 'isCorrectsMultiple' : 'isCorrectsMultiple';
                     var answersHtml = '<h4>Answers</h4>';
                     for (var i = 0; i < 4; i++) {
                         answersHtml += `
                                     <div class="answer-row">
                                         <input type="text" name="answers[${i}]" class="quiz-input" placeholder="Answer ${i + 1}" required />
-                                        <label><input type="${inputType}" name="isCorrects[${i}]" value="true" /> Correct</label>
+                                        <label><input type="${inputType}" name="${nameAttr}" value="${i}" /> Correct</label>
                                     </div>
                                 `;
                     }
+                    answersHtml += `
+                                <button type="button" id="addAnswer" class="w3-button w3-small w3-blue">Add Answer</button>
+                            `;
                     $('#answersContainer').html(answersHtml);
+
+                    // Add dynamic answer field
+                    let answerIndex = 4;
+                    $('#addAnswer').click(function () {
+                        const newAnswerHtml = `
+                                    <div class="answer-row">
+                                        <input type="text" name="answers[${answerIndex}]" class="quiz-input" placeholder="Answer ${answerIndex + 1}" required />
+                                        <label><input type="${inputType}" name="${nameAttr}" value="${answerIndex}" /> Correct</label>
+                                    </div>
+                                `;
+                        $('#addAnswer').before(newAnswerHtml);
+                        answerIndex++;
+                    });
                 } else if (quizType === 'Writing') {
                     $('#answersContainer').html(`
                                 <h4>Sample Answer</h4>

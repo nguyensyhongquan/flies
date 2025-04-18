@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = "View Courses";
-    Layout = "~/Views/Shared/_MentorLayout.cshtml";
+    Layout = "~/Views/Shared/_MentorLayout.cshtml"; 
 }
 
 <div id="viewCoursesPage" class="container">
@@ -14,14 +14,14 @@
             {
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
-                        <img src="@(course.CoursesPicture ?? "/images/default-course.jpg")" class="card-img-top" alt="@course.Title" style="height: 200px; object-fit: cover;">
+                        <img src="@(course.CoursesPicture ?? "/images/profile.png")" class="card-img-top" alt="@course.Title" style="height: 200px; object-fit: cover;">
                         <div class="card-body">
                             <h5 class="card-title">@course.Title</h5>
                             <p class="card-text">
                                 <i class="fas fa-users"></i> @course.EnrollmentCount Students
                             </p>
-                            <a asp-action="Show" asp-controller="Course" asp-route-id="@course.CourseId" class="btn btn-primary">Manage Course</a>
-                        </div>
+                            <a asp-action="AddSection" asp-controller="Course" asp-route-id="@course.CourseId" class="btn btn-primary">Manage Course</a>
+                        </div> 
                     </div>
                 </div>
             }
@@ -29,9 +29,7 @@
     }
     else
     {
-        <div class="alert alert-info">
-            No courses found. <a asp-action="Create" asp-controller="Course" class="alert-link">Create a course</a> to get started!
-        </div>
+      
     }
 </div>
 

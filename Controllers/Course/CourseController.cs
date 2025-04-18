@@ -413,13 +413,13 @@ using System.IO;
                 {
                     Console.WriteLine($"Error: {ex.Message}\nStackTrace: {ex.StackTrace}");
                     ModelState.AddModelError("", $"Error deleting course: {ex.Message}");
-                    return View("DeleteCourse", course);
+                    return View("Delete", course);
                 }
             }
 
         // GET: Course/Manage/{id}
-    
-        public async Task<IActionResult> Show(int id)
+
+        public async Task<IActionResult> Show()
         {
             var userIdStr = HttpContext.Session.GetString("UserId");
             var userRole = HttpContext.Session.GetString("UserRole")?.ToLower();
@@ -436,57 +436,18 @@ using System.IO;
                 return RedirectToAction(nameof(Index));
             }
 
-            // Debug: List owned CourseIds
-            var userCourses = await _context.Courses
+            var courses = await _context.Courses
                 .Where(c => c.CreatedBy == userId)
-                .Select(c => c.CourseId)
-                .ToListAsync();
-            TempData["DebugCourses"] = $"User owns courses: {string.Join(", ", userCourses)}";
-
-            var course = await _context.Courses
-                .Include(c => c.Sections)
-                    .ThenInclude(s => s.Lessons)
-                .Select(c => new
+                .Select(c => new CourseWithEnrollmentViewModel
                 {
-                    Course = c,
+                    CourseId = c.CourseId,
+                    Title = c.Title,
+                    CoursesPicture = c.CoursesPicture,
                     EnrollmentCount = c.Enrollements.Count()
                 })
-                .FirstOrDefaultAsync(c => c.Course.CourseId == id && c.Course.CreatedBy == userId);
+                .ToListAsync();
 
-            if (course == null)
-            {
-                TempData["Error"] = $"Course ID {id} not found or you don't have permission.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            var viewModel = new CourseManageViewModel
-            {
-                CourseId = course.Course.CourseId,
-                Title = course.Course.Title,
-                EnrollmentCount = course.EnrollmentCount,
-                Sections = course.Course.Sections
-                    .OrderBy(s => s.Positition)
-                    .Select(s => new SectionViewModel
-                    {
-                        SectionId = s.SectionId,
-                        Title = s.Title,
-                        Description = s.Description,
-                        Position = s.Positition ?? 0,
-                        Lessons = s.Lessons
-                            .Select(l => new LessonViewModel
-                            {
-                                LessonId = l.LessonId,
-                                Title = l.Title,
-                                VideoUrl = l.VideoUrl,
-                                Duration = l.Duration,
-                                CreatedAt = l.CreatedAt
-                            })
-                            .ToList()
-                    })
-                    .ToList()
-            };
-
-            return View(viewModel);
+            return View("MyCourse", courses);
         }
 
         // POST: Course/AddSection

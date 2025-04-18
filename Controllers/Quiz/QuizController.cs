@@ -37,7 +37,7 @@ namespace FliesProject.Controllers
             {
                 ModelState.Remove("writingSample");
             }
-            if (quiz.QuizType != "MultipleChoice") // Adjust if multiple-choice has a specific type
+            if (quiz.QuizType != "MultipleChoice" && quiz.QuizType != "SingleChoice")
             {
                 ModelState.Remove("isCorrectsMultiple");
             }
@@ -74,16 +74,17 @@ namespace FliesProject.Controllers
                             _context.QuizAnswers.Add(answer);
                         }
                     }
-                    else
+                    else // SingleChoice or MultipleChoice
                     {
-               
                         for (int i = 0; i < answers.Count; i++)
                         {
+                            // Check if the index `i` is marked as correct in isCorrectsMultiple
+                            bool isCorrect = isCorrectsMultiple != null && isCorrectsMultiple.Contains(i.ToString());
                             var answer = new QuizAnswer
                             {
                                 QuestionId = question.QuestionId,
                                 AnswerText = answers[i],
-                                IsCorrect = isCorrectsMultiple.Contains(i.ToString())
+                                IsCorrect = isCorrect
                             };
                             _context.QuizAnswers.Add(answer);
                         }
