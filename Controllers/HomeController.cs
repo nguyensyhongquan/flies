@@ -1,9 +1,13 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using FliesProject.Models.Entities;
 using FliesProject.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using FliesProject.Services;
 
 namespace FliesProject.Controllers
 {
@@ -35,7 +39,6 @@ namespace FliesProject.Controllers
 
                 // Băm mật khẩu được gửi lên
                 string hashedInputPassword = HashPassword(model.Passwordhash);
-
                 Console.WriteLine($"Hashed Input Password: {hashedInputPassword}");
                 Console.WriteLine($"Stored PasswordHash: {user.Passwordhash}");
 
@@ -51,9 +54,31 @@ namespace FliesProject.Controllers
                     return StatusCode(500, new { success = false, message = "Session is not available" });
                 }
 
+                HttpContext.Session.SetString("UserId", user.UserId.ToString());
                 HttpContext.Session.SetString("UserRole", user.Role ?? "");
                 HttpContext.Session.SetString("UserName", user.Username ?? "");
                 HttpContext.Session.SetString("UserAvatar", user.AvatarUrl ?? "");
+
+                // Thiết lập claims cho xác thực
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Role, user.Role ?? "")
+        };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = true, // Đặt true nếu muốn cookie lưu lâu dài sau khi đóng trình duyệt
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+                };
+
+                // Sử dụng phương thức đồng bộ thay vì await
+                HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity),
+                    authProperties).GetAwaiter().GetResult();
 
                 string homepageUrl = (user.Role ?? "").ToLower() switch
                 {
@@ -78,7 +103,6 @@ namespace FliesProject.Controllers
                 return StatusCode(500, new { success = false, message = "Internal Server Error", error = ex.Message });
             }
         }
-
         private string HashPassword(string password)
         {
             using (var sha256 = SHA256.Create())

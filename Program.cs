@@ -9,6 +9,7 @@ using FliesProject.Services;
 using FliesProject.Models.Entities;
 using Org.BouncyCastle.Crypto.Generators;
 using FliesProject.AIBot;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -67,6 +68,13 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowAnyHeader());
 });
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Home/Login";         // Điều chỉnh từ /Account/Login thành /Home/Login
+                                                   //   options.AccessDeniedPath = "/Home/AccessDenied";  // Điều chỉnh tương tự
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+    });
 var app = builder.Build();
 
 
@@ -89,7 +97,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseSession();
-
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllerRoute(
