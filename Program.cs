@@ -71,6 +71,13 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowAnyHeader());
 });
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Home/Login";         // Điều chỉnh từ /Account/Login thành /Home/Login
+                                                   //   options.AccessDeniedPath = "/Home/AccessDenied";  // Điều chỉnh tương tự
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+    });
 var app = builder.Build();
 
 

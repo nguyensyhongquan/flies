@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = null;  // hoặc bạn để layout tùy ý
+    Layout = "~/Views/Shared/Admin.cshtml";  // hoặc bạn để layout tùy ý
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -7,67 +7,46 @@
     <meta charset="UTF-8">
     <title>ChatBot Interface</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        #chat-container {
-            width: 500px;
-            margin: 20px auto;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-        }
-
-        #chat-messages {
-            height: 300px;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 8px;
-            margin-bottom: 10px;
-            background-color: #fff;
-        }
-
-            #chat-messages div {
-                margin-bottom: 8px;
-            }
-
-        #questionInput {
-            width: 80%;
-            padding: 5px;
-        }
-
-        #loading {
-            font-style: italic;
-            color: #888;
-        }
-
-        canvas {
-            margin-top: 20px;
-            max-width: 100%;
-        }
-    </style>
 </head>
 <body>
-    <div id="chat-container">
-        <h2>Chat with Bot</h2>
-        <div id="chat-messages"></div>
-        <input type="text" id="questionInput" placeholder="Enter your question here" />
-        <button onclick="sendMessage()">Send</button>
-        <div id="loading" style="display:none;">Loading...</div>
+    <div class="AIcontainer">
+        <h1 class="main-title">Chat AI Example</h1>
+        <div class="chat-container">
+            <div class="chat-title">Chat với AI</div>
+
+            <!-- Khu vực hiển thị tin nhắn -->
+            <div class="chat-messages" id="chatMessages">
+                <div class="message user">Xin chào AI!</div>
+                <div class="message ai">Chào bạn! Mình có thể giúp gì cho bạn hôm nay?</div>
+            </div>
+
+            <div class="input-with-button">
+                <input type="text"
+                       id="userInput"
+                       placeholder="What's your mind..." />
+                <button id="sendBtn" onclick="sendMessage()">
+                    ➤
+                </button>
+            </div>
+        </div>
     </div>
 
     <canvas id="chartCanvas" width="500" height="300" style="display:none;"></canvas>
 
     <script>
-        let currentChart = null;
+        // let currentChart = null;
 
-        async function sendMessage() {
-            const question = document.getElementById("questionInput").value.trim();
+        // Send the user input to the bot
+             async function sendMessage() {
+            const question = document.getElementById("userInput").value.trim();
+            console.log("Button clicked, sending message...");
+             console.log(question);
             if (!question) {
                 alert("Please enter a question.");
                 return;
             }
 
-            document.getElementById("loading").style.display = "block";
+            // document.getElementById("loading").style.display = "block";
 
             try {
                 const response = await fetch("/api/chat/message", {
@@ -83,18 +62,17 @@
                 }
 
                 const result = await response.json();
-                document.getElementById("loading").style.display = "none";
+                // document.getElementById("loading").style.display = "none";
 
-                const chat = document.getElementById("chat-messages");
-                chat.innerHTML += `<div><strong>You:</strong> ${question}</div>`;
-                chat.innerHTML += `<div><strong>Bot:</strong> ${result.message}</div>`;
+                const chat = document.getElementById("chatMessages");
+                chat.innerHTML += `<div class="message user"><strong>You:</strong> ${question}</div>`;
+                chat.innerHTML += `<div class="message ai"><strong>Bot:</strong> ${result.message}</div>`;
                 chat.scrollTop = chat.scrollHeight;
 
                 // Nếu có biểu đồ, vẽ
                 if (result.chartType && result.chartData) {
                     displayChart(result.chartType, result.chartData);
                 } else {
-                    // Ẩn canvas nếu không có chart
                     document.getElementById("chartCanvas").style.display = "none";
                 }
             } catch (err) {
@@ -104,40 +82,6 @@
             }
         }
 
-        function displayChart(chartType, chartDataJson) {
-            const canvas = document.getElementById("chartCanvas");
-            canvas.style.display = "block";
-
-            // Parse data
-            let chartData;
-            try {
-                chartData = JSON.parse(chartDataJson);
-            } catch (e) {
-                console.error("Invalid chartData JSON", e);
-                return;
-            }
-
-            const ctx = canvas.getContext("2d");
-
-            // Destroy previous chart nếu có
-            if (currentChart) {
-                currentChart.destroy();
-            }
-
-            currentChart = new Chart(ctx, {
-                type: chartType,    // 'bar', 'pie', 'line', ...
-                data: chartData,
-                options: {
-                    responsive: true,
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Chart'
-                        }
-                    }
-                }
-            });
-        }
     </script>
 </body>
 </html>

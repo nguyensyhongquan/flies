@@ -8,7 +8,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using FliesProject.Services;
+
 using Microsoft.AspNetCore.Authorization;
+
 
 namespace FliesProject.Controllers
 {
