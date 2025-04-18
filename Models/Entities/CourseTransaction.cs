@@ -13,7 +13,5 @@ public partial class CourseTransaction
 
     public DateTime? TransactionDate { get; set; }
 
-    public string TransactionType { get; set; } = null!;
-
     public virtual Enrollement Enrollement { get; set; } = null!;
 }

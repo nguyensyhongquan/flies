@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = ViewBag.Success ? "Thanh toán thành công" : "Thanh toán thất bại";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h4>Kết quả thanh toán</h4>
+                </div>
+                <div class="card-body text-center">
+                    @if (ViewBag.Success)
+                    {
+                        <div class="mb-4">
+                            <i class="fas fa-check-circle text-success" style="font-size: 64px;"></i>
+                        </div>
+                        <h5 class="mb-3 text-success">Thanh toán thành công</h5>
+                        <p class="mb-1">Số tiền: @string.Format("{0:N0}", ViewBag.Amount) VNĐ</p>
+                        <p>@ViewBag.Message</p>
+                    }
+                    else
+                    {
+                        <div class="mb-4">
+                            <i class="fas fa-times-circle text-danger" style="font-size: 64px;"></i>
+                        </div>
+                        <h5 class="mb-3 text-danger">Thanh toán thất bại</h5>
+                        <p>@ViewBag.Message</p>
+                    }
+                </div>
+                <div class="card-footer">
+                    <div class="d-grid gap-2">
+                        @if (ViewBag.Success)
+                        {
+                            <a href="/" class="btn btn-primary">Về trang chủ</a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Deposit", "Payment")" class="btn btn-primary">Thử lại</a>
+                            <a href="/" class="btn btn-outline-secondary">Về trang chủ</a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

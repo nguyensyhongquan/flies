@@ -1,0 +1,21 @@
+﻿@model FliesProject.Models.Entities.Course
+
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Xác nhận mua khóa học</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <p>Bạn có chắc chắn muốn mua khóa học <strong>@Model.Title</strong>?</p>
+            <p>Giá: <span class="text-danger fw-bold">@(Model.Price?.ToString("N0") ?? "0") VNĐ</span></p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+            <form asp-controller="Course" asp-action="Purchase" asp-route-id="@Model.CourseId" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger">Xác nhận mua</button>
+            </form>
+        </div>
+    </div>
+</div>

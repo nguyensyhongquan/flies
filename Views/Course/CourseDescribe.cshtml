@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="/css/Course/CourseDescribe.css" asp-append-version="true">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <style>
         /* Background mờ khi mở popup */
@@ -257,57 +258,35 @@
                     </div>
                     <div class="col-lg-4">
                         <div class="card">
+                            <!-- Cập nhật phần nút "Mua ngay" trong CourseDescribe.cshtml -->
                             <div class="card-body">
                                 <p class="text-muted">Tổng cộng</p>
-                                <h2 class="text-danger fw-bold">@Model.Price</h2>
-                                <button class="btn btn-outline-danger w-100 mb-2" id="buyNowBtn">Mua ngay</button>
+                                <h2 class="text-danger fw-bold">@(Model.Price?.ToString("N0") ?? "0") VNĐ</h2>
+
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    @if (ViewBag.IsEnrolled)
+                                    {
+                                        <a asp-controller="Course" asp-action="CourseDetail" asp-route-id="@Model.CourseId" class="btn btn-success w-100 mb-2">Vào học ngay</a>
+                                    }
+                                    else
+                                    {
+                                        <a href="#" class="btn btn-outline-danger w-100 mb-2" onclick="showPurchaseConfirmation(@Model.CourseId)">Mua ngay</a>
+                                    }
+                                }
+                                else
+                                {
+                                    <a asp-controller="Home" asp-action="Login" asp-route-returnUrl="@Url.Action("CourseDescribe", "Course", new { id = Model.CourseId })"
+                                       class="btn btn-outline-danger w-100 mb-2">Mua ngay</a>
+                                }
                                 <button class="btn btn-outline-primary w-100">Tư vấn</button>
                             </div>
                         </div>
-                    </div>
+                    </div> 
                 </div>
             </div>
         </section>
 
-        <!-- Modal Bootstrap -->
-        <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="orderModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <!-- Thông tin khóa học -->
-                        <div class="course-info">
-                            <img src="https://via.placeholder.com/80" alt="Course Image" class="course-img">
-                            <div>
-                                <p class="course-title">@Model.Title</p>
-                                <p class="course-price">@Model.Price</p>
-                            </div>
-                        </div>
-
-                        <!-- Danh sách tính năng -->
-                        <div class="feature-list">
-                            <div class="feature-item"><img src="https://via.placeholder.com/18" alt="icon"> Video (62)</div>
-                            <div class="feature-item">
-                                <img src="https://via.placeholder.com/18" alt="icon"> Tài liệu (41)
-                            </div>
-                            <div class="feature-item">
-                                <img src="https://via.placeholder.com/18" alt="icon"> Bài tập (20)
-                            </div>
-                            <div class="feature-item">
-                                <img src="https://via.placeholder.com/18" alt="icon"> Homework (18)
-                            </div>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                            <button type="button" class="buy-btn">Thanh toán ngay</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            </div>
        
 
         <!-- Course Tabs -->
@@ -352,7 +331,7 @@
                          aria-labelledby="curriculum-tab">
                         <h3 class="mb-4">Chương trình học</h3>
                         <p>
-                            Nếu quyết tâm học nghiêm túc, YouPass cam kết bạn sẽ luôn luôn biết cách viết cho mọi dạng
+                            Nếu quyết tâm học nghiêm túc, Flies cam kết bạn sẽ luôn luôn biết cách viết cho mọi dạng
                             bài Writing Task 1.
                         </p>
                         <p>
@@ -651,11 +630,11 @@
                             <div class="card-body p-4">
                                 <div class="row align-items-center">
                                     <div class="col-md-8">
-                                        <p>YouPass cam kết chất lượng đầu ra mạnh mẽ, cụ thể là:</p>
+                                        <p>Flies cam kết chất lượng đầu ra mạnh mẽ, cụ thể là:</p>
                                         <p>
                                             Nếu bạn (1) thỏa năng lực đầu vào qua Entrance Test, và bạn (2) hoàn thành đủ
                                             tất cả bài tập => nhưng khi đi thi thật, điểm Writing bạn thấp hơn 6.5, thì
-                                            YouPass sẽ refund bạn 100% học phí đã đóng.
+                                            Flies sẽ refund bạn 100% học phí đã đóng.
                                         </p>
                                         <p class="text-muted font-italic mb-0">
                                             <small>
@@ -680,7 +659,7 @@
 
                     <!-- Reviews Tab Content -->
                     <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
-                        <h3 class="mb-4">Học sinh YouPass Review</h3>
+                        <h3 class="mb-4">Học sinh Flies Review</h3>
                         <div class="row">
                             <div class="col-md-6 mb-4">
                                 <div class="review-card">
@@ -1003,23 +982,68 @@
         </div>
     </footer>
 
+    <!-- Đặt modal ở đây, ngay trước các script -->
+    <div class="modal fade" id="purchaseModal" tabindex="-1" aria-labelledby="purchaseModalLabel" aria-hidden="true">
+        <div id="modalContent"></div>
+    </div>
 
-
+    <!-- Script cho modal -->
     <script>
-        document.getElementById("buyNowBtn").addEventListener("click", function () {
-            var orderModal = new bootstrap.Modal(document.getElementById("orderModal"));
-            orderModal.show();
-        });
+        function showPurchaseConfirmation(courseId) {
+            $.ajax({
+                url: '/Course/ConfirmPurchase/' + courseId,
+                type: 'GET',
+                success: function (result) {
+                    $('#modalContent').html(result);
+                    $('#purchaseModal').modal('show');
+                },
+                error: function (error) {
+                    console.log(error);
+                    alert('Có lỗi xảy ra khi tải thông tin xác nhận.');
+                }
+            });
+        }
 
-        // Hiển thị input nhập mã giảm giá khi nhấn vào "Nhập mã khuyến mãi"
-        document.getElementById("showDiscountInput").addEventListener("click", function () {
-            document.querySelector(".discount-input").style.display = "block";
+        // Hiển thị thông báo thành công hoặc lỗi
+        $(document).ready(function() {
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>
+                    if(typeof toastr !== 'undefined') {
+                        toastr.success('@TempData["SuccessMessage"]');
+                    } else {
+                        alert('@TempData["SuccessMessage"]');
+                    }
+            </text>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <text>
+                    if(typeof toastr !== 'undefined') {
+                        toastr.error('@TempData["ErrorMessage"]');
+                    } else {
+                        alert('@TempData["ErrorMessage"]');
+                    }
+            </text>
+        }
         });
     </script>
+
+
+
+    
     <script src="~/js/user/Header.js"></script>
 
     <!-- Bootstrap 5 JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Kiểm tra nếu jquery chưa được load, thêm nó vào -->
+    <script>
+        if (typeof jQuery === 'undefined') {
+            document.write('<script src="https://code.jquery.com/jquery-3.6.0.min.js"><\/script>');
+        }
+    </script>
 
 
 

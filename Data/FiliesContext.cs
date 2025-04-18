@@ -7,10 +7,6 @@ namespace FliesProject.Data;
 
 public partial class FiliesContext : DbContext
 {
-    public FiliesContext()
-    {
-    }
-
     public FiliesContext(DbContextOptions<FiliesContext> options)
         : base(options)
     {
@@ -25,6 +21,8 @@ public partial class FiliesContext : DbContext
     public virtual DbSet<Enrollement> Enrollements { get; set; }
 
     public virtual DbSet<Lesson> Lessons { get; set; }
+
+    public virtual DbSet<PaymentOrder> PaymentOrders { get; set; }
 
     public virtual DbSet<Quiz> Quizzes { get; set; }
 
@@ -43,10 +41,6 @@ public partial class FiliesContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserCourseProgress> UserCourseProgresses { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=.;Database=Filies;TrustServerCertificate=True;Trusted_Connection=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -217,6 +211,31 @@ public partial class FiliesContext : DbContext
                 .HasForeignKey(d => d.SectionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Lessons__section__6D0D32F4");
+        });
+
+        modelBuilder.Entity<PaymentOrder>(entity =>
+        {
+            entity.HasKey(e => e.OrderId).HasName("PK__PaymentO__C3905BCF396F97E0");
+
+            entity.ToTable("PaymentOrder");
+
+            entity.Property(e => e.OrderId)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.TransactionRef)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.User).WithMany(p => p.PaymentOrders)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PaymentOrder_User");
         });
 
         modelBuilder.Entity<Quiz>(entity =>
