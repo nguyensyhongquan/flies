@@ -202,23 +202,27 @@ Please suggest the most appropriate chart type and create the data structure for
         {
             // 1. Tạo prompt để AI “làm mượt” câu trả lời
             var prompt = $@"
-You are a professional AI assistant.
-Your task is to combine the following parts into a single, fluent, user-friendly response in Vietnamese:
+            You are a professional AI assistant.
+            Your task is to combine the following parts into a single, fluent, user-friendly response in Vietnamese:
 
-- The user's original question: ""{question}""
-- The SQL query used: {sqlQuery}
-- A brief explanation of what the query does: {explanation}
-- The raw data returned (in rows, separated by dashes):
-{rawDataText}
-- A brief insight from the query results: {analysis}
+            - The user's original question: ""{question}""
+            - The SQL query used: {sqlQuery}
+            - A brief explanation of what the query does: {explanation}
+            - The raw data returned (in rows, separated by dashes):
+            {rawDataText}
+            - A brief insight from the query results: {analysis}
 
-Output only one paragraph (2–4 sentences) that:
+            Output only one paragraph (2–4 sentences) that:
 
-1.Answer a summary of the answer through the retrieved rawDataText.
+            1.Answer a summary of the answer through the retrieved rawDataText.
 
-2.Answer the question in its entirety and to the point
+            2.Answer the question in its entirety and to the point
+            3.Not showing the query you need to use, just answer the result
+            4.Không cần show ra cách truy vấn , câu lệnh , user họ chỉ cần kết quả thôi họ không cần bạn showw quá trình nhé!
+            5.Hãy show ra thông tin 1 cách chi tiết thông qua từ {rawDataText} không phải dấu diếm gì cả ,khồng cần trả lời 1 cách khái quát làm gì ok !
+            6.Khi public các thông tin từ {rawDataText} thì chỉ nên public những thông tin mang tính tiên quyết như email , tên ,địa chỉ ,số điện thoại ( dành cho việc xác định danh tính 1 người )
+            ";
 
-";
 
             // 2. Build the API request
             var request = new ApiRequestBuilder()

@@ -24,13 +24,14 @@ namespace FliesProject.Controllers.Api
         [HttpPost("message")]
         public async Task<ActionResult<ChatRequest>> ProcessMessage([FromBody] ChatRequest req)
         {
-            const string SessionKey = "ChatHistory";
-            var historyJson = HttpContext.Session.GetString(SessionKey);
-            var history = string.IsNullOrEmpty(historyJson)
-    ? new List<Message>()
-    : JsonSerializer.Deserialize<List<Message>>(historyJson)!;
+            Console.WriteLine("hiiiiiiiiii");
+    //        const string SessionKey = "ChatHistory";
+    //        var historyJson = HttpContext.Session.GetString(SessionKey);
+    //        var history = string.IsNullOrEmpty(historyJson)
+    //? new List<Message>()
+    //: JsonSerializer.Deserialize<List<Message>>(historyJson)!;
 
-            Console.WriteLine("The MEssaage is "+req.Message);
+    //        Console.WriteLine("The MEssaage is "+req.Message);
             if (string.IsNullOrWhiteSpace(req?.Message))
                 return BadRequest(new ChatResponse
                 {
@@ -39,11 +40,11 @@ namespace FliesProject.Controllers.Api
                 });
 
             _logger.LogInformation("Start processing message: {Message}", req.Message);
-            history.Add(new Message
-            {
-                Role = "user",
-                Content = req.Message
-            });
+            //history.Add(new Message
+            //{
+            //    Role = "user",
+            //    Content = req.Message
+            //});
             try
             {
     //            var aiRequest = new ApiRequestBuilder()
@@ -57,12 +58,12 @@ namespace FliesProject.Controllers.Api
     //.Build();
 
                 var reply = await _chatRouterService.RouteQuestion(req.Message);
-                history.Add(new Message
-                {
-                    Role = "assistant",
-                    Content = reply
-                });
-                HttpContext.Session.SetString(SessionKey, JsonSerializer.Serialize(history));
+                //history.Add(new Message
+                //{
+                //    Role = "assistant",
+                //    Content = reply
+                //});
+                //HttpContext.Session.SetString(SessionKey, JsonSerializer.Serialize(history));
                 // Nếu bạn có ChartType/ChartData, parse từ reply hoặc ChatResponse
                 // Giả sử reply là thuần text, không chart:
                 return Ok(new ChatResponse

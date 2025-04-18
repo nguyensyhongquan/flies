@@ -57,12 +57,12 @@
     <PackageReference Include="bootstrap" Version="5.3.3" />
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="EngDict.NET" Version="1.0.1" />
-<<<<<<< HEAD
+
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.0" />
-=======
-    <PackageReference Include="Gemini.NET" Version="3.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.4" />
->>>>>>> 05f5921b535070f35b1045d9f8b2ac3392fb5b5d
+
+   
+
+
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -79,17 +79,17 @@
   </ItemGroup>
 
   <ItemGroup>
-<<<<<<< HEAD
+
     <Folder Include="AIBot\API Models\API Request\" />
     <Folder Include="Models\Events\" />
-=======
+
     <Folder Include="AIBot\" />
     <Folder Include="NewFolder\" />
     <Folder Include="Views\Mentor\" />
     <Folder Include="wwwroot\css\admin\" />
     <Folder Include="wwwroot\css\mentor\" />
     <Folder Include="wwwroot\css\user\" />
->>>>>>> 05f5921b535070f35b1045d9f8b2ac3392fb5b5d
+
     <Folder Include="wwwroot\js\admin\" />
     <Folder Include="wwwroot\js\mentor\" />
     <Folder Include="wwwroot\mentor\" />
