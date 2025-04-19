@@ -10,7 +10,7 @@ namespace FliesProject.Controllers.Api
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Policy = "admin")]
+    [Authorize(Policy = "Admin")]
     public class ChatController : ControllerBase
     {
         private readonly ChatRouterService _chatRouterService;

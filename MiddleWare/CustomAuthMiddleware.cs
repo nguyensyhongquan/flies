@@ -34,7 +34,7 @@ namespace FliesProject.MiddleWare
                  !userRole.Equals("mentor", StringComparison.OrdinalIgnoreCase) &&
                  !userRole.Equals("student", StringComparison.OrdinalIgnoreCase)))
             {
-                _logger.LogWarning("Forbidden access attempt by user with role: {UserRole}", userRole);
+                //_logger.LogWarning("Forbidden access attempt by user with role: {UserRole}", userRole);
                 httpContext.Response.Redirect("/Account/Home");  
                 return;
             }
