@@ -2,6 +2,7 @@
 using FliesProject.AIBot;
 using FliesProject.Models.AImodel;
 using FliesProject.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.Enums;
 
@@ -9,6 +10,7 @@ namespace FliesProject.Controllers.Api
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Policy = "admin")]
     public class ChatController : ControllerBase
     {
         private readonly ChatRouterService _chatRouterService;

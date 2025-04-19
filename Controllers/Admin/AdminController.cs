@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using FliesProject.Models.Entities;
 using FliesProject.Extensions;
 using FliesProject.Repositories.GenericRepository;
+using Microsoft.AspNetCore.Authorization;
 namespace FliesProject.Controllers.Admin
 {
     public class AdminController : Controller
@@ -16,6 +17,7 @@ namespace FliesProject.Controllers.Admin
             _userRepository = userRepository;
         }
         // GET: AdminController
+        [Authorize(Policy = "Admin")]
         public ActionResult Home()
         {
             return View();

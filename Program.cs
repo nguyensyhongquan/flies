@@ -10,6 +10,7 @@ using FliesProject.Models.Entities;
 using Org.BouncyCastle.Crypto.Generators;
 using FliesProject.AIBot;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using FliesProject.MiddleWare;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -46,8 +47,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Home/Login";         // Điều chỉnh từ /Account/Login thành /Home/Login
-                                                   //   options.AccessDeniedPath = "/Home/AccessDenied";  // Điều chỉnh tương tự
+        options.LoginPath = "/Home/Login";         
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
     });
 
@@ -71,13 +71,18 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowAnyHeader());
 });
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Home/Login";         // Điều chỉnh từ /Account/Login thành /Home/Login
-                                                   //   options.AccessDeniedPath = "/Home/AccessDenied";  // Điều chỉnh tương tự
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-    });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy =>
+          policy.RequireRole("admin"));
+    options.AddPolicy("User", policy =>
+      policy.RequireRole("user"));
+    options.AddPolicy("Mentor", policy =>
+      policy.RequireRole("mentor"));  // Quyền truy c
+
+});
+
+
 var app = builder.Build();
 
 
@@ -101,6 +106,7 @@ app.UseRouting();
 
 app.UseSession();
 app.UseAuthentication();
+app.UseMiddleware<CustomAuthMiddleware>(); // Đăng ký middleware
 
 app.UseAuthorization();
 app.MapRazorPages();

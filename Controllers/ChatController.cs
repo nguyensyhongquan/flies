@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using FliesProject.Models.AImodel;
 using FliesProject.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FliesProject.Controllers
@@ -26,7 +27,7 @@ namespace FliesProject.Controllers
         {
             return View(new ChatViewModel());
         }
-
+        [Authorize(Policy = "Admin")]
         [HttpPost]
         public async Task<IActionResult> SendMessage(ChatViewModel model)
         {

@@ -28,6 +28,7 @@ namespace FliesProject.Controllers
         {
             return View();
         }
+        [AllowAnonymous]
         public IActionResult Login([FromBody] User model)
         {
             try
@@ -61,6 +62,9 @@ namespace FliesProject.Controllers
 
                 HttpContext.Session.SetString("UserId", user.UserId.ToString());
                 HttpContext.Session.SetString("UserRole", user.Role ?? "");
+                Console.WriteLine("the userrole is ......................"+user.Role);
+                
+                Console.WriteLine("the user role is");
                 HttpContext.Session.SetString("UserName", user.Username ?? "");
                 HttpContext.Session.SetString("UserAvatar", user.AvatarUrl ?? "");
 

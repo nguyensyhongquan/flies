@@ -8,6 +8,7 @@ using Models.Shared;
 using System.Security.Cryptography;
 using System.Text;
 using FliesProject.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FliesProject.Controllers.Students
 {
@@ -20,6 +21,7 @@ namespace FliesProject.Controllers.Students
             _userService = userService;
             _dbContext = dbContext;
         }
+        [AllowAnonymous]
         public IActionResult Home()
         {
             return View();
