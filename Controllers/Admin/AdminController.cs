@@ -7,6 +7,7 @@ using FliesProject.Repositories.GenericRepository;
 using Microsoft.AspNetCore.Authorization;
 namespace FliesProject.Controllers.Admin
 {
+    [Authorize(Policy = "Admin")]
     public class AdminController : Controller
     {
         private readonly IStudentRepository _studentRepository;
@@ -17,7 +18,7 @@ namespace FliesProject.Controllers.Admin
             _userRepository = userRepository;
         }
         // GET: AdminController
-        [Authorize(Policy = "Admin")]
+       
         public ActionResult Home()
         {
             return View();
