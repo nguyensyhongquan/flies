@@ -7,10 +7,8 @@ using FliesProject.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using FliesProject.Services;
-
 using Microsoft.AspNetCore.Authorization;
-
+using FliesProject.Models.Entities.ViewModels;
 
 namespace FliesProject.Controllers
 {
@@ -18,11 +16,11 @@ namespace FliesProject.Controllers
     public class HomeController : Controller
     {
         private readonly IUserService _userService;
-
-        
-        public HomeController(IUserService userService)
+        private readonly IEmailService _emailService;
+        public HomeController(IUserService userService, IEmailService emailService)
         {
             _userService = userService;
+            _emailService = emailService;
         }
         public IActionResult Home()
         {
@@ -127,9 +125,52 @@ namespace FliesProject.Controllers
             var username = HttpContext.Session.GetString("UserName");
             if (!string.IsNullOrEmpty(username))
             {
-                return Json(new { isLoggedIn = true, username = username });
+                var user = _userService.GetUserByUsername(username);
+                return Json(new
+                {
+                    isLoggedIn = true,
+                    username = username,
+                    avatar = user.AvatarUrl
+                });
             }
+
             return Json(new { isLoggedIn = false });
         }
+        [HttpPost]
+        public IActionResult SendResetLink([FromBody] string email)
+        {
+            try
+            {
+                var user = _userService.GetUserByEmail(email);
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "Email không tồn tại trong hệ thống." });
+                }
+
+                // Tạo token chứa UserId và timestamp (UTC ticks)
+                var timestamp = DateTime.UtcNow.Ticks;
+                var rawToken = $"{user.UserId}:{timestamp}";
+                var encodedToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(rawToken));
+
+                var resetLink = Url.Action("ResetPassword", "Account", new { token = encodedToken }, Request.Scheme);
+
+                string subject = "Yêu cầu đặt lại mật khẩu";
+                string body = $@"
+            <p>Chào {user.Username},</p>
+            <p>Bạn vừa yêu cầu đặt lại mật khẩu. Vui lòng nhấn vào liên kết bên dưới để tiếp tục:</p>
+            <p><a href='{resetLink}'>Đặt lại mật khẩu</a></p>
+            <p><b>Lưu ý:</b> Liên kết sẽ hết hạn sau <b>5 phút</b>.</p>";
+
+                _emailService.SendEmail(email, subject, body);
+
+                return Json(new { success = true, message = "Đã gửi liên kết đặt lại mật khẩu đến email của bạn." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error in SendResetLink: {ex}");
+                return StatusCode(500, new { success = false, message = "Lỗi hệ thống", error = ex.Message });
+            }
+        }
+
     }
 }

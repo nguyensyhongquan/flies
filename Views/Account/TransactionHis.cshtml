@@ -1,14 +1,16 @@
-﻿﻿@{
+﻿@model FliesProject.Models.Entities.ViewModels.StudentTransactionViewModel
+@{
     Layout = null;
-    @model FliesProject.Models.Entities.User
+    var currentPage = ViewBag.CurrentPage as int? ?? 1;
+    var totalPages = ViewBag.TotalPages as int? ?? 1;
 }
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile Student</title>
-    <link rel="stylesheet" href="~/css/user/Profile.css" asp-append-version="true">
+    <title>Transaction History</title>
+    <link rel="stylesheet" href="~/css/user/giaodich.css" asp-append-version="true">
     <link rel="stylesheet" href="~/css/user/Header.css" asp-append-version="true">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
@@ -76,7 +78,7 @@
         </div>
     </header>
     <div class="container">
-        <!-- Phần 1: Quảng cá-->
+        <!-- Phần 1: Quảng cáo -->
         <section class="banner">
             <div class="banner-text">
                 <h2>Chào mừng bạn đến với website của chúng tôi!</h2>
@@ -90,29 +92,29 @@
         <!-- Phần 2: Thông tin người dùng -->
         <section class="profile-section">
             <div class="profile-left">
-                <img src="@Model.AvatarUrl" alt="Avatar" class="avatar">
-                <p class="user-name">@Model.Fullname</p>
+                <img src="@Model.User.AvatarUrl" alt="Avatar" class="avatar">
+                <p class="user-name">@Model.User.Fullname</p>
             </div>
             <div class="profile-middle">
                 <div class="profile-item">
                     <label for="courseName">Khóa Học:</label>
-                    <span id="courseName">@ViewBag.LatestCourseTitle</span>
+                    <span id="courseName">@Model.LatestCourseTitle</span>
                 </div>
                 <div class="profile-item">
                     <label for="coursesJoined">Khóa Học Đã Tham Gia:</label>
-                    <span id="coursesJoined">@Model.EnrollementStudents.Count</span>
+                    <span id="coursesJoined">@Model.User.EnrollementStudents.Count</span>
                 </div>
                 <div class="profile-item">
                     <label for="joinDate">Ngày tham gia:</label>
-                    <span id="joinDate">@Model.CreatedAt?.ToString("dd/MM/yyyy")</span>
+                    <span id="joinDate">@Model.User.CreatedAt?.ToString("dd/MM/yyyy")</span>
                 </div>
                 <div class="profile-item">
                     <label for="status">Trạng thái:</label>
-                    <span id="status">@Model.Status</span>
+                    <span id="status">@Model.User.Status</span>
                 </div>
                 <div class="profile-item">
                     <label for="balance">Số Dư:</label>
-                    <span id="balance">@Model.Balance?.ToString("0.##")</span>
+                    <span id="balance">@Model.User.Balance?.ToString("0.##")</span>
                 </div>
             </div>
             <div class="profile-right">
@@ -148,87 +150,59 @@
             </div>
         </div>
 
-        <!-- Phần 4: Thông tin cá nhân -->
+        <!-- Phần 4: Ls Giao Dịch -->
         <section class="info-section">
             <div class="info-header">
-                <h3>Thông Tin Cá Nhân</h3>
-                <button class="btn edit-info" onclick="openPopup('editProfilePopup')">
-                    <i class="fas fa-edit"></i> Chỉnh sửa Thông Tin
-                </button>
+                <h3>Lịch Sử Giao Dịch</h3>
             </div>
             <hr>
-            <div class="info-content">
-                <div class="info-row">
-                    <span class="info-label">Họ và Tên:</span>
-                    <span class="info-value">@Model.Fullname</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Ngày Sinh:</span>
-                    <span class="info-value">@Model.Birthday?.ToString("dd/MM/yyyy")</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Giới Tính:</span>
-                    <span class="info-value">
-                        @{
-                            var genderDisplay = Model.Gender switch
-                            {
-                                "M" => "Nam",
-                                "F" => "Nữ",
-                                "O" => "Khác",
-                                _ => "Unknown"
-                            };
-                        }
-                        @genderDisplay
-                    </span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Địa Chỉ:</span>
-                    <span class="info-value">@Model.Address</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Số Điện Thoại:</span>
-                    <span class="info-value">@Model.PhoneNumber</span>
-                </div>
-                <div class="info-row">
-                    <span class="info-label">Email:</span>
-                    <span class="info-value">@Model.Email</span>
-                </div>
+            <table class="transaction-table" id="transactionTable">
+                <thead>
+                    <tr>
+                        <th>Mã Giao Dịch</th>
+                        <th>Thời Gian GD</th>
+                        <th>Số Tiền</th>
+                        <th>Nội Dung</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionBody">
+                    @foreach (var transaction in Model.Transactions)
+                    {
+                        <tr>
+                            <td>@transaction.TransactionId</td>
+                            <td>@transaction.TransactionDate?.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>@transaction.Amount.ToString("N0") VND</td>
+                            <td>@transaction.Description</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="container-fluid">
+                <ul class="pagination">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="TransactionHis" asp-route-page="@(Model.CurrentPage - 1)">Previous</a>
+                        </li>
+                    }
+
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-action="TransactionHis" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="TransactionHis" asp-route-page="@(Model.CurrentPage + 1)">Next</a>
+                        </li>
+                    }
+                </ul>
             </div>
+
         </section>
-    </div>
-    <div class="popup" id="editProfilePopup" style="display: none;">
-        <div class="popup-content large">
-            <button class="close-btn" onclick="closePopup('editProfilePopup')">&times;</button>
-            <h2>Chỉnh sửa thông tin</h2>
-
-            <label for="editFullname">Họ và tên:</label>
-            <input type="text" id="editFullname" placeholder="Nhập họ và tên" />
-
-            <label for="editBirthday">Ngày sinh:</label>
-            <input type="date" id="editBirthday" />
-
-            <div class="gender-group">
-                <label class="gender-label">Giới tính:</label>
-                <div class="gender-options">
-                    <input type="radio" name="gender" id="genderMale" value="M" />
-                    <label for="genderMale">Nam</label>
-
-                    <input type="radio" name="gender" id="genderFemale" value="F" />
-                    <label for="genderFemale">Nữ</label>
-
-                    <input type="radio" name="gender" id="genderOther" value="O" />
-                    <label for="genderOther">Khác</label>
-                </div>
-            </div>
-
-            <label for="editPhone">Số điện thoại:</label>
-            <input type="text" id="editPhone" placeholder="Nhập số điện thoại" />
-
-            <label for="editAddress">Địa chỉ:</label>
-            <input type="text" id="editAddress" placeholder="Nhập địa chỉ" />
-
-            <button onclick="saveProfile()">Lưu thay đổi</button>
-        </div>
     </div>
     <!-- Popup Đổi Mật Khẩu -->
     <div class="popup" id="changePasswordPopup" style="display: none;">
@@ -268,16 +242,5 @@
     </div>
     <script src="~/js/user/profile.js"></script>
     <script src="~/js/user/Header.js"></script>
-    <script>
-        const currentUser = {
-            fullName: '@Model.Fullname',
-            birthday: '@Model.Birthday?.ToString("yyyy-MM-dd")',
-            gender: '@Model.Gender',
-            phone: '@Model.PhoneNumber',
-            address: '@Model.Address'
-        };
-
-        console.log("CurrentUser from Razor:", currentUser);
-    </script>
 </body>
 </html>
