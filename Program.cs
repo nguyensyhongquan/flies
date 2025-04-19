@@ -16,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IChatService, ChatService>();
@@ -35,6 +36,9 @@ builder.Services.AddScoped<Generator>(sp =>
 builder.Services.Configure<DatabaseChatModule>(builder.Configuration.GetSection("DatabaseChatModule"));
 builder.Services.AddScoped<IChatModule, DatabaseChatModule>();
 builder.Services.AddScoped<ChatRouterService>();
+// Đăng ký BlobStorageService dưới dạng singleton hoặc scoped
+builder.Services.AddSingleton<BlobStorageService>();
+//builder.Services.AddScoped<IAIService, AIService>();
 // 🔹 Cấu hình Session
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -43,14 +47,12 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true; // 🔐 Bảo mật cookie session
     options.Cookie.IsEssential = true;
 });
-
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Home/Login";         
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
     });
-
 builder.Services.AddHttpContextAccessor(); // Cần thiết để sử dụng HttpContext.Session
 builder.Services.AddDbContext<FiliesContext>(options =>
 
@@ -107,7 +109,6 @@ app.UseRouting();
 app.UseSession();
 app.UseAuthentication();
 app.UseMiddleware<CustomAuthMiddleware>(); // Đăng ký middleware
-
 app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllerRoute(
