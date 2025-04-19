@@ -71,7 +71,7 @@
                     <a href="#">Lựa chọn 3</a>
                 </div>
             </div>
-            <a asp-area="" asp-controller="Account" asp-action="Dinosaur"><i class="fas fa-info-circle"></i> Dinosaur là gì ?</a>
+            <a asp-area="" asp-controller="Account" asp-action="Dinosaur"><i class="fas fa-info-circle"></i> Filies là gì ?</a>
         </div>
     </header>
 
@@ -85,7 +85,26 @@
             <button id="submitBtn" onclick="login()">Đăng nhập</button>
             <div style="margin-top: 10px; text-align: center;">
                 <span onclick="switchPopup('authPopup', 'signupPopup')" style="cursor: pointer; color: #0066B3;">
-                    Chưa có tài khoản? Quên mật khẩu
+                    Chưa có tài khoản?
+                </span>
+                <br />
+                <span onclick="switchPopup('authPopup', 'forgotPasswordPopup')" style="cursor: pointer; color: #0066B3;">
+                    Quên mật khẩu?
+                </span>
+            </div>
+        </div>
+    </div>
+    <!-- Popup for Forgot Password -->
+    <div class="popup" id="forgotPasswordPopup" style="display: none;">
+        <div class="popup-content">
+            <button class="close-btn" onclick="closePopup('forgotPasswordPopup')">&times;</button>
+            <h2>Quên mật khẩu</h2>
+            <p>Nhập email để nhận đường dẫn đặt lại mật khẩu.</p>
+            <input type="email" id="resetEmail" placeholder="Email của bạn" />
+            <button onclick="sendResetLink()">Gửi liên kết đặt lại</button>
+            <div style="margin-top: 10px; text-align: center;">
+                <span onclick="switchPopup('forgotPasswordPopup', 'authPopup')" style="cursor: pointer; color: #0066B3;">
+                    Quay lại đăng nhập
                 </span>
             </div>
         </div>
@@ -159,5 +178,38 @@
         </div>
     </div>
     <script src="~/js/user/Header.js"></script>
+    <script>
+        function sendResetLink() {
+            const email = document.getElementById('resetEmail').value;
+
+            if (!email) {
+                alert("Vui lòng nhập email.");
+                return;
+            }
+
+            fetch('/Home/SendResetLink', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(email),
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+
+                    if (data.success) {
+                        alert("Đã gửi liên kết đặt lại mật khẩu tới email của bạn.");
+                        closePopup('forgotPasswordPopup');
+                    } else {
+                        alert(data.message || "Không tìm thấy email hoặc lỗi hệ thống.");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Có lỗi xảy ra. Vui lòng thử lại sau.");
+                });
+        }
+    </script>
 </body>
 </html>
