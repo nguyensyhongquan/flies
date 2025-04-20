@@ -12,7 +12,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-            <form asp-controller="Course" asp-action="Purchase" asp-route-id="@Model.CourseId" method="post">
+            <form asp-controller="UsersCourse" asp-action="Purchase" asp-route-id="@Model.CourseId" method="post">
                 @Html.AntiForgeryToken()
                 <button type="submit" class="btn btn-danger">Xác nhận mua</button>
             </form>

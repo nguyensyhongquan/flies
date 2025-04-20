@@ -49,11 +49,11 @@
         <div class="nav-bar">
             <a asp-area="" asp-controller="Account" asp-action="Home"><i class="fas fa-home"></i> Home</a>
             <div class="dropdown">
-                <a asp-area="" asp-controller="Course" asp-action="CourseOverview"><i class="fas fa-book"></i> Khóa Học Dinosaur <i class="fas fa-chevron-down"></i></a>
+                <a asp-area="" asp-controller="UsersCourse" asp-action="CourseOverview"><i class="fas fa-book"></i> Khóa Học Dinosaur <i class="fas fa-chevron-down"></i></a>
                 <div class="dropdown-content">
                     @foreach (var course in Model)
                     {
-                        <a href="@Url.Action("CourseDescribe", "Course", new { id = course.CourseId })">@course.Title</a>
+                        <a href="@Url.Action("CourseDescribe", "UsersCourse", new { id = course.CourseId })">@course.Title</a>
                     }
 
                 </div>
@@ -195,7 +195,7 @@
                                 </div>
 
                                 <div class="text-center mt-4">
-                                    <a class="btn btn-primary px-4" href="@Url.Action("CourseDescribe", "Course", new { id = course.CourseId })">Tìm hiểu thêm về khóa học</a>
+                                    <a class="btn btn-primary px-4" href="@Url.Action("CourseDescribe", "UsersCourse", new { id = course.CourseId })">Tìm hiểu thêm về khóa học</a>
                                 </div>
                             </div>
                         </div>

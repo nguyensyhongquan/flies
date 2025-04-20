@@ -11,6 +11,8 @@ using Microsoft.EntityFrameworkCore;
 using Models.Shared;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 
 namespace FliesProject.Controllers.Students
 {
@@ -67,7 +69,13 @@ namespace FliesProject.Controllers.Students
         [HttpPost]
         public IActionResult Logout()
         {
-            HttpContext.Session.Remove("UserName");
+            // Xóa tất cả session
+            HttpContext.Session.Clear();
+
+            // Đăng xuất authentication cookie sử dụng GetAwaiter().GetResult()
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme)
+                .GetAwaiter()
+                .GetResult();
 
             return RedirectToAction("Home", "Account");
         }

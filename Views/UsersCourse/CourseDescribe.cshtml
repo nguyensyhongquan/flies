@@ -160,7 +160,7 @@
         <div class="nav-bar">
             <a asp-area="" asp-controller="Account" asp-action="Home"><i class="fas fa-home"></i> Home</a>
             <div class="dropdown">
-                <a asp-area="" asp-controller="Course" asp-action="CourseOverview"><i class="fas fa-book"></i> Khóa Học Dinosaur <i class="fas fa-chevron-down"></i></a>
+                <a asp-area="" asp-controller="UsersCourse" asp-action="CourseOverview"><i class="fas fa-book"></i> Khóa Học Dinosaur <i class="fas fa-chevron-down"></i></a>
                 <div class="dropdown-content">
                     <a href="#">Lựa chọn 1</a>
                     <a href="#">Lựa chọn 2</a>
@@ -258,31 +258,30 @@
                     </div>
                     <div class="col-lg-4">
                         <div class="card">
-                            <!-- Cập nhật phần nút "Mua ngay" trong CourseDescribe.cshtml -->
                             <div class="card-body">
-                                <p class="text-muted">Tổng cộng</p>
-                                <h2 class="text-danger fw-bold">@(Model.Price?.ToString("N0") ?? "0") VNĐ</h2>
-
                                 @if (User.Identity.IsAuthenticated)
                                 {
                                     @if (ViewBag.IsEnrolled)
                                     {
-                                        <a asp-controller="Course" asp-action="CourseDetail" asp-route-id="@Model.CourseId" class="btn btn-success w-100 mb-2">Vào học ngay</a>
+                                        <a asp-controller="UsersCourse" asp-action="CourseDetail" asp-route-id="@Model.CourseId" class="btn btn-success w-100 mb-2">Vào học ngay</a>
                                     }
                                     else
                                     {
+                                        <p class="text-muted">Tổng cộng</p>
+                                        <h2 class="text-danger fw-bold">@(Model.Price?.ToString("N0") ?? "0") VNĐ</h2>
                                         <a href="#" class="btn btn-outline-danger w-100 mb-2" onclick="showPurchaseConfirmation(@Model.CourseId)">Mua ngay</a>
                                     }
                                 }
                                 else
                                 {
-                                    <a asp-controller="Home" asp-action="Login" asp-route-returnUrl="@Url.Action("CourseDescribe", "Course", new { id = Model.CourseId })"
-                                       class="btn btn-outline-danger w-100 mb-2">Mua ngay</a>
+                                    <p class="text-muted">Tổng cộng</p>
+                                    <h2 class="text-danger fw-bold">@(Model.Price?.ToString("N0") ?? "0") VNĐ</h2>
+                                    <a href="#" class="btn btn-outline-danger w-100 mb-2" onclick="showLoginRequired()">Mua ngay</a>
                                 }
                                 <button class="btn btn-outline-primary w-100">Tư vấn</button>
                             </div>
                         </div>
-                    </div> 
+                    </div>
                 </div>
             </div>
         </section>
@@ -1004,6 +1003,12 @@
             });
         }
 
+             function showLoginRequired() {
+            // Hiển thị thông báo yêu cầu đăng nhập
+            alert("Bạn cần đăng nhập trước khi mua khóa học này!");
+
+        }
+
         // Hiển thị thông báo thành công hoặc lỗi
         $(document).ready(function() {
         @if (TempData["SuccessMessage"] != null)
@@ -1028,6 +1033,8 @@
             </text>
         }
         });
+
+
     </script>
 
 

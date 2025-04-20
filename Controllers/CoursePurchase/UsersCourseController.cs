@@ -1,5 +1,6 @@
 ﻿using FliesProject.Data;
 using FliesProject.Models.Entities;
+using FliesProject.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.Shared;
@@ -7,12 +8,12 @@ using System.Security.Claims;
 
 namespace FliesProject.Controllers.Course
 {
-    public class CourseController : Controller
+    public class UsersCourseController : Controller
     {
         private readonly FiliesContext _dbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CourseController(FiliesContext dbContext, IHttpContextAccessor httpContextAccessor)
+        public UsersCourseController(FiliesContext dbContext, IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
             _httpContextAccessor = httpContextAccessor;
@@ -24,24 +25,13 @@ namespace FliesProject.Controllers.Course
             return View(courses);
         }
 
-      /*  public IActionResult CourseDescribe(int id)
-        {
-            var course = _dbContext.Courses.Find(id);
-
-            if (course == null)
-            {
-                return NotFound();
-            }
-            return View(course);
-        } */
-
         // Action hiển thị popup xác nhận mua khóa học
         public async Task<IActionResult> ConfirmPurchase(int id)
         {
             // Kiểm tra đăng nhập
             if (!User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Login", "Home", new { returnUrl = Url.Action("CourseDescribe", "Course", new { id }) });
+                return RedirectToAction("Login", "Home", new { returnUrl = Url.Action("CourseDescribe", "UsersCourse", new { id }) });
             }
 
             // Lấy thông tin khóa học
@@ -101,7 +91,7 @@ namespace FliesProject.Controllers.Course
             // Kiểm tra số dư
             if (user.Balance < course.Price)
             {
-                TempData["ErrorMessage"] = "Số dư không đủ để thanh toán khóa học này.";
+                TempData["ErrorMessage"] = "Balance is not enough to handle this transaction";
                 return RedirectToAction("CourseDescribe", new { id });
             }
 
@@ -140,8 +130,8 @@ namespace FliesProject.Controllers.Course
                     await _dbContext.SaveChangesAsync();
                     await transaction.CommitAsync();
 
-                    TempData["SuccessMessage"] = "Mua khóa học thành công!";
-                    return RedirectToAction("CourseDetail", new { id });
+                    TempData["SuccessMessage"] = "Buy Course Successfull!";
+                    return RedirectToAction("CourseDescribe", new { id });
                 }
                 catch (Exception ex)
                 {
@@ -178,22 +168,43 @@ namespace FliesProject.Controllers.Course
             return View(course);
         }
 
+        [HttpGet]
         public async Task<IActionResult> CourseDetail(int id)
         {
-            // Thêm logic hiển thị chi tiết khóa học đã mua
+            // Lấy thông tin người dùng hiện tại
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
+            // Lấy thông tin khóa học, section và lesson
+            var course = await _dbContext.Courses
+                .Include(c => c.Sections)
+                    .ThenInclude(s => s.Lessons)
+                .FirstOrDefaultAsync(c => c.CourseId == id);
+
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            // Kiểm tra xem người dùng có được ghi danh vào khóa học không
             var enrollment = await _dbContext.Enrollements
-                .Include(e => e.Course)
                 .FirstOrDefaultAsync(e => e.CourseId == id && e.StudentId == userId);
 
             if (enrollment == null)
             {
-                TempData["ErrorMessage"] = "Bạn chưa đăng ký khóa học này.";
-                return RedirectToAction("CourseDescribe", new { id });
+                return Forbid();
             }
 
-            return View(enrollment);
+            // Tạo view model để truyền cho view
+            var viewModel = new CourseDetailViewModel
+            {
+                Course = course,
+                UserId = userId,
+                MentorId = course.CreatedBy,
+                Enrollement = enrollment
+            };
+
+            // Trả về dữ liệu cho view
+            return View(viewModel);
         }
     }
 }
