@@ -17,5 +17,7 @@ public partial class Lesson
 
     public DateTime? CreatedAt { get; set; }
 
+    public virtual ICollection<LessonCompletion> LessonCompletions { get; set; } = new List<LessonCompletion>();
+
     public virtual Section Section { get; set; } = null!;
 }

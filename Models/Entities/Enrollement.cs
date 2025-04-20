@@ -25,6 +25,8 @@ public partial class Enrollement
 
     public virtual ICollection<CourseTransaction> CourseTransactions { get; set; } = new List<CourseTransaction>();
 
+    public virtual ICollection<LessonCompletion> LessonCompletions { get; set; } = new List<LessonCompletion>();
+
     public virtual User Mentor { get; set; } = null!;
 
     public virtual User Student { get; set; } = null!;

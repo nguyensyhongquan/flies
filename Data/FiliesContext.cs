@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using FliesProject.Models.Entities;
+﻿using FliesProject.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace FliesProject.Data;
 
 public partial class FiliesContext : DbContext
 {
+    public FiliesContext()
+    {
+    }
+
     public FiliesContext(DbContextOptions<FiliesContext> options)
         : base(options)
     {
@@ -21,6 +23,8 @@ public partial class FiliesContext : DbContext
     public virtual DbSet<Enrollement> Enrollements { get; set; }
 
     public virtual DbSet<Lesson> Lessons { get; set; }
+
+    public virtual DbSet<LessonCompletion> LessonCompletions { get; set; }
 
     public virtual DbSet<PaymentOrder> PaymentOrders { get; set; }
 
@@ -211,6 +215,25 @@ public partial class FiliesContext : DbContext
                 .HasForeignKey(d => d.SectionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Lessons__section__6D0D32F4");
+        });
+
+        modelBuilder.Entity<LessonCompletion>(entity =>
+        {
+            entity.HasKey(e => e.CompletionId).HasName("PK__LessonCo__77FA708F894F65D2");
+
+            entity.ToTable("LessonCompletion");
+
+            entity.Property(e => e.CompletedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Enrollement).WithMany(p => p.LessonCompletions)
+                .HasForeignKey(d => d.EnrollementId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_LessonCompletion_Enrollement");
+
+            entity.HasOne(d => d.Lesson).WithMany(p => p.LessonCompletions)
+                .HasForeignKey(d => d.LessonId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_LessonCompletion_Lesson");
         });
 
         modelBuilder.Entity<PaymentOrder>(entity =>

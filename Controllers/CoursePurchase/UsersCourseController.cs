@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Models.Shared;
 using System.Security.Claims;
 
-namespace FliesProject.Controllers.Course
+namespace FliesProject.Controllers.CoursePurchase
 {
     public class UsersCourseController : Controller
     {
@@ -194,17 +194,123 @@ namespace FliesProject.Controllers.Course
                 return Forbid();
             }
 
+            // Lấy thông tin tiến độ khóa học của người dùng
+            var courseProgress = await _dbContext.UserCourseProgresses
+                .FirstOrDefaultAsync(p => p.EnrollementId == enrollment.EnrollementId);
+
+            // Nếu chưa có tiến độ, tạo mới
+            if (courseProgress == null)
+            {
+                int totalLessons = course.Sections.Sum(s => s.Lessons.Count);
+            //    int totalQuizzes = await _dbContext.Quizzes.CountAsync(q => q.CourseId == id);
+
+                courseProgress = new UserCourseProgress
+                {
+                    EnrollementId = enrollment.EnrollementId,
+                    CompletedLessons = 0,
+                  //  CompletedQuizzes = 0,
+                    TotalLessons = totalLessons,
+                 //   TotalQuizzes = totalQuizzes,
+                    ProgressPercentage = 0,
+                    UpdatedAt = DateTime.Now
+                };
+
+                _dbContext.UserCourseProgresses.Add(courseProgress);
+                await _dbContext.SaveChangesAsync();
+            }
+
+            // Lấy danh sách các bài học đã hoàn thành
+            var completedLessons = await _dbContext.LessonCompletions
+                .Where(lc => lc.EnrollementId == enrollment.EnrollementId)
+                .Select(lc => lc.LessonId)
+                .ToListAsync();
+
+            var completedLessonsDict = completedLessons.ToDictionary(id => id, id => true);
+
+
+
+
+
             // Tạo view model để truyền cho view
             var viewModel = new CourseDetailViewModel
             {
                 Course = course,
                 UserId = userId,
                 MentorId = course.CreatedBy,
-                Enrollement = enrollment
+                Enrollement = enrollment,
+                CourseProgress = courseProgress,
+                CompletedLessonIds = completedLessonsDict
             };
 
             // Trả về dữ liệu cho view
             return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MarkLessonComplete(int lessonId)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Home");
+            }
+
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            // Lấy thông tin bài học
+            var lesson = await _dbContext.Lessons
+                .Include(l => l.Section)
+                .FirstOrDefaultAsync(l => l.LessonId == lessonId);
+
+            if (lesson == null)
+            {
+                return NotFound();
+            }
+
+            // Lấy thông tin ghi danh của người dùng
+            var enrollment = await _dbContext.Enrollements
+                .FirstOrDefaultAsync(e => e.CourseId == lesson.Section.CourseId && e.StudentId == userId);
+
+            if (enrollment == null)
+            {
+                return Forbid();
+            }
+
+            // Kiểm tra xem bài học đã được đánh dấu hoàn thành chưa
+            var existingCompletion = await _dbContext.LessonCompletions
+                .FirstOrDefaultAsync(lc => lc.EnrollementId == enrollment.EnrollementId && lc.LessonId == lessonId);
+
+            if (existingCompletion == null)
+            {
+                // Thêm mới nếu chưa có
+                var lessonCompletion = new LessonCompletion
+                {
+                    EnrollementId = enrollment.EnrollementId,
+                    LessonId = lessonId,
+                    CompletedAt = DateTime.Now
+                };
+
+                _dbContext.LessonCompletions.Add(lessonCompletion);
+
+                // Cập nhật tiến độ khóa học
+                var courseProgress = await _dbContext.UserCourseProgresses
+                    .FirstOrDefaultAsync(p => p.EnrollementId == enrollment.EnrollementId);
+
+                if (courseProgress != null)
+                {
+                    courseProgress.CompletedLessons = (courseProgress.CompletedLessons ?? 0) + 1;
+
+                    // Tính toán phần trăm hoàn thành
+                    decimal totalItems = courseProgress.TotalLessons + courseProgress.TotalQuizzes;
+                    decimal completedItems = (courseProgress.CompletedLessons ?? 0) + (courseProgress.CompletedQuizzes ?? 0);
+                    courseProgress.ProgressPercentage = (completedItems / totalItems) * 100;
+                    courseProgress.UpdatedAt = DateTime.Now;
+                }
+
+                await _dbContext.SaveChangesAsync();
+            }
+
+            // Chuyển hướng đến trang chi tiết khóa học
+            return RedirectToAction("CourseDetail", new { id = lesson.Section.CourseId });
         }
     }
 }

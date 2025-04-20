@@ -211,8 +211,27 @@
                     </div>
                 </div>
 
+                <!-- Course Progress Bar -->
+                <div class="course-progress mb-4">
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-success" role="progressbar"
+                             style="width: @(Model.CourseProgress?.ProgressPercentage ?? 0)%;"
+                             aria-valuenow="@(Model.CourseProgress?.ProgressPercentage ?? 0)"
+                             aria-valuemin="0" aria-valuemax="100">
+                            @Math.Round(Model.CourseProgress?.ProgressPercentage ?? 0, 1)%
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <span>Bài học hoàn thành: @(Model.CourseProgress?.CompletedLessons ?? 0)/@(Model.CourseProgress?.TotalLessons ?? 0)</span>
+                        <span>Bài kiểm tra hoàn thành: @(Model.CourseProgress?.CompletedQuizzes ?? 0)/@(Model.CourseProgress?.TotalQuizzes ?? 0)</span>
+                    </div>
+                </div>
+
                 <!-- Video Player -->
-                <div class="video-container rounded">
+                <div class="video-container rounded" id="videoPlayerSection">
+                    <div class="video-info p-2 bg-light border-bottom">
+                        <h5 id="currentVideoTitle" class="mb-0">Chọn bài học để xem</h5>
+                    </div>
                     <video id="mainVideo" class="w-100">
                         <source src="" id="videoSource" type="video/mp4">
                         Your browser does not support the video tag.
@@ -417,12 +436,13 @@
                                             <div class="accordion-body p-2">
                                                                 @if (!string.IsNullOrEmpty(lesson.VideoUrl))
                                                                 {
-                                                                    <div class="lesson-item bg-light rounded mb-2 p-2 video-link"
+                                                                    <div class="lesson-item bg-light rounded mb-2 p-2 video-link @(Model.CompletedLessonIds.ContainsKey(lesson.LessonId) ? "completed" : "")"
                                                                          data-video-url="@lesson.VideoUrl"
-                                                                         data-video-title="@lesson.Title">
+                                                                         data-video-title="@lesson.Title"
+                                                                         data-lesson-id="@lesson.LessonId">
                                                                         <div class="d-flex">
                                                                             <div class="video-thumbnail position-relative me-2">
-                                                                                <img src="#" alt="@lesson.Title" width="60" height="60" class="rounded">
+                                                                                <img src="/images/video-thumbnail.jpg" alt="@lesson.Title" width="60" height="60" class="rounded">
                                                                                 <div class="play-icon position-absolute top-50 start-50 translate-middle">
                                                                                     <i class="bi bi-play-circle-fill text-danger"></i>
                                                                                 </div>
@@ -431,8 +451,21 @@
                                                                                 <h6 class="mb-1 fw-medium">Video:</h6>
                                                                                 <p class="mb-0">@lesson.Title</p>
                                                                             </div>
-                                                                            <div>
-                                                                                <span class="badge bg-secondary">@lesson.Duration</span>
+                                                                            <div class="d-flex align-items-center">
+                                                                                <span class="badge bg-secondary">@lesson.Duration phút</span>
+                                                                                @if (Model.CompletedLessonIds.ContainsKey(lesson.LessonId))
+                                                                                {
+                                                                                    <span class="badge bg-success ms-2">
+                                                                                        <i class="bi bi-check-circle-fill"></i> Hoàn thành
+                                                                                    </span>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <button type="button" class="btn btn-sm btn-outline-success ms-2 mark-complete-btn"
+                                                                                            data-lesson-id="@lesson.LessonId">
+                                                                                        Đánh dấu hoàn thành
+                                                                                    </button>
+                                                                                }
                                                                             </div>
                                                                         </div>
                                                                     </div>
@@ -481,7 +514,7 @@
     <!-- Custom JS -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-                   const video = document.getElementById('mainVideo');
+        const video = document.getElementById('mainVideo');
         const videoSource = document.getElementById('videoSource');
         const playPauseBtn = document.getElementById('playPauseBtn');
         const muteBtn = document.getElementById('muteBtn');
@@ -490,36 +523,105 @@
         const progressBar = document.getElementById('progressBar');
         const currentTimeDisplay = document.getElementById('currentTime');
         const durationDisplay = document.getElementById('duration');
+
+         // Video link elements
         const videoLinks = document.querySelectorAll('.video-link');
 
+         // Mark complete buttons
+        const markCompleteButtons = document.querySelectorAll('.mark-complete-btn');
 
-                // Set the first video URL if available
-            const firstVideoLink = document.querySelector('.video-link');
-            if (firstVideoLink) {
-                const videoUrl = firstVideoLink.getAttribute('data-video-url');
-                videoSource.src = videoUrl;
-                video.load();
+        // Dictionary to track video progress
+        const videoProgress = {};
+
+        // Video completion threshold (100%)
+        const completionThreshold = 1.0;
+
+        // Set the first video URL if available
+        const firstVideoLink = document.querySelector('.video-link');
+        if (firstVideoLink) {
+            const videoUrl = firstVideoLink.getAttribute('data-video-url');
+            const videoTitle = firstVideoLink.getAttribute('data-video-title');
+            videoSource.src = videoUrl;
+            if (currentVideoTitle) {
+                currentVideoTitle.textContent = videoTitle;
             }
+            video.load();
+        }
 
-            // Add click event listener to all video links
-            videoLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    const videoUrl = this.getAttribute('data-video-url');
-                    const videoTitle = this.getAttribute('data-video-title');
+        // Add click event listener to all video links
+        videoLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                const videoUrl = this.getAttribute('data-video-url');
+                const videoTitle = this.getAttribute('data-video-title');
+                const lessonId = this.getAttribute('data-lesson-id');
 
-                    // Update video source and reload
-                    videoSource.src = videoUrl;
-                    video.load();
+                // Update video source and reload
+                videoSource.src = videoUrl;
+                if (currentVideoTitle) {
+                    currentVideoTitle.textContent = videoTitle;
+                }
+                video.load();
 
-                    // Auto play after loading
-                    video.onloadeddata = function() {
-                        video.play();
-                        updatePlayPauseIcon();
-                    };
-                });
+                // Restore progress if available
+                if (videoProgress[videoUrl]) {
+                    video.addEventListener('loadedmetadata', function onceLoaded() {
+                        video.currentTime = videoProgress[videoUrl].currentTime;
+                        video.removeEventListener('loadedmetadata', onceLoaded);
+                    }, { once: true });
+                }
+
+                // Auto play after loading
+                video.onloadeddata = function() {
+                    video.play();
+                    updatePlayPauseIcon();
+                };
             });
+        });
 
-            // Play/Pause functionality
+       // Add click event listener to mark complete buttons
+        markCompleteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const lessonId = this.getAttribute('data-lesson-id');
+                markLessonComplete(lessonId);
+            });
+        });
+
+        // Track video progress for auto-completion
+        video.addEventListener('timeupdate', function() {
+            const currentUrl = videoSource.src;
+            const currentTime = video.currentTime;
+            const duration = video.duration;
+
+            // Store progress for this video
+            videoProgress[currentUrl] = {
+                currentTime: currentTime,
+                duration: duration
+            };
+
+            // Check if video has passed completion threshold
+            if (currentTime / duration > completionThreshold) {
+                const activeVideoLink = findVideoLinkByUrl(currentUrl);
+                if (activeVideoLink && !activeVideoLink.classList.contains('completed')) {
+                    const lessonId = activeVideoLink.getAttribute('data-lesson-id');
+                    markLessonComplete(lessonId);
+                }
+            }
+        });
+
+        // Auto mark complete when video ends
+        video.addEventListener('ended', function() {
+            playPauseBtn.querySelector('i').className = 'bi bi-play-fill';
+
+            const currentUrl = videoSource.src;
+            const activeVideoLink = findVideoLinkByUrl(currentUrl);
+
+            if (activeVideoLink && !activeVideoLink.classList.contains('completed')) {
+                const lessonId = activeVideoLink.getAttribute('data-lesson-id');
+                markLessonComplete(lessonId);
+            }
+        });
+
+        // Play/Pause functionality
             playPauseBtn.addEventListener('click', function() {
                 if (video.paused) {
                     video.play();
@@ -529,7 +631,7 @@
                 updatePlayPauseIcon();
             });
 
-            // Update play/pause icon
+        // Update play/pause icon
             function updatePlayPauseIcon() {
                 const icon = playPauseBtn.querySelector('i');
                 if (video.paused) {
@@ -539,7 +641,7 @@
                 }
             }
 
-            // Mute/Unmute functionality
+        // Mute/Unmute functionality
             muteBtn.addEventListener('click', function() {
                 video.muted = !video.muted;
                 updateMuteIcon();
@@ -552,7 +654,7 @@
                 }
             });
 
-            // Update mute icon
+        // Update mute icon
             function updateMuteIcon() {
                 const icon = muteBtn.querySelector('i');
                 if (video.muted || video.volume === 0) {
@@ -564,14 +666,14 @@
                 }
             }
 
-            // Volume control
+        // Volume control
             volumeControl.addEventListener('input', function() {
                 video.volume = this.value;
                 video.muted = (this.value === 0);
                 updateMuteIcon();
             });
 
-            // Fullscreen functionality
+        // Fullscreen functionality
             fullscreenBtn.addEventListener('click', function() {
                 if (video.requestFullscreen) {
                     video.requestFullscreen();
@@ -582,7 +684,7 @@
                 }
             });
 
-            // Update progress bar
+        // Update progress bar
             video.addEventListener('timeupdate', function() {
                 const progress = (video.currentTime / video.duration) * 100;
                 progressBar.style.width = progress + '%';
@@ -592,13 +694,13 @@
                 durationDisplay.textContent = formatTime(video.duration);
             });
 
-            // Click on progress bar to seek
+        // Click on progress bar to seek
             document.querySelector('.progress-container').addEventListener('click', function(e) {
                 const percent = (e.offsetX / this.offsetWidth);
                 video.currentTime = percent * video.duration;
             });
 
-            // Format time in MM:SS
+        // Format time in MM:SS
             function formatTime(seconds) {
                 if (isNaN(seconds)) return "00:00";
 
@@ -608,15 +710,38 @@
                 return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
             }
 
-            // Update duration display when metadata is loaded
+        // Update duration display when metadata is loaded
             video.addEventListener('loadedmetadata', function() {
                 durationDisplay.textContent = formatTime(video.duration);
             });
 
-            // When video ends, reset UI
-            video.addEventListener('ended', function() {
-                playPauseBtn.querySelector('i').className = 'bi bi-play-fill';
-            });
+        // Helper function to find video link by URL
+            function findVideoLinkByUrl(url) {
+                for (let link of videoLinks) {
+                    if (link.getAttribute('data-video-url') === url) {
+                        return link;
+                    }
+                }
+                return null;
+            }
+
+        // Function to mark lesson as complete
+            function markLessonComplete(lessonId) {
+                // Tạo và gửi form để đánh dấu bài học hoàn thành
+                const form = document.createElement('form');
+                form.method = 'POST';
+                 form.action = '/UsersCourse/MarkLessonComplete'; // Đường dẫn đến action xử lý
+                form.style.display = 'none';
+
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'lessonId';
+                input.value = lessonId;
+
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            }
         });
     </script>
 
