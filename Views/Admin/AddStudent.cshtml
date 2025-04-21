@@ -129,7 +129,7 @@
                             </li>
                             <li class="nav-item dropdown header-profile">
                                 <a class="nav-link" href="#" role="button" data-toggle="dropdown">
-                                    <img src="images/profile/education/pic1.jpg" width="20" alt="">
+                                    <img src="https://fliesenglish2025.blob.core.windows.net/avater/pngwing.com.png" width="20" alt="">
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right">
                                     <a href="app-profile.html" class="dropdown-item ai-icon">
@@ -439,7 +439,7 @@
                             </div>
                             <div class="card-body">
                                 <div class="form-validation">
-                                    <form class="form-valide" asp-action="AddStudent" asp-controller="Admin" method="post">
+                                    <form class="form-valide" asp-action="AddStudent" asp-controller="Admin" method="post" asp-antiforgery="true">
                                         <div class="row">
                                             <!-- Left Column -->
                                             <div class="col-xl-6">
@@ -547,7 +547,7 @@
                                             <!-- Buttons -->
                                             <div class="col-12 text-right">
                                                 <button type="submit" class="btn btn-primary" id="val-submit">Submit</button>
-                                                <button type="reset" class="btn btn-secondary" id="val-cancel">Cancel</button>
+                                                <a href="/Admin/Student" class="btn btn-secondary" id="val-cancel">Cancel</a>
                                             </div>
                                         </div>
                                     </form>
@@ -570,11 +570,10 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     // Xử lý thông báo lỗi từ server
- 
     errorMessage = "@errorMessage".trim();
     
     if (errorMessage) {
-          swal("Good job!",  errorMessage, "error");
+          swal("Not Success!",  errorMessage, "error");
           return;
     }
 
@@ -596,29 +595,38 @@ document.addEventListener('DOMContentLoaded', function() {
             const birthday = document.getElementById('birthday').value;
 
             // Validate dữ liệu
-            if (!username || !fullname || !email || !mobilephone || !password || !confirmPassword || !gender || !balance || !birthday) {
-            swal("Stupid job!", "vui lòng điền đầy đủ thông tin", "error");
+            if (!username || !fullname || !email || !mobilephone || !password || !confirmPassword || !gender || !balance) {
+                swal("Not Success!", "vui lòng điền đầy đủ thông tin", "error");
                 return;
             }
 
             if (password !== confirmPassword) {
-               swal("Stupid!", "Nhập password cho match", "error");
+                swal("Not Success", "Nhập password cho match", "error");
                 return;
             }
-            // console.log(errorMessage);
-            // if(errorMessage)
-            // {
-            //      Swal.fire({
-            //         icon: 'error',
-            //         title: 'Lỗi!',
-            //         text: errorMessage,
-            //         confirmButtonText: 'OK'
-            //     });
-            //     return;
-            // }
 
-            // Nếu validate thành công, submit form
-            form.submit();
+            // Tạo FormData object
+            const formData = new FormData(form);
+            
+            // Gửi dữ liệu bằng fetch
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/Admin/Student';
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .catch(error => {
+                swal("Not Success!", "Có lỗi xảy ra khi gửi dữ liệu", "error");
+                console.error('Error:', error);
+            });
         });
     }
 }); 

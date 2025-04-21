@@ -110,3 +110,34 @@ function switchPopup(closeId, openId) {
     closePopup(closeId);
     document.getElementById(openId).style.display = 'flex';
 }
+function sendResetLink() {
+    const email = document.getElementById('resetEmail').value;
+
+    if (!email) {
+        alert("Vui lòng nhập email.");
+        return;
+    }
+
+    fetch('/Home/SendResetLink', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(email),
+    })
+        .then(res => res.json())
+        .then(data => {
+            console.log(data);
+
+            if (data.success) {
+                alert("Đã gửi liên kết đặt lại mật khẩu tới email của bạn.");
+                closePopup('forgotPasswordPopup');
+            } else {
+                alert(data.message || "Không tìm thấy email hoặc lỗi hệ thống.");
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Có lỗi xảy ra. Vui lòng thử lại sau.");
+        });
+}

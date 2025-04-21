@@ -1,0 +1,147 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ChatBot Interface</title>
+    <!-- Bao gồm Chart.js từ CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Một số style cơ bản cho giao diện */
+        #chat-container {
+            width: 500px;
+            margin: 0 auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+
+        #chat-messages {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 8px;
+            margin-bottom: 10px;
+            background-color: #fff;
+        }
+
+            #chat-messages div {
+                margin-bottom: 8px;
+            }
+
+        #questionInput {
+            width: 80%;
+            padding: 5px;
+        }
+
+        #loading {
+            font-style: italic;
+            color: #888;
+        }
+
+        canvas {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Giao diện chat -->
+    <div id="chat-container">
+        <div id="chat-messages"></div>
+        <input type="text" id="questionInput" placeholder="Enter your question here" />
+        <button onclick="sendMessage()">Send</button>
+        <div id="loading" style="display:none;">Loading...</div>
+    </div>
+    <!-- Canvas hiển thị biểu đồ -->
+    <canvas id="chartCanvas" width="400" height="200" style="display:none;"></canvas>
+
+    <!-- Script JavaScript -->
+    <script>
+        async function sendMessage() {
+            const question = document.getElementById("questionInput").value.trim();
+            if (!question) {
+                alert("Please enter a question.");
+                return;
+            }
+
+            // Hiển thị loading indicator
+            document.getElementById("loading").style.display = "block";
+
+            try {
+                // Gửi yêu cầu POST tới endpoint của backend
+                const response = await fetch("/api/chat/message", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+
+                const result = await response.json();
+
+                // Ẩn loading indicator
+                document.getElementById("loading").style.display = "none";
+
+                // Hiển thị câu trả lời text lên chat window
+                const chatMessages = document.getElementById("chat-messages");
+                chatMessages.innerHTML += `<div><strong>You:</strong> ${question}</div>`;
+                chatMessages.innerHTML += `<div><strong>Bot:</strong> ${result.response}</div>`;
+
+                // Cuộn chat messages xuống dưới
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                // Kiểm tra và hiển thị biểu đồ nếu có dữ liệu
+                if (result.chartType && result.chartData) {
+                    displayChart(result.chartType, result.chartData);
+                } else {
+                    // Nếu không có biểu đồ, ẩn canvas
+                    document.getElementById("chartCanvas").style.display = "none";
+                }
+            } catch (error) {
+                console.error("Error sending message:", error);
+                document.getElementById("loading").style.display = "none";
+                alert("Có lỗi xảy ra khi gửi câu hỏi.");
+            }
+        }
+
+        function displayChart(chartType, chartData) {
+            // Hiển thị canvas biểu đồ
+            const canvas = document.getElementById("chartCanvas");
+            canvas.style.display = "block";
+
+            const ctx = canvas.getContext("2d");
+
+            // Parse chuỗi JSON chartData thành đối tượng
+            let parsedData;
+            try {
+                parsedData = JSON.parse(chartData);
+            } catch (e) {
+                console.error("Error parsing chart data:", e);
+                return;
+            }
+
+            // Nếu bạn cần hủy bỏ biểu đồ cũ trước khi tạo mới, sử dụng biến toàn cục (không hiển thị ví dụ này)
+            // Tạo biểu đồ mới với Chart.js
+            new Chart(ctx, {
+                type: chartType, // ví dụ: "bar", "line", "pie", "scatter", v.v.
+                data: parsedData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Generated Chart'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+

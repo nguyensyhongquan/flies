@@ -1,4 +1,4 @@
-﻿    
+
 * {
     margin: 0;
     padding: 0;
@@ -154,10 +154,12 @@ html, body {
     text-align: center;
     font-weight: bold;
 }
+
 .logout-container {
     display: flex;
     justify-content: flex-end;
 }
+
 .logout-button {
     padding: 5px 15px;
     background-color: #F36F21;
@@ -170,9 +172,9 @@ html, body {
     white-space: nowrap;
 }
 
-.logout-button:hover {
-    background-color: #D75C15;
-}
+    .logout-button:hover {
+        background-color: #D75C15;
+    }
 
 .auth-links {
     display: block;
@@ -309,7 +311,7 @@ html, body {
     }
 
 .popup input {
-    width: 100%;
+    width: 80%;
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ddd;

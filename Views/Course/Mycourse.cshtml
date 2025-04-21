@@ -1,0 +1,64 @@
+﻿@model IEnumerable<FliesProject.Models.Entities.ViewModels.CourseWithEnrollmentViewModel>
+
+@{
+    ViewData["Title"] = "View Courses";
+    Layout = "~/Views/Shared/_MentorLayout.cshtml"; 
+}
+
+<div id="viewCoursesPage" class="container">
+    <h2 class="my-4">View Courses</h2>
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var course in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <img src="@(course.CoursesPicture ?? "/images/profile.png")" class="card-img-top" alt="@course.Title" style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">@course.Title</h5>
+                            <p class="card-text">
+                                <i class="fas fa-users"></i> @course.EnrollmentCount Students
+                            </p>
+                            <a asp-action="AddSection" asp-controller="Course" asp-route-id="@course.CourseId" class="btn btn-primary">Manage Course</a>
+                        </div> 
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+      
+    }
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <style>
+        .card {
+            transition: transform 0.2s;
+        }
+
+            .card:hover {
+                transform: scale(1.05);
+            }
+
+        .card-img-top {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-text {
+            color: #555;
+        }
+
+        .btn-primary {
+            width: 100%;
+        }
+    </style>
+}

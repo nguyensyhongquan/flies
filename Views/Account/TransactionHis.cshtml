@@ -1,0 +1,246 @@
+﻿@model FliesProject.Models.Entities.ViewModels.StudentTransactionViewModel
+@{
+    Layout = null;
+    var currentPage = ViewBag.CurrentPage as int? ?? 1;
+    var totalPages = ViewBag.TotalPages as int? ?? 1;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction History</title>
+    <link rel="stylesheet" href="~/css/user/giaodich.css" asp-append-version="true">
+    <link rel="stylesheet" href="~/css/user/Header.css" asp-append-version="true">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+</head>
+<body>
+    <header>
+        <div class="header">
+            <div class="header-left">
+                <img src="~/images/user/logo.jpg" alt="Logo" class="logo">
+                <div class="search-container">
+                    <i class="fa fa-search search-icon"></i>
+                    <input type="text" class="search-box" placeholder="Tìm kiếm khóa học bạn mong muốn...">
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="auth-links" id="authLinks">
+                    <a href="javascript:void(0);" id="loginLink">Đăng nhập</a>
+                    <a href="javascript:void(0);" id="signupLink">Đăng ký</a>
+                </div>
+                <a href="#" class="google-login" id="googleLogin">
+                    <i class="fab fa-google"></i> Login with Google
+                </a>
+                <div class="user-info" id="userInfo" style="display: none;">
+                    <div class="user-avatar-container">
+                        <i class="bi bi-bell notification-icon">
+                            <span id="notificationCount" class="notification-badge">3</span>
+                        </i>
+                        <img src="~/images/user/avatar.jpg" alt="Avatar" class="user-avatar">
+                        <span id="userName" class="user-name"></span>
+                    </div>
+                    <div class="logout-container">
+                        <button id="logoutButton" class="logout-button">Đăng xuất</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-bar">
+            <a asp-area="" asp-controller="Account" asp-action="Home"><i class="fas fa-home"></i> Home</a>
+            <div class="dropdown">
+                <a href="#"><i class="fas fa-book"></i> Khóa Học Dinosaur <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                    <a href="#">Lựa chọn 1</a>
+                    <a href="#">Lựa chọn 2</a>
+                    <a href="#">Lựa chọn 3</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#"><i class="fas fa-pencil-alt"></i> Luyện Writing AI, Reading, Listening <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                    <a href="#">Lựa chọn 1</a>
+                    <a href="#">Lựa chọn 2</a>
+                    <a href="#">Lựa chọn 3</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <a href="#"><i class="fas fa-file-alt"></i> Bài Mẫu 8.0 + <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                    <a href="#">Lựa chọn 1</a>
+                    <a href="#">Lựa chọn 2</a>
+                    <a href="#">Lựa chọn 3</a>
+                </div>
+            </div>
+            <a asp-area="" asp-controller="Account" asp-action="Dinosaur"><i class="fas fa-info-circle"></i> Flies là gì ?</a>
+        </div>
+    </header>
+    <div class="container">
+        <!-- Phần 1: Quảng cáo -->
+        <section class="banner">
+            <div class="banner-text">
+                <h2>Chào mừng bạn đến với website của chúng tôi!</h2>
+                <p>Hãy Tham Gia Ngay Các Khóa Học Của Dinosaur Để Có Thêm Kiến Thức Về Tiếng Anh</p>
+            </div>
+            <div class="banner-image">
+                <img src="~/images/user/banner.png" alt="Quảng cáo">
+            </div>
+        </section>
+
+        <!-- Phần 2: Thông tin người dùng -->
+        <section class="profile-section">
+            <div class="profile-left">
+                <img src="@Model.User.AvatarUrl" alt="Avatar" class="avatar">
+                <p class="user-name">@Model.User.Fullname</p>
+            </div>
+            <div class="profile-middle">
+                <div class="profile-item">
+                    <label for="courseName">Khóa Học:</label>
+                    <span id="courseName">@Model.LatestCourseTitle</span>
+                </div>
+                <div class="profile-item">
+                    <label for="coursesJoined">Khóa Học Đã Tham Gia:</label>
+                    <span id="coursesJoined">@Model.User.EnrollementStudents.Count</span>
+                </div>
+                <div class="profile-item">
+                    <label for="joinDate">Ngày tham gia:</label>
+                    <span id="joinDate">@Model.User.CreatedAt?.ToString("dd/MM/yyyy")</span>
+                </div>
+                <div class="profile-item">
+                    <label for="status">Trạng thái:</label>
+                    <span id="status">@Model.User.Status</span>
+                </div>
+                <div class="profile-item">
+                    <label for="balance">Số Dư:</label>
+                    <span id="balance">@Model.User.Balance?.ToString("0.##")</span>
+                </div>
+            </div>
+            <div class="profile-right">
+                <button class="btn" onclick="openChangeAvatarPopup()">
+                    <i class="fas fa-image"></i> Thay đổi Avatar
+                </button>
+                <button class="btn" onclick="openChangePasswordPopup()"><i class="fas fa-lock"></i> Thay đổi Mật khẩu</button>
+                <a href="home.html" style="text-decoration: none;">
+                    <button class="btn logout">
+                        <i class="fas fa-coins"></i> Nạp Tiền
+                    </button>
+                </a>
+            </div>
+            <div class="edit-section">
+                <span>Never gonna give you up</span>
+                <button class="edit-button">[Sửa]</button>
+            </div>
+        </section>
+
+        <!-- Phần 3: Dashboard -->
+        <div class="dashboard">
+            <div class="section">
+                <a asp-area="" asp-controller="Account" asp-action="ProfileStudent" style="text-decoration: none;">Thông Tin Cá Nhân</a>
+            </div>
+            <div class="section">
+                <a asp-area="" asp-controller="Account" asp-action="ListCourse" style="text-decoration: none;">Khóa Học</a>
+            </div>
+            <div class="section">
+                <a asp-area="" asp-controller="Account" asp-action="ListCertificate" style="text-decoration: none;">Chứng Chỉ</a>
+            </div>
+            <div class="section">
+                <a asp-area="" asp-controller="Account" asp-action="TransactionHis" style="text-decoration: none;">Lịch Sử Giao Dịch</a>
+            </div>
+        </div>
+
+        <!-- Phần 4: Ls Giao Dịch -->
+        <section class="info-section">
+            <div class="info-header">
+                <h3>Lịch Sử Giao Dịch</h3>
+            </div>
+            <hr>
+            <table class="transaction-table" id="transactionTable">
+                <thead>
+                    <tr>
+                        <th>Mã Giao Dịch</th>
+                        <th>Thời Gian GD</th>
+                        <th>Số Tiền</th>
+                        <th>Nội Dung</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionBody">
+                    @foreach (var transaction in Model.Transactions)
+                    {
+                        <tr>
+                            <td>@transaction.TransactionId</td>
+                            <td>@transaction.TransactionDate?.ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>@transaction.Amount.ToString("N0") VND</td>
+                            <td>@transaction.Description</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="container-fluid">
+                <ul class="pagination">
+                    @if (Model.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="TransactionHis" asp-route-page="@(Model.CurrentPage - 1)">Previous</a>
+                        </li>
+                    }
+
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-action="TransactionHis" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+
+                    @if (Model.CurrentPage < Model.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="TransactionHis" asp-route-page="@(Model.CurrentPage + 1)">Next</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+
+        </section>
+    </div>
+    <!-- Popup Đổi Mật Khẩu -->
+    <div class="popup" id="changePasswordPopup" style="display: none;">
+        <div class="popup-content large">
+            <button class="close-btn" onclick="closePopup('changePasswordPopup')">&times;</button>
+            <h2>Đổi Mật Khẩu</h2>
+
+            <label for="currentPassword">Mật khẩu cũ:</label>
+            <input type="password" id="currentPassword" placeholder="Nhập mật khẩu cũ" />
+
+            <label for="newPassword">Mật khẩu mới:</label>
+            <input type="password" id="newPassword" placeholder="Nhập mật khẩu mới" />
+
+            <label for="confirmPassword">Nhập lại mật khẩu:</label>
+            <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu mới" />
+
+            <button onclick="savePassword()">Lưu thay đổi</button>
+        </div>
+    </div>
+    <!-- Popup Thay đổi Avatar -->
+    <div class="popup" id="changeAvatarPopup" style="display: none;">
+        <div class="popup-content large">
+            <button class="close-btn" onclick="closePopup('changeAvatarPopup')">&times;</button>
+            <h2>Thay đổi Avatar</h2>
+
+            <!-- Input chọn ảnh -->
+            <label for="avatarInput" class="form-label">Chọn ảnh:</label>
+            <input type="file" id="avatarInput" accept="image/*" onchange="previewAvatar(event)" />
+
+            <!-- Xem trước ảnh -->
+            <div id="avatarPreviewContainer" style="margin: 15px 0; text-align: center; display: none;">
+                <img id="avatarPreview" src="#" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 50%;" />
+            </div>
+
+            <button onclick="saveAvatar()">Lưu Avatar</button>
+        </div>
+    </div>
+    <script src="~/js/user/profile.js"></script>
+    <script src="~/js/user/Header.js"></script>
+</body>
+</html>

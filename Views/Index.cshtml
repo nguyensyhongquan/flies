@@ -1,0 +1,118 @@
+﻿@* @model FilesProject.Models.ChatViewModel *@
+
+@* @{ *@
+@*     ViewData["Title"] = "Chat với Database"; *@
+@* } *@
+
+@* <div class="container"> *@
+@*     <div class="row"> *@
+@*         <div class="col-md-4"> *@
+@*             <div class="card"> *@
+@*                 <div class="card-header"> *@
+@*                     <h5>Cấu hình Database</h5> *@
+@*                 </div> *@
+@*                 <div class="card-body"> *@
+@*                     <form asp-action="CheckConnection" method="post"> *@
+@*                         <div class="form-group"> *@
+@*                             <label asp-for="DatabaseType"></label> *@
+@*                             <select asp-for="DatabaseType" class="form-control"> *@
+@*                                 <option value="">Chọn loại database</option> *@
+@*                                 <option value="SqlServer">SQL Server</option> *@
+@*                                 <option value="PostgreSQL">PostgreSQL</option> *@
+@*                                 <option value="MySQL">MySQL</option> *@
+@*                             </select> *@
+@*                         </div> *@
+@*                         <div class="form-group mt-2"> *@
+@*                             <label asp-for="ConnectionString"></label> *@
+@*                             <input asp-for="ConnectionString" class="form-control" /> *@
+@*                         </div> *@
+@*                         <div class="form-group mt-3"> *@
+@*                             <button type="submit" class="btn btn-primary">Kiểm tra kết nối</button> *@
+@*                             <button type="submit" class="btn btn-info" asp-action="AnalyzeDatabase">Phân tích Database</button> *@
+@*                         </div> *@
+@*                     </form> *@
+@*                 </div> *@
+@*             </div> *@
+@*         </div> *@
+
+@*         <div class="col-md-8"> *@
+@*             <div class="card"> *@
+@*                 <div class="card-header"> *@
+@*                     <h5>Chat với Database</h5> *@
+@*                 </div> *@
+@*                 <div class="card-body"> *@
+@*                     <form asp-action="SendMessage" method="post"> *@
+@*                         <input type="hidden" asp-for="DatabaseType" /> *@
+@*                         <input type="hidden" asp-for="ConnectionString" /> *@
+
+@*                         <div class="form-group"> *@
+@*                             <label asp-for="Question"></label> *@
+@*                             <textarea asp-for="Question" class="form-control" rows="3"></textarea> *@
+@*                             <span asp-validation-for="Question" class="text-danger"></span> *@
+@*                         </div> *@
+
+@*                         <div class="form-group mt-2"> *@
+@*                             <label asp-for="ChartType"></label> *@
+@*                             <select asp-for="ChartType" class="form-control"> *@
+@*                                 <option value="">Không cần biểu đồ</option> *@
+@*                                 <option value="bar">Biểu đồ cột</option> *@
+@*                                 <option value="line">Biểu đồ đường</option> *@
+@*                                 <option value="pie">Biểu đồ tròn</option> *@
+@*                             </select> *@
+@*                         </div> *@
+
+@*                         <div class="form-group mt-3"> *@
+@*                             <button type="submit" class="btn btn-primary">Gửi</button> *@
+@*                         </div> *@
+@*                     </form> *@
+
+@*                     @if (Model.HasError) *@
+@*                     { *@
+@*                         <div class="alert alert-danger mt-3"> *@
+@*                             @Model.ErrorMessage *@
+@*                         </div> *@
+@*                     } *@
+
+@*                     @if (!string.IsNullOrEmpty(Model.Answer)) *@
+@*                     { *@
+@*                         <div class="card mt-3"> *@
+@*                             <div class="card-body"> *@
+@*                                 <h6>Kết quả:</h6> *@
+@*                                 <p>@Model.Answer</p> *@
+@*                             </div> *@
+@*                         </div> *@
+@*                     } *@
+
+@*                     @if (!string.IsNullOrEmpty(Model.ChartData)) *@
+@*                     { *@
+@*                         <div class="card mt-3"> *@
+@*                             <div class="card-body"> *@
+@*                                 <canvas id="chartCanvas"></canvas> *@
+@*                             </div> *@
+@*                         </div> *@
+@*                     } *@
+@*                 </div> *@
+@*             </div> *@
+@*         </div> *@
+@*     </div> *@
+@* </div> *@
+
+@* @section Scripts { *@
+@*     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> *@
+@*     <script> *@
+@*         @if (!string.IsNullOrEmpty(Model.ChartData)) *@
+@*         { *@
+@*             <text> *@
+@*                 const ctx = document.getElementById('chartCanvas'); *@
+@*                 const chartData = @Html.Raw(Model.ChartData); *@
+@*                 new Chart(ctx, { *@
+@*                     type: '@Model.ChartType', *@
+@*                     data: chartData, *@
+@*                     options: { *@
+@*                         responsive: true *@
+@*                     } *@
+@*                 }); *@
+@*             </text> *@
+@*         } *@
+@*     </script> *@
+@* }  *@

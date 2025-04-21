@@ -1,0 +1,128 @@
+﻿@model FliesProject.Models.Entities.ViewModels.CourseManageViewModel
+
+@{
+    ViewData["Title"] = "Manage Course";
+    Layout = "~/Views/Shared/_MentorLayout.cshtml";
+}
+
+<div id="manageCoursePage" class="container">
+    <h2 class="my-4">Manage Course: @Model.Title</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+
+    <!-- Add Section Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Add New Section</h3>
+        </div>
+        <div class="card-body">
+            <form asp-action="AddSection" asp-controller="Course" method="post">
+                <input type="hidden" name="courseId" value="@Model.CourseId" />
+                <div class="form-group">
+                    <label for="title">Section Title</label>
+                    <input type="text" name="title" class="form-control" required />
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea name="description" class="form-control"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Section</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sections and Lessons -->
+    <div class="sections-list">
+        @if (Model.Sections.Any())
+        {
+            @foreach (var sec in Model.Sections)
+            {
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>@sec.Title</h4>
+                        <p>@sec.Description</p>
+                    </div>
+                    <div class="card-body">
+                        <!-- Add Lesson Form -->
+                        <div class="mb-3">
+                            <h5>Add New Lesson</h5>
+                            <form asp-action="AddLesson" asp-controller="Course" method="post">
+                                <input type="hidden" name="sectionId" value="@sec.SectionId" />
+                                <div class="form-group">
+                                    <label for="title">Lesson Title</label>
+                                    <input type="text" name="title" class="form-control" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="videoUrl">Video URL</label>
+                                    <input type="text" name="videoUrl" class="form-control" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="duration">Duration (minutes)</label>
+                                    <input type="number" name="duration" class="form-control" min="0" />
+                                </div>
+                                <button type="submit" class="btn btn-primary">Add Lesson</button>
+                            </form>
+                        </div>
+
+                        <!-- Lessons List -->
+                        @if (sec.Lessons.Any())
+                        {
+                            <h5>Lessons</h5>
+                            <ul class="list-group">
+                                @foreach (var lesson in sec.Lessons)
+                                {
+                                    <li class="list-group-item">
+                                        <strong>@lesson.Title</strong>
+                                        <p>Video: <a href="@lesson.VideoUrl" target="_blank">@lesson.VideoUrl</a></p>
+                                        @if (lesson.Duration.HasValue)
+                                        {
+                                            <p>Duration: @lesson.Duration minutes</p>
+                                        }
+                                        <p>Created: @lesson.CreatedAt?.ToString("g")</p>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No lessons in this section.</p>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="alert alert-info">No sections found. Add a section to get started!</div>
+        }
+    </div>
+
+    <a asp-action="Index" asp-controller="Course" class="btn btn-secondary mt-3">Back to My Courses</a>
+</div>
+
+@section Styles {
+    <style>
+        .sections-list .card {
+            margin-bottom: 20px;
+        }
+
+        .list-group-item {
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .btn-primary {
+            margin-top: 10px;
+        }
+    </style>
+}
