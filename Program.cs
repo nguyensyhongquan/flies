@@ -9,6 +9,8 @@ using Org.BouncyCastle.Crypto.Generators;
 using FliesProject.AIBot;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using FliesProject.MiddleWare;
+using FliesProject.Repositories.IGenericRepository;
+using FliesProject.Repositories.GenericRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -51,9 +53,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Home/Login";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
     });
-builder.Services.AddHttpContextAccessor(); // Cần thiết để sử dụng HttpContext.Session
-builder.Services.AddDbContext<FiliesContext>(options =>
-
 
 builder.Services.AddHttpContextAccessor(); // Cần thiết để sử dụng HttpContext.Session
 builder.Services.AddDbContext<FiliesContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
