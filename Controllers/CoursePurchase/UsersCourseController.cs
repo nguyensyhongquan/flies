@@ -279,6 +279,9 @@ namespace FliesProject.Controllers.CoursePurchase
             var existingCompletion = await _dbContext.LessonCompletions
                 .FirstOrDefaultAsync(lc => lc.EnrollementId == enrollment.EnrollementId && lc.LessonId == lessonId);
 
+            UserCourseProgress courseProgress = null;
+
+
             if (existingCompletion == null)
             {
                 // Thêm mới nếu chưa có
@@ -292,7 +295,7 @@ namespace FliesProject.Controllers.CoursePurchase
                 _dbContext.LessonCompletions.Add(lessonCompletion);
 
                 // Cập nhật tiến độ khóa học
-                var courseProgress = await _dbContext.UserCourseProgresses
+                 courseProgress = await _dbContext.UserCourseProgresses
                     .FirstOrDefaultAsync(p => p.EnrollementId == enrollment.EnrollementId);
 
                 if (courseProgress != null)
@@ -307,6 +310,31 @@ namespace FliesProject.Controllers.CoursePurchase
                 }
 
                 await _dbContext.SaveChangesAsync();
+            }
+            else
+            {
+                // Nếu đã hoàn thành rồi, chỉ cần lấy thông tin tiến độ hiện tại
+                courseProgress = await _dbContext.UserCourseProgresses
+                    .FirstOrDefaultAsync(p => p.EnrollementId == enrollment.EnrollementId);
+            }
+
+            // Kiểm tra nếu là AJAX request
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                // Trả về JSON response với dữ liệu tiến độ
+                return Json(new
+                {
+                    success = true,
+                    message = "Lesson marked as complete",
+                    progressData = new
+                    {
+                        progressPercentage = courseProgress?.ProgressPercentage,
+                        completedLessons = courseProgress?.CompletedLessons,
+                        totalLessons = courseProgress?.TotalLessons,
+                        completedQuizzes = courseProgress?.CompletedQuizzes,
+                        totalQuizzes = courseProgress?.TotalQuizzes
+                    }
+                });
             }
 
             // Chuyển hướng đến trang chi tiết khóa học

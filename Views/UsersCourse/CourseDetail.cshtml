@@ -205,10 +205,6 @@
                         <h5 class="mb-1 text-success">IELTS Writing Task 1 - Aim 6.5/7.0++</h5>
                     
                     </div>
-                    <div class="ms-auto">
-                        <button class="btn btn-outline-dark btn-sm me-2">Xem chi tiết tiến độ</button>
-                       
-                    </div>
                 </div>
 
                 <!-- Course Progress Bar -->
@@ -328,7 +324,7 @@
                                             <i class="bi bi-arrow-return-right me-1"></i> 1 Phản hồi
                                         </button>
                                     </div>
-                                </div>
+                                </div>  
                             </div>
                         </div>
 
@@ -442,7 +438,7 @@
                                                                          data-lesson-id="@lesson.LessonId">
                                                                         <div class="d-flex">
                                                                             <div class="video-thumbnail position-relative me-2">
-                                                                                <img src="/images/video-thumbnail.jpg" alt="@lesson.Title" width="60" height="60" class="rounded">
+                                                                                <img src="/images/bootstrap-logo.png" alt="@lesson.Title" width="60" height="60" class="rounded">
                                                                                 <div class="play-icon position-absolute top-50 start-50 translate-middle">
                                                                                     <i class="bi bi-play-circle-fill text-danger"></i>
                                                                                 </div>
@@ -509,8 +505,7 @@
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
     <!-- Custom JS -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -523,6 +518,8 @@
         const progressBar = document.getElementById('progressBar');
         const currentTimeDisplay = document.getElementById('currentTime');
         const durationDisplay = document.getElementById('duration');
+        const currentVideoTitle = document.getElementById('currentVideoTitle');
+     
 
          // Video link elements
         const videoLinks = document.querySelectorAll('.video-link');
@@ -533,8 +530,8 @@
         // Dictionary to track video progress
         const videoProgress = {};
 
-        // Video completion threshold (100%)
-        const completionThreshold = 1.0;
+        // Video completion threshold (95%)
+        const completionThreshold = 0.95;
 
         // Set the first video URL if available
         const firstVideoLink = document.querySelector('.video-link');
@@ -725,24 +722,109 @@
                 return null;
             }
 
-        // Function to mark lesson as complete
-            function markLessonComplete(lessonId) {
-                // Tạo và gửi form để đánh dấu bài học hoàn thành
-                const form = document.createElement('form');
-                form.method = 'POST';
-                 form.action = '/UsersCourse/MarkLessonComplete'; // Đường dẫn đến action xử lý
-                form.style.display = 'none';
+         // Function to mark lesson as complete using AJAX
+                 function markLessonComplete(lessonId) {
+            // Create a fetch request to mark the lesson as complete without page reload
+            fetch('/UsersCourse/MarkLessonComplete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: `lessonId=${lessonId}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Find the lesson item and mark it as completed in the UI
+                    const videoLink = document.querySelector(`.video-link[data-lesson-id="${lessonId}"]`);
+                    if (videoLink) {
+                        videoLink.classList.add('completed');
 
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'lessonId';
-                input.value = lessonId;
+                        // Find and update the badge
+                        const completeBtn = videoLink.querySelector('.mark-complete-btn');
+                        if (completeBtn) {
+                            const parent = completeBtn.parentElement;
+                            completeBtn.remove();
 
-                form.appendChild(input);
-                document.body.appendChild(form);
-                form.submit();
+                            // Create completed badge
+                            const completedBadge = document.createElement('span');
+                            completedBadge.className = 'badge bg-success ms-2';
+                            completedBadge.innerHTML = '<i class="bi bi-check-circle-fill"></i> Hoàn thành';
+                            parent.appendChild(completedBadge);
+                        }
+
+                        // Update the progress bar with the new data
+                        updateCourseProgressUI(data.progressData);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error marking lesson as complete:', error);
+            });
+        }
+
+        // Function to update the course progress UI elements
+        function updateCourseProgressUI(progressData) {
+            if (!progressData) return;
+
+            // Update the progress bar
+            const progressBar = document.querySelector('.course-progress .progress-bar');
+            if (progressBar) {
+                const percentage = progressData.progressPercentage || 0;
+                progressBar.style.width = percentage + '%';
+                progressBar.setAttribute('aria-valuenow', percentage);
+                progressBar.textContent = Math.round(percentage * 10) / 10 + '%';
             }
+
+            // Update completed lessons text
+            const lessonsCompletedSpan = document.querySelector('.course-progress span:first-child');
+            if (lessonsCompletedSpan && progressData.completedLessons !== undefined && progressData.totalLessons !== undefined) {
+                lessonsCompletedSpan.textContent = `Bài học hoàn thành: ${progressData.completedLessons}/${progressData.totalLessons}`;
+            }
+
+            // Update completed quizzes text if applicable
+            const quizzesCompletedSpan = document.querySelector('.course-progress span:last-child');
+            if (quizzesCompletedSpan && progressData.completedQuizzes !== undefined && progressData.totalQuizzes !== undefined) {
+                quizzesCompletedSpan.textContent = `Bài kiểm tra hoàn thành: ${progressData.completedQuizzes}/${progressData.totalQuizzes}`;
+            }
+        }
+
+            // ACCORDION FIX - NEW ADDITION
+        // Fix for nested accordions
+        const accordionElements = document.querySelectorAll('.accordion-collapse');
+
+        accordionElements.forEach(element => {
+            // Add event listeners for Bootstrap's built-in collapse events
+            element.addEventListener('hide.bs.collapse', function() {
+                // Find the button that controls this element
+                const button = document.querySelector(`[data-bs-target="#${this.id}"]`);
+                if (button) {
+                    button.classList.add('collapsed');
+                }
+            });
+
+            element.addEventListener('show.bs.collapse', function() {
+                // Find the button that controls this element
+                const button = document.querySelector(`[data-bs-target="#${this.id}"]`);
+                if (button) {
+                    button.classList.remove('collapsed');
+                }
+            });
         });
+
+        // Prevent parent collapse from triggering when clicking on child accordion buttons
+        const innerAccordionButtons = document.querySelectorAll('.accordion .accordion .accordion-button');
+        innerAccordionButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Stop event from bubbling up to parent accordion elements
+                e.stopPropagation();
+            });
+        });
+
+        
+        });
+            
     </script>
 
 
