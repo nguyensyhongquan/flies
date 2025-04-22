@@ -102,9 +102,7 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseSession();
 app.UseAuthentication();
 app.UseMiddleware<CustomAuthMiddleware>(); // Đăng ký middleware

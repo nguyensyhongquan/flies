@@ -7,13 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\NewFolder1\**" />
-    <Content Remove="Controllers\NewFolder1\**" />
-    <EmbeddedResource Remove="Controllers\NewFolder1\**" />
-    <None Remove="Controllers\NewFolder1\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Remove="C:\Users\FPT\.nuget\packages\bootstrap\5.3.3\contentFiles\any\any\wwwroot\css\bootstrap-grid.css" />
     <Content Remove="C:\Users\FPT\.nuget\packages\bootstrap\5.3.3\contentFiles\any\any\wwwroot\css\bootstrap-grid.css.map" />
     <Content Remove="C:\Users\FPT\.nuget\packages\bootstrap\5.3.3\contentFiles\any\any\wwwroot\css\bootstrap-grid.min.css" />
@@ -91,7 +84,6 @@
     <Folder Include="Models\Events\" />
     <Folder Include="Services\" />
     <Folder Include="AIBot\" />
-    <Folder Include="NewFolder\" />
     <Folder Include="Views\Mentor\" />
     <Folder Include="wwwroot\css\admin\" />
     <Folder Include="wwwroot\css\mentor\" />

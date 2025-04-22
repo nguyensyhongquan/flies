@@ -4,6 +4,7 @@ using FliesProject.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models.Shared;
+using MySqlX.XDevAPI;
 using System.Security.Claims;
 
 namespace FliesProject.Controllers.CoursePurchase
@@ -169,7 +170,7 @@ namespace FliesProject.Controllers.CoursePurchase
         }
 
         [HttpGet]
-        public async Task<IActionResult> CourseDetail(int id)
+        public async Task<IActionResult> CourseDetail(int id, int lessonId)
         {
             // Lấy thông tin người dùng hiện tại
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
@@ -194,6 +195,13 @@ namespace FliesProject.Controllers.CoursePurchase
                 return Forbid();
             }
 
+            // If lessonId is not provided, get the first lesson from the course
+            if (lessonId == 0 && course.Sections.Any() && course.Sections.First().Lessons.Any())
+            {
+                lessonId = course.Sections.First().Lessons.First().LessonId;
+            }
+
+
             // Lấy thông tin tiến độ khóa học của người dùng
             var courseProgress = await _dbContext.UserCourseProgresses
                 .FirstOrDefaultAsync(p => p.EnrollementId == enrollment.EnrollementId);
@@ -202,15 +210,15 @@ namespace FliesProject.Controllers.CoursePurchase
             if (courseProgress == null)
             {
                 int totalLessons = course.Sections.Sum(s => s.Lessons.Count);
-            //    int totalQuizzes = await _dbContext.Quizzes.CountAsync(q => q.CourseId == id);
+                //    int totalQuizzes = await _dbContext.Quizzes.CountAsync(q => q.CourseId == id);
 
                 courseProgress = new UserCourseProgress
                 {
                     EnrollementId = enrollment.EnrollementId,
                     CompletedLessons = 0,
-                  //  CompletedQuizzes = 0,
+                     // CompletedQuizzes = 0,
                     TotalLessons = totalLessons,
-                 //   TotalQuizzes = totalQuizzes,
+                     // TotalQuizzes = totalQuizzes,
                     ProgressPercentage = 0,
                     UpdatedAt = DateTime.Now
                 };
@@ -229,7 +237,17 @@ namespace FliesProject.Controllers.CoursePurchase
 
 
 
+            // Get current user's avatar
+            var currentUser = await _dbContext.Users.FindAsync(userId);
 
+            // Fetch comments for the specific lesson
+            var comments = await _dbContext.QuizComments
+                .Where(c => c.LessonId == lessonId && c.ParentCommentId == null)
+                .Include(c => c.User)
+                .Include(c => c.InverseParentComment)
+                    .ThenInclude(r => r.User)
+                .OrderByDescending(c => c.CreatedAt)
+                .ToListAsync();
 
             // Tạo view model để truyền cho view
             var viewModel = new CourseDetailViewModel
@@ -239,8 +257,13 @@ namespace FliesProject.Controllers.CoursePurchase
                 MentorId = course.CreatedBy,
                 Enrollement = enrollment,
                 CourseProgress = courseProgress,
-                CompletedLessonIds = completedLessonsDict
+                CompletedLessonIds = completedLessonsDict,
+                // Comment related properties
+                Comments = comments,
+                CurrentLessonId = lessonId,
+                CurrentUserAvatar = currentUser?.AvatarUrl
             };
+
 
             // Trả về dữ liệu cho view
             return View(viewModel);
@@ -295,8 +318,8 @@ namespace FliesProject.Controllers.CoursePurchase
                 _dbContext.LessonCompletions.Add(lessonCompletion);
 
                 // Cập nhật tiến độ khóa học
-                 courseProgress = await _dbContext.UserCourseProgresses
-                    .FirstOrDefaultAsync(p => p.EnrollementId == enrollment.EnrollementId);
+                courseProgress = await _dbContext.UserCourseProgresses
+                   .FirstOrDefaultAsync(p => p.EnrollementId == enrollment.EnrollementId);
 
                 if (courseProgress != null)
                 {
@@ -339,6 +362,54 @@ namespace FliesProject.Controllers.CoursePurchase
 
             // Chuyển hướng đến trang chi tiết khóa học
             return RedirectToAction("CourseDetail", new { id = lesson.Section.CourseId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddComment(int lessonId, string commentText, int? parentCommentId)
+        {
+            if (string.IsNullOrWhiteSpace(commentText))
+            {
+                return RedirectToAction("CourseDetail", new { id = GetCourseIdFromLessonId(lessonId), lessonId = lessonId });
+            }
+
+            // Get current user
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            // Create new comment
+            var comment = new QuizComment
+            {
+                LessonId = lessonId,
+                UserId = userId,
+                CommentText = commentText,
+                ParentCommentId = parentCommentId,
+                CreatedAt = DateTime.Now
+            };
+
+            // Add and save
+            _dbContext.QuizComments.Add(comment);
+            await _dbContext.SaveChangesAsync();
+
+            // Get the course ID from lesson ID
+            var courseId = await GetCourseIdFromLessonId(lessonId);
+
+            // Redirect back to course detail with the current lesson ID
+            return RedirectToAction("CourseDetail", new { id = courseId, lessonId = lessonId });
+        }
+
+        // Helper method to get course ID from lesson ID
+        private async Task<int> GetCourseIdFromLessonId(int lessonId)
+        {
+            var lesson = await _dbContext.Lessons
+                .Include(l => l.Section)
+                .FirstOrDefaultAsync(l => l.LessonId == lessonId);
+
+            if (lesson != null && lesson.Section != null)
+            {
+                return lesson.Section.CourseId;
+            }
+
+            return 0; // Or handle this case appropriately
         }
     }
 }

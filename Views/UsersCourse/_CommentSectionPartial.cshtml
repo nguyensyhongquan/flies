@@ -1,0 +1,211 @@
+﻿@model FliesProject.ViewModel.CourseDetailViewModel
+@using System.Security.Claims
+
+@using Microsoft.AspNetCore.Identity
+
+
+@{
+    string GetTimeAgo(DateTime? dateTime)
+    {
+        if (!dateTime.HasValue) return "gần đây";
+
+        var timeDiff = DateTime.Now - dateTime.Value;
+
+        if (timeDiff.TotalMinutes < 1)
+            return "vừa xong";
+        if (timeDiff.TotalMinutes < 60)
+            return $"{(int)timeDiff.TotalMinutes} phút trước";
+        if (timeDiff.TotalHours < 24)
+            return $"{(int)timeDiff.TotalHours} giờ trước";
+        if (timeDiff.TotalDays < 30)
+            return $"{(int)timeDiff.TotalDays} ngày trước";
+        if (timeDiff.TotalDays < 365)
+            return $"{(int)(timeDiff.TotalDays / 30)} tháng trước";
+
+        return $"{(int)(timeDiff.TotalDays / 365)} năm trước";
+    }
+}
+
+<!-- Comments Section -->
+<div class="comments-section mb-4">
+    <div class="d-flex align-items-center mb-3">
+        <span class="bg-success bg-opacity-10 text-success rounded-pill px-2 py-1 d-flex align-items-center">
+            <i class="bi bi-chat-left-text-fill me-1"></i>
+            <span class="fw-medium">@Model.Comments.Count Thảo luận</span>
+        </span>
+    </div>
+
+    <!-- Comment Input -->
+    <form asp-action="AddComment" asp-controller="UsersCourse" method="post">
+        <input type="hidden" name="lessonId" value="@Model.CurrentLessonId" />
+        <input type="hidden" name="parentCommentId" value="" />
+
+        <div class="comment-input d-flex mb-4">
+            <div class="me-2">
+                @if (!string.IsNullOrEmpty(Model.CurrentUserAvatar))
+                {
+                    <img src="@Model.CurrentUserAvatar" class="avatar-circle rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="Your avatar" />
+                }
+                else
+                {
+                    <span class="avatar-circle bg-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                        <i class="bi bi-person-fill text-white"></i>
+                    </span>
+                }
+            </div>
+            <div class="flex-grow-1 position-relative">
+                <input type="text" name="commentText" class="form-control bg-light" placeholder="Nhập thảo luận và bài viết" required>
+                <button type="submit" class="btn position-absolute end-0 top-0 bottom-0">
+                    <i class="bi bi-image"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Comments List -->
+    <div class="comments-list">
+        @foreach (var comment in Model.Comments)
+        {
+            <div class="comment-item mb-4">
+                <div class="d-flex">
+                    <div class="me-2">
+                        @if (!string.IsNullOrEmpty(comment.User.AvatarUrl))
+                        {
+                            <img src="@comment.User.AvatarUrl" class="avatar-circle rounded-circle" style="width: 40px; height: 40px; object-fit: cover;" alt="@comment.User.Fullname" />
+                        }
+                        else
+                        {
+                            <span class="avatar-circle rounded-circle d-flex align-items-center justify-content-center bg-light" style="width: 40px; height: 40px;">
+                                <i class="bi bi-person-fill"></i>
+                            </span>
+                        }
+                    </div>
+                    <div class="flex-grow-1">
+                        <div class="d-flex align-items-center mb-1">
+                            <h6 class="mb-0 fw-medium">@comment.User.Fullname</h6>
+                            @if (comment.User.UserId == Model.MentorId)
+                            {
+                                <span class="badge rounded-pill bg-primary ms-2 text-white">Giáo viên</span>
+                            }
+                            <small class="text-muted ms-2">
+                                @GetTimeAgo(comment.CreatedAt)
+                           
+                                   
+                            </small>
+                        </div>
+                        <p class="mb-2">@comment.CommentText</p>
+                        <div class="d-flex align-items-center">
+                            <button class="btn btn-sm btn-light me-2 d-flex align-items-center">
+                                <i class="bi bi-hand-thumbs-up me-1"></i> 0
+                            </button>
+                            <button class="btn btn-sm btn-light me-2 d-flex align-items-center reply-button" data-comment-id="@comment.CommentId">
+                                <i class="bi bi-chat me-1"></i> Phản hồi
+                            </button>
+                            @if (comment.InverseParentComment.Count > 0)
+                            {
+                                <button class="btn btn-sm btn-light text-success d-flex align-items-center toggle-replies" data-comment-id="@comment.CommentId">
+                                    <i class="bi bi-arrow-return-right me-1"></i> @comment.InverseParentComment.Count Phản hồi
+                                </button>
+                            }
+                        </div>
+
+                        <!-- Reply form (hidden by default) -->
+                        <div class="reply-form mt-3" id="reply-form-@comment.CommentId" style="display: none;">
+                            <form asp-action="AddComment" asp-controller="UsersCourse" method="post">
+                                <input type="hidden" name="lessonId" value="@Model.CurrentLessonId" />
+                                <input type="hidden" name="parentCommentId" value="@comment.CommentId" />
+                                <div class="d-flex">
+                                    <div class="flex-grow-1 position-relative">
+                                        <input type="text" name="commentText" class="form-control bg-light" placeholder="Viết phản hồi..." required>
+                                        <button type="submit" class="btn btn-primary btn-sm position-absolute end-0 top-0 bottom-0">
+                                            Gửi
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Replies (hidden by default) -->
+                        <div class="replies mt-3" id="replies-@comment.CommentId" style="display: none;">
+                            @foreach (var reply in comment.InverseParentComment.OrderBy(r => r.CreatedAt))
+                            {
+                                <div class="reply-item mb-3 ms-4">
+                                    <div class="d-flex">
+                                        <div class="me-2">
+                                            @if (!string.IsNullOrEmpty(reply.User.AvatarUrl))
+                                            {
+                                                <img src="@reply.User.AvatarUrl" class="avatar-circle rounded-circle" style="width: 32px; height: 32px; object-fit: cover;" alt="@reply.User.Fullname" />
+                                            }
+                                            else
+                                            {
+                                                <span class="avatar-circle rounded-circle d-flex align-items-center justify-content-center bg-light" style="width: 32px; height: 32px;">
+                                                    <i class="bi bi-person-fill"></i>
+                                                </span>
+                                            }
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex align-items-center mb-1">
+                                                <h6 class="mb-0 fw-medium">@reply.User.Fullname</h6>
+                                                @if (reply.User.UserId == Model.MentorId)
+                                                {
+                                                    <span class="badge rounded-pill bg-primary ms-2 text-white">Giáo viên</span>
+                                                }
+                                                <small class="text-muted ms-2">
+                                                    @GetTimeAgo(reply.CreatedAt)
+                                                  
+                                                </small>
+                                            </div>
+                                            <p class="mb-2">@if (reply.ParentComment != null)
+                                                {
+                                                    <span class="text-primary">@reply.ParentComment.User.Fullname</span>
+                                                } @reply.CommentText</p>
+                                            <div class="d-flex align-items-center">
+                                                <button class="btn btn-sm btn-light me-2 d-flex align-items-center">
+                                                    <i class="bi bi-hand-thumbs-up me-1"></i> 0
+                                                </button>
+                                                <button class="btn btn-sm btn-light me-2 d-flex align-items-center reply-button" data-comment-id="@comment.CommentId">
+                                                    <i class="bi bi-chat me-1"></i> Phản hồi
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- JavaScript for comment functionality -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle reply form
+        document.querySelectorAll('.reply-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.getAttribute('data-comment-id');
+                const replyForm = document.getElementById(`reply-form-${commentId}`);
+                if (replyForm.style.display === 'none') {
+                    replyForm.style.display = 'block';
+                } else {
+                    replyForm.style.display = 'none';
+                }
+            });
+        });
+
+        // Toggle replies
+        document.querySelectorAll('.toggle-replies').forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.getAttribute('data-comment-id');
+                const replies = document.getElementById(`replies-${commentId}`);
+                if (replies.style.display === 'none') {
+                    replies.style.display = 'block';
+                } else {
+                    replies.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>

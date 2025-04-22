@@ -19,5 +19,7 @@ public partial class Lesson
 
     public virtual ICollection<LessonCompletion> LessonCompletions { get; set; } = new List<LessonCompletion>();
 
+    public virtual ICollection<QuizComment> QuizComments { get; set; } = new List<QuizComment>();
+
     public virtual Section Section { get; set; } = null!;
 }

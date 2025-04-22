@@ -1,4 +1,6 @@
-﻿using FliesProject.Models.Entities;
+﻿using System;
+using System.Collections.Generic;
+using FliesProject.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace FliesProject.Data;
@@ -46,6 +48,7 @@ public partial class FiliesContext : DbContext
 
     public virtual DbSet<UserCourseProgress> UserCourseProgresses { get; set; }
 
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Certificate>(entity =>
@@ -315,7 +318,7 @@ public partial class FiliesContext : DbContext
 
         modelBuilder.Entity<QuizComment>(entity =>
         {
-            entity.HasKey(e => e.CommentId).HasName("PK__quiz_com__E795768722DE0317");
+            entity.HasKey(e => e.CommentId).HasName("PK__quiz_com__E7957687EEE83A2C");
 
             entity.ToTable("quiz_comments");
 
@@ -327,23 +330,23 @@ public partial class FiliesContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("created_at");
+            entity.Property(e => e.LessonId).HasColumnName("lesson_id");
             entity.Property(e => e.ParentCommentId).HasColumnName("parent_comment_id");
-            entity.Property(e => e.QuizId).HasColumnName("quiz_id");
             entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.Lesson).WithMany(p => p.QuizComments)
+                .HasForeignKey(d => d.LessonId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_quiz_comments_Lesson");
 
             entity.HasOne(d => d.ParentComment).WithMany(p => p.InverseParentComment)
                 .HasForeignKey(d => d.ParentCommentId)
-                .HasConstraintName("FK__quiz_comm__paren__18EBB532");
-
-            entity.HasOne(d => d.Quiz).WithMany(p => p.QuizComments)
-                .HasForeignKey(d => d.QuizId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__quiz_comm__quiz___17036CC0");
+                .HasConstraintName("FK_quiz_comments_Parent");
 
             entity.HasOne(d => d.User).WithMany(p => p.QuizComments)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__quiz_comm__user___17F790F9");
+                .HasConstraintName("FK_quiz_comments_Users");
         });
 
         modelBuilder.Entity<QuizQuestion>(entity =>
