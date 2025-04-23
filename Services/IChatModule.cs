@@ -69,12 +69,13 @@ namespace FliesProject.Services
                     Console.WriteLine(string.Join(" | ", values));
                 }
                 var rawDataText = rawBuilder.ToString();
+                Console.WriteLine("The raw datatext la "+rawDataText);
                 // Bước 4: Phân tích kết quả truy vấn để đưa ra nhận định bổ sung
                 var analysis = await _aiService.AnalyzeQueryResult(question, queryResult);
                 var chartSuggestion = await _aiService.GenerateChartSuggestion(queryResult, analysis);
                 Console.WriteLine("The suggestionnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn is "+chartSuggestion);
-
-                var answer = await _aiService.GenerateSmoothAnswer(sqlQuery, explanation, analysis, question,rawDataText);
+                string charsugges=chartSuggestion.ToString();
+                var answer = await _aiService.GenerateSmoothAnswer(sqlQuery, explanation, analysis, question,rawDataText,charsugges);
                 // (Tùy chọn) Nếu cần, có thể gợi ý biểu đồ từ kết quả truy vấn bằng cách gọi GenerateChartSuggestion
 
                 // Ghép kết quả trả về thành phản hồi cho người dùng

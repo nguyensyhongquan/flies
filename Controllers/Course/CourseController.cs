@@ -1,17 +1,17 @@
-﻿    using FliesProject.Data;
+﻿using FliesProject.Data;
 using FliesProject.Models.Entities;
 using Microsoft.EntityFrameworkCore;
-    using FliesProject.Models.Entities.ViewModels;
-    using FliesProject.Repositories.IGenericRepository;
-    using Microsoft.AspNetCore.Mvc;
+using FliesProject.Models.Entities.ViewModels;
+using FliesProject.Repositories.IGenericRepository;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
-    using System.Linq;
-    using System.Threading.Tasks;
+using System.Linq;
+using System.Threading.Tasks;
 
-    namespace FliesProject.Controllers.Course
-    {
-        public class CourseController : Controller
+namespace FliesProject.Controllers.Course
+{
+    public class CourseController : Controller
         {
             private readonly IUserRepository _userRepository;
             private readonly FiliesContext _context;

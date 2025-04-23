@@ -11,6 +11,7 @@ using Org.BouncyCastle.Crypto.Generators;
 using FliesProject.AIBot;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using FliesProject.MiddleWare;
+using FliesProject.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
@@ -60,12 +61,14 @@ builder.Services.AddDbContext<FiliesContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddControllersWithViews().AddCookieTempDataProvider();
 builder.Services.AddRazorPages();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddControllers().AddNewtonsoftJson();
+builder.Services.AddSignalR(); // Thêm SignalR
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -104,7 +107,7 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 app.UseRouting();
 
 app.UseSession();
@@ -119,6 +122,7 @@ app.MapControllerRoute(
 
 app.UseCors("AllowAll");
 app.MapControllers();
+app.MapHub<NotificationHub>("/notificationHub");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 
 app.Run();
 

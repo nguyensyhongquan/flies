@@ -23,6 +23,10 @@ namespace FliesProject.Controllers.Admin
         {
             return View();
         }
+        public ActionResult AboutStudent()
+        {
+            return View();
+        }
         public ActionResult Test()
         {
             Console.WriteLine("Running to the ChatView ....................");

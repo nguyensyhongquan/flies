@@ -1,5 +1,5 @@
 ﻿@{
-    Layout = "~/Views/Shared/Admin.cshtml";  // hoặc bạn để layout tùy ý
+    Layout = "~/Views/Shared/Admin.cshtml";
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -7,6 +7,58 @@
     <meta charset="UTF-8">
     <title>ChatBot Interface</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Style cho table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+            .data-table th, .data-table td {
+                padding: 12px;
+                border: 1px solid #ddd;
+                text-align: left;
+            }
+
+            .data-table th {
+                background-color: #f5f5f5;
+                font-weight: bold;
+            }
+
+            .data-table tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+        /* Style cho message */
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .user {
+            background-color: #007bff;
+            color: white;
+            margin-left: 20%;
+        }
+
+        .ai {
+            background-color: #f8f9fa;
+            margin-right: 20%;
+        }
+
+        /* Style cho chart */
+        .chart-container {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
     <div class="AIcontainer">
@@ -31,22 +83,66 @@
         </div>
     </div>
 
-    <canvas id="chartCanvas" width="500" height="300" style="display:none;"></canvas>
-
     <script>
-        // let currentChart = null;
+        // Hàm lấy giá trị từ response của AI
+        function getValueFromResponse(response, key) {
+            const regex = new RegExp(`<${key}>:\\s*\\[(.*?)\\]`);
+            const match = response.match(regex);
+            return match ? match[1] : '';
+        }
 
-        // Send the user input to the bot
-             async function sendMessage() {
+        // Hàm tạo table HTML
+        function createTableHtml(columns, data) {
+            const tableHtml = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            ${columns.split(',').map(col => `<th>${col.trim()}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            ${data.split(',').map(cell => `<td>${cell.trim()}</td>`).join('')}
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+            return tableHtml;
+        }
+
+        // Hàm tạo chart
+        function createChart(chartContainer, columns, data) {
+            const ctx = document.createElement('canvas');
+            chartContainer.appendChild(ctx);
+
+            new Chart(ctx, {
+                type: 'bar', // hoặc type khác tùy nhu cầu
+                data: {
+                    labels: columns.split(',').map(col => col.trim()),
+                    datasets: [{
+                        label: 'Data',
+                        data: data.split(',').map(val => Number(val.trim())),
+                        backgroundColor: 'rgba(0, 123, 255, 0.5)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Data Visualization'
+                        }
+                    }
+                }
+            });
+        }
+
+        async function sendMessage() {
             const question = document.getElementById("userInput").value.trim();
-            console.log("Button clicked, sending message...");
-             console.log(question);
             if (!question) {
                 alert("Please enter a question.");
                 return;
             }
-
-            // document.getElementById("loading").style.display = "block";
 
             try {
                 const response = await fetch("/api/chat/message", {
@@ -62,26 +158,64 @@
                 }
 
                 const result = await response.json();
-                // document.getElementById("loading").style.display = "none";
-
                 const chat = document.getElementById("chatMessages");
-                chat.innerHTML += `<div class="message user"><strong>You:</strong> ${question}</div>`;
-                chat.innerHTML += `<div class="message ai"><strong>Bot:</strong> ${result.message}</div>`;
-                chat.scrollTop = chat.scrollHeight;
 
-                // Nếu có biểu đồ, vẽ
-                if (result.chartType && result.chartData) {
-                    displayChart(result.chartType, result.chartData);
-                } else {
-                    document.getElementById("chartCanvas").style.display = "none";
+                // Thêm tin nhắn người dùng
+                chat.innerHTML += `
+                    <div class="message user">
+                        <strong>You:</strong> ${question}
+                    </div>
+                `;
+
+                // Thêm tin nhắn AI
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'message ai';
+
+                // Thêm text message
+                const messageText = getValueFromResponse(result.message, 'Message');
+                aiMessage.innerHTML = `<div><strong>Bot:</strong> ${messageText}</div>`;
+
+                // Kiểm tra và thêm table nếu có
+                const canCreateTable = getValueFromResponse(result.message, 'CanCreateTable');
+                const preferTable = getValueFromResponse(result.message, 'PreferTableorchart');
+                if (canCreateTable === 'Yes' && preferTable === 'Table') {
+                    const columns = getValueFromResponse(result.message, 'Column');
+                    const data = getValueFromResponse(result.message, 'Data');
+                    if (columns && data) {
+                        aiMessage.innerHTML += createTableHtml(columns, data);
+                    }
                 }
+
+                // Kiểm tra và thêm chart nếu có
+                const chartType = getValueFromResponse(result.message, 'ChartType');
+                if (chartType && chartType !== 'No') {
+                    const chartContainer = document.createElement('div');
+                    chartContainer.className = 'chart-container';
+                    const columns = getValueFromResponse(result.message, 'Column');
+                    const data = getValueFromResponse(result.message, 'Data');
+                    if (columns && data) {
+                        aiMessage.appendChild(chartContainer);
+                        createChart(chartContainer, columns, data);
+                    }
+                }
+
+                chat.appendChild(aiMessage);
+                chat.scrollTop = chat.scrollHeight;
+                document.getElementById("userInput").value = '';
+
             } catch (err) {
                 console.error(err);
-                document.getElementById("loading").style.display = "none";
                 alert("Có lỗi xảy ra khi gửi câu hỏi.");
             }
         }
 
+        // Thêm event listener cho phím Enter
+        document.getElementById("userInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
     </script>
 </body>
 </html>

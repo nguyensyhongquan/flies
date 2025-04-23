@@ -154,16 +154,10 @@ Please analyze the data above and provide important insights.";
 
                 var prompt = $@"You are a data visualization expert.
 Your task is to suggest the most suitable chart type to display the data.If the analysis is just a list and you feel that there is no comparison here, you can completely answer no.
-Choose only one of the following chart types: bar, line, pie, scatter.
-Return in JSON format with 2 fields: chartType and chartData.
+Choose only one of the following chart types: bar, line, pie
+Return in JSON format with 2 fields: chartType and chartData.Và tau cần mày trả lời theo đúng format cho tau ở dưới đây nhé : mày trả về cho t 1 là 3 loại chart type t trả lại no.Giá trị mà mày trả về chỉ là trong 4 cái sau :no,bar,line,pie
 
-Data:
-{dataDescription}
-
-Analysis:
-{analysis}
-
-Please suggest the most appropriate chart type and create the data structure for that chart.";
+";
 
                 var request = new ApiRequestBuilder()
                     .WithPrompt(prompt)
@@ -198,7 +192,7 @@ Please suggest the most appropriate chart type and create the data structure for
         string explanation,
         string analysis,
         string question,
-        string rawDataText)
+        string rawDataText,string sugesstion)
         {
             // 1. Tạo prompt để AI “làm mượt” câu trả lời
             var prompt = $@"
@@ -221,6 +215,17 @@ Please suggest the most appropriate chart type and create the data structure for
             4.Không cần show ra cách truy vấn , câu lệnh , user họ chỉ cần kết quả thôi họ không cần bạn showw quá trình nhé!
             5.Hãy show ra thông tin 1 cách chi tiết thông qua từ {rawDataText} không phải dấu diếm gì cả ,khồng cần trả lời 1 cách khái quát làm gì ok !
             6.Khi public các thông tin từ {rawDataText} thì chỉ nên public những thông tin mang tính tiên quyết như email , tên ,địa chỉ ,số điện thoại ( dành cho việc xác định danh tính 1 người )
+            7.Khi tau truyền vào suggestion{sugesstion}(ở đây là suggestion cho việc trả về biểu đồ) m hãy đi so sánh và phân tích cho tau xem là với trường hợp này thì tao nên trả về dữ liệu thuần table hay bắt buốc phải tạo ra biểu đồ để trực quan nhé ( biểu đồ thường để dành cho việc thống kê thu nhập , thống kê lượng học sinh từ các khóa học ..., nói chung là để thống kê và làm dữ liệu để so sánh trong năm hoặc là ở đây có sự so  sánh giữa các đối tượng -so sánh giữa các đối tượng thường là hình pie
+            8.Hãy nhwos giá trị mà mấy lấy và truyền vào luôn luôn là giá trị thực giúp tau ok! Và ở những dòng gen bên dưới cứ hết dòng là mày kết thúc bằng dấu . giúp tao với nhe.
+            9.Bây giờ tau muốn mi trả lời theo đúng format cho tau ở dưới đây nhé :
+            <Message>:(Ở đây mày hãy vận dụng từ analysis và explannation gì đó để trả  lời ) , lưu ý không quá cứng nhắt hãy trả lời như 1 con người</Message>
+            <Column>:[column1,column2] (Cái này hãy tổng hợp từ raw data giúp tau và hãy vận dụng điều 5 và 6 mình nói với bạn nhé )</Column>
+            <Data>:[properties1value1,properties2value,....][](Cái này  sẽ kiểu như là data ứng với Column ở trên nhé</Data>
+            <CanCreateTable>:[Yes,No](cái này mày hãy phân tích nếu có thể tạo bảng thì trả về yes không thì trả về no nhé)</CanCreateTable>
+            <PreferTableorchart>:[Table,Chart,No](hãy xem xét điều thứ 7 mà tau nói với mi rồi liệu đó mà gen ra kết quả, đoạn này hãy xem là liệu mình có nên tạo được table hay chart không? ,nếu như có thể tạo được table và chart , hãy xem xét kĩ càng là mình nên tạo chart hay là table .Những trường hợp mà nên tạo chart là những trường hợp mà mình thực sự cần so sánh , ( như là so sánh thu nhập của các tháng trong năm , số học sinh mới của các khóa học từng tháng so với các tháng trong năm , doanh thu cũng như vậy .Còn những trường hợp mà nên tạo table là trường hợp mà mình chỉ càn list ra thông tin mà không cần nhiều sự so sánh ở đây như là list ra danh sách thông tin học sinh , các khóa học hiện có ... Nói chung table là những dạng mà người dùng chỉ cần xem thông tin thôi không đặt nặng về vấn đề so sánh . CÒn thêm trường hợp nữa là mình không cần thiết phải tạo table hay chart , đây là khi mà thông tin cần truyền tải lại cho người dùng không phải ở dạng list, kiểu như chỉ cần 1 con số cụ thể hay là chỉ cần 1 thông tin cụ thể á bạn.) </PreferTableorchart>
+            <ChartType>:[Bar,Line,Pie,No](cái này mày hãy xem xét điều thứ 7 mà tau nói với mi rồi liệu đó mà gen ra kết quả)</ChartType>
+            <Database>:[Yes](Để giá yes này luôn luôn đúng hộ mình mình cần xử lý việc khác nữa nhé)</Database>
+            <IsErrol>:[Yes,No](Nếu như xảy ra lỗi thì mày báo tao cái luôn )</IsErrol>
             ";
 
 
