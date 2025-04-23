@@ -23,6 +23,8 @@ public partial class Quiz
 
     public DateTime? CreatedAt { get; set; }
 
+    public virtual ICollection<QuizCompletion> QuizCompletions { get; set; } = new List<QuizCompletion>();
+
     public virtual ICollection<QuizQuestion> QuizQuestions { get; set; } = new List<QuizQuestion>();
 
     public virtual ICollection<QuizTransaction> QuizTransactions { get; set; } = new List<QuizTransaction>();

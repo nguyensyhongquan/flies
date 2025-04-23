@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Diagnostics;
 using FliesProject.Services;
-using FliesProject.Models.Entities;
 using Org.BouncyCastle.Crypto.Generators;
 using FliesProject.AIBot;
 using Microsoft.AspNetCore.Authentication.Cookies;

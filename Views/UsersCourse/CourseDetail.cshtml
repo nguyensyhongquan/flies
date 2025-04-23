@@ -1,6 +1,7 @@
 ﻿@model FliesProject.ViewModel.CourseDetailViewModel
 
 
+
 @{
     Layout = null;
 }
@@ -277,6 +278,32 @@
                 <partial name="_CommentSectionPartial" model="Model" />
             </div>
 
+            <!-- Quiz Modal -->
+            <div class="modal fade" id="quizModal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="quizModalLabel">Đang tải quiz...</h5>
+                            <div class="quiz-type-badge ms-2"></div>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="quiz-content">
+                                <div class="d-flex justify-content-center">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                            <button type="button" class="btn btn-primary quiz-submit-btn" style="display: none;">Nộp bài</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Sidebar -->
             <div class="col-lg-4">
                 <div class="course-sidebar bg-white border rounded p-0">
@@ -385,7 +412,73 @@
                                                                         </div>
                                                                     </div>
                                                                 }
+                                                          
 
+                                                                <!-- Quiz Component -->
+                                                                @{
+                                                                        var lessonQuizzes = Model.LessonQuizzes != null && Model.LessonQuizzes.ContainsKey(lesson.LessonId)
+                                                                        ? Model.LessonQuizzes[lesson.LessonId]
+                                                                        : new List<FliesProject.Models.Entities.Quiz>();
+
+                                                                    foreach (var quiz in lessonQuizzes)
+                                                                    {
+                                                                        string quizIconClass = "bi-question-circle-fill";
+                                                                        string quizBgColor = "bg-primary";
+
+                                                                        if (quiz.QuizType.ToLower() == "reading")
+                                                                        {
+                                                                            quizIconClass = "bi-book-fill";
+                                                                            quizBgColor = "bg-info";
+                                                                        }
+                                                                        else if (quiz.QuizType.ToLower() == "listening")
+                                                                        {
+                                                                            quizIconClass = "bi-headphones";
+                                                                            quizBgColor = "bg-warning";
+                                                                        }
+                                                                        else if (quiz.QuizType.ToLower() == "writing")
+                                                                        {
+                                                                            quizIconClass = "bi-pencil-fill";
+                                                                            quizBgColor = "bg-success";
+                                                                        }
+
+                                                                        <div class="lesson-item quiz-card bg-light rounded mb-2 p-2 @(Model.CompletedQuizIds.ContainsKey(quiz.QuizId) ? "completed" : "")"
+                                                                             data-quiz-id="@quiz.QuizId"
+                                                                             data-quiz-type="@quiz.QuizType"
+                                                                             data-lesson-id="@lesson.LessonId"
+                                                                             data-bs-toggle="modal"
+                                                                             data-bs-target="#quizModal">
+                                                                            <div class="d-flex">
+                                                                                <div class="quiz-thumbnail position-relative me-2">
+                                                                                    <div class="quiz-icon d-flex align-items-center justify-content-center @quizBgColor text-white" style="width: 60px; height: 60px; border-radius: 5px;">
+                                                                                        <i class="bi @quizIconClass fs-4"></i>
+                                                                                    </div>
+                                                                                </div>
+                                                                                <div class="flex-grow-1">
+                                                                                    <h6 class="mb-1 fw-medium">Quiz: <span class="badge @quizBgColor">@quiz.QuizType</span></h6>
+                                                                                    <p class="mb-0">@quiz.Title</p>
+                                                                                </div>
+                                                                                <div class="d-flex align-items-center">
+                                                                                    @if (quiz.TimeLimit.HasValue)
+                                                                                    {
+                                                                                        <span class="badge bg-secondary me-2">@quiz.TimeLimit phút</span>
+                                                                                    }
+                                                                                    @if (Model.CompletedQuizIds.ContainsKey(quiz.QuizId))
+                                                                                    {
+                                                                                        <span class="badge bg-success ms-2">
+                                                                                            <i class="bi bi-check-circle-fill"></i> Hoàn thành
+                                                                                        </span>
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        <button type="button" class="btn btn-sm btn-primary">
+                                                                                            Bắt đầu
+                                                                                        </button>
+                                                                                    }
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    }
+                                                                }
                                    @*           @if (!string.IsNullOrEmpty(lesson.Content))
                                                 {
                                                     <div class="lesson-content mt-3">
@@ -743,8 +836,19 @@
 
         
         });
+
+
             
     </script>
+
+    @section Scripts {
+        <!-- Đảm bảo jQuery đã được nạp trước -->
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+        <!-- Sau đó tải script của bạn -->
+        <script src="~/js/CourseDetailQuiz.js"></script>
+    }
+    <script src="~/js/user/Header.js"></script>
 
 
 </body>

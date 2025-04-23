@@ -11,6 +11,10 @@ namespace FliesProject.ViewModel
         public UserCourseProgress CourseProgress { get; set; }
         public Dictionary<int, bool> CompletedLessonIds { get; set; } = new Dictionary<int, bool>();
 
+        public Dictionary<int, bool> CompletedQuizIds { get; set; } = new Dictionary<int, bool>();
+
+        public Dictionary<int, List<Quiz>> LessonQuizzes { get; set; } = new Dictionary<int, List<Quiz>>();
+
         // Comments related properties
         public List<QuizComment> Comments { get; set; } = new List<QuizComment>();
         public string NewCommentText { get; set; }

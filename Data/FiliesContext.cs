@@ -28,6 +28,8 @@ public partial class FiliesContext : DbContext
 
     public virtual DbSet<LessonCompletion> LessonCompletions { get; set; }
 
+    public virtual DbSet<LessonQuizMapping> LessonQuizMappings { get; set; }
+
     public virtual DbSet<PaymentOrder> PaymentOrders { get; set; }
 
     public virtual DbSet<Quiz> Quizzes { get; set; }
@@ -35,6 +37,8 @@ public partial class FiliesContext : DbContext
     public virtual DbSet<QuizAnswer> QuizAnswers { get; set; }
 
     public virtual DbSet<QuizComment> QuizComments { get; set; }
+
+    public virtual DbSet<QuizCompletion> QuizCompletions { get; set; }
 
     public virtual DbSet<QuizQuestion> QuizQuestions { get; set; }
 
@@ -48,7 +52,10 @@ public partial class FiliesContext : DbContext
 
     public virtual DbSet<UserCourseProgress> UserCourseProgresses { get; set; }
 
-    
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=LAPTOP-KMN3B2QI;Database=Filies;TrustServerCertificate=True;Trusted_Connection=True");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Certificate>(entity =>
@@ -239,6 +246,25 @@ public partial class FiliesContext : DbContext
                 .HasConstraintName("FK_LessonCompletion_Lesson");
         });
 
+        modelBuilder.Entity<LessonQuizMapping>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("LessonQuizMapping");
+
+            entity.Property(e => e.LessonId).HasColumnName("lessonId");
+
+            entity.HasOne(d => d.Lesson).WithMany()
+                .HasForeignKey(d => d.LessonId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__LessonQui__lesso__72910220");
+
+            entity.HasOne(d => d.Quiz).WithMany()
+                .HasForeignKey(d => d.QuizId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__LessonQui__QuizI__73852659");
+        });
+
         modelBuilder.Entity<PaymentOrder>(entity =>
         {
             entity.HasKey(e => e.OrderId).HasName("PK__PaymentO__C3905BCF396F97E0");
@@ -347,6 +373,25 @@ public partial class FiliesContext : DbContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_quiz_comments_Users");
+        });
+
+        modelBuilder.Entity<QuizCompletion>(entity =>
+        {
+            entity.HasKey(e => e.CompletionId).HasName("PK__QuizComp__77FA708F3CFAF59F");
+
+            entity.ToTable("QuizCompletion");
+
+            entity.Property(e => e.CompletedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Enrollement).WithMany(p => p.QuizCompletions)
+                .HasForeignKey(d => d.EnrollementId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_QuizCompletion_Enrollement");
+
+            entity.HasOne(d => d.Quiz).WithMany(p => p.QuizCompletions)
+                .HasForeignKey(d => d.QuizId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_QuizCompletion_Quiz");
         });
 
         modelBuilder.Entity<QuizQuestion>(entity =>

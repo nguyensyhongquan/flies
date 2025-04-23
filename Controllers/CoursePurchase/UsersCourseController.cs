@@ -210,15 +210,19 @@ namespace FliesProject.Controllers.CoursePurchase
             if (courseProgress == null)
             {
                 int totalLessons = course.Sections.Sum(s => s.Lessons.Count);
-                //    int totalQuizzes = await _dbContext.Quizzes.CountAsync(q => q.CourseId == id);
+                int totalQuizzes = await _dbContext.LessonQuizMappings
+                          .Where(lq => lq.Lesson.Section.CourseId == id)
+                        .Select(lq => lq.QuizId)
+                  
+                           .CountAsync();
 
                 courseProgress = new UserCourseProgress
                 {
                     EnrollementId = enrollment.EnrollementId,
                     CompletedLessons = 0,
-                     // CompletedQuizzes = 0,
+                     CompletedQuizzes = 0,
                     TotalLessons = totalLessons,
-                     // TotalQuizzes = totalQuizzes,
+                     TotalQuizzes = totalQuizzes,
                     ProgressPercentage = 0,
                     UpdatedAt = DateTime.Now
                 };
@@ -235,6 +239,16 @@ namespace FliesProject.Controllers.CoursePurchase
 
             var completedLessonsDict = completedLessons.ToDictionary(id => id, id => true);
 
+            // Lấy danh sách các quiz đã hoàn thành
+            var completedQuizzes = await _dbContext.QuizCompletions
+                .Where(qc => qc.EnrollementId == enrollment.EnrollementId)
+                .Select(qc => qc.QuizId)
+                .ToListAsync();
+
+            var completedQuizzesDict = completedQuizzes.ToDictionary(id => id, id => true);
+
+
+
 
 
             // Get current user's avatar
@@ -249,6 +263,27 @@ namespace FliesProject.Controllers.CoursePurchase
                 .OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();
 
+            // Get all lesson quiz mappings for this course
+            var allLessonIds = course.Sections.SelectMany(s => s.Lessons).Select(l => l.LessonId).ToList();
+            
+
+            var lessonQuizMappings = await _dbContext.LessonQuizMappings
+                .Where(lq => allLessonIds.Contains(lq.LessonId))
+                .Include(lq => lq.Quiz)
+                .ToListAsync();
+
+            // Group quizzes by lesson ID
+            var lessonQuizzes = new Dictionary<int, List<Quiz>>();
+            foreach (var mapping in lessonQuizMappings)
+            {
+                if (!lessonQuizzes.ContainsKey(mapping.LessonId))
+                {
+                    lessonQuizzes[mapping.LessonId] = new List<Quiz>();
+                }
+
+                lessonQuizzes[mapping.LessonId].Add(mapping.Quiz);
+            }
+
             // Tạo view model để truyền cho view
             var viewModel = new CourseDetailViewModel
             {
@@ -258,6 +293,8 @@ namespace FliesProject.Controllers.CoursePurchase
                 Enrollement = enrollment,
                 CourseProgress = courseProgress,
                 CompletedLessonIds = completedLessonsDict,
+                CompletedQuizIds = completedQuizzesDict,
+                LessonQuizzes = lessonQuizzes,
                 // Comment related properties
                 Comments = comments,
                 CurrentLessonId = lessonId,
