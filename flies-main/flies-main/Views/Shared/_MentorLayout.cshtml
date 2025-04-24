@@ -1,0 +1,654 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/mentor/asset/bootstrap/css/bootstrap.min.css" />
+    <title>Home page</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="~/mentor/asset/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Thêm thư viện Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="~/css/mentor/mentor.css">
+    <style>
+        html, body, h1, h2, h3, h4, h5 {
+            font-family: "Raleway", sans-serif
+        }
+    </style>
+
+    <style>
+        /* CSS cho toàn trang */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+            padding: 15px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+            header .form-control {
+                border-radius: 20px;
+                border: none;
+                padding: 10px 20px;
+                width: 40%;
+                max-width: 400px;
+            }
+
+            header .btn-light {
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: background-color 0.3s ease;
+            }
+
+                header .btn-light:hover {
+                    background-color: #e9ecef;
+                }
+
+            header .rounded-circle {
+                border: 2px solid #fff;
+                transition: transform 0.3s ease;
+            }
+
+                header .rounded-circle:hover {
+                    transform: scale(1.1);
+                }
+
+        /* Sidebar */
+        .sidebar {
+            background: #fff;
+            border-right: 1px solid #e9ecef;
+            min-height: calc(100vh - 70px);
+            padding-top: 20px;
+        }
+
+            .sidebar .nav-item {
+                margin-bottom: 10px;
+            }
+
+            .sidebar .btn-toggle {
+                padding: 10px 15px;
+                border-radius: 5px;
+                background: transparent;
+                color: #333;
+                font-weight: 500;
+                transition: background-color 0.3s ease, color 0.3s ease;
+            }
+
+                .sidebar .btn-toggle:hover {
+                    background: #e9ecef;
+                    color: #007bff;
+                }
+
+            .sidebar .list-group-item {
+                border: none;
+                padding: 8px 20px;
+            }
+
+                .sidebar .list-group-item a {
+                    color: #555;
+                    text-decoration: none;
+                    transition: color 0.3s ease;
+                }
+
+                    .sidebar .list-group-item a:hover {
+                        color: #007bff;
+                    }
+
+        /* Main Content */
+        main {
+            padding: 30px;
+        }
+
+        /* Home Page */
+        #homePage .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            #homePage .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            }
+
+        #homePage .profile-img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #007bff;
+        }
+
+        #homePage h4 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        #homePage .text-muted {
+            font-size: 0.9rem;
+        }
+
+        #homePage .btn-primary {
+            border-radius: 20px;
+            padding: 8px 20px;
+            background: #007bff;
+            border: none;
+            transition: background 0.3s ease;
+        }
+
+            #homePage .btn-primary:hover {
+                background: #0056b3;
+            }
+
+        #homePage h1 {
+            font-size: 2rem;
+            color: #333;
+            margin: 30px 0 20px;
+        }
+
+        #homePage .course-card {
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            #homePage .course-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            }
+
+        #homePage .course-img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        #homePage .course-card h5 {
+            font-size: 1.2rem;
+            color: #333;
+            margin: 10px 0 5px;
+        }
+
+        #homePage .course-category {
+            font-size: 0.9rem;
+            color: #5a4f4f;
+            margin: 0;
+        }
+
+        #homePage .course-students {
+            font-size: 0.9rem;
+            color: #666;
+            margin: 5px 0 0;
+        }
+
+        /* Footer */
+        footer {
+            padding: 20px 0;
+            background: #1e3c72;
+            font-size: 0.9rem;
+        }
+
+        /* CSS cho New Message */
+        .message-card {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+            .message-card:hover {
+                background-color: #f8f9fa;
+            }
+
+            .message-card.card-body {
+                padding: 15px;
+            }
+
+            .message-card.message-row {
+                display: flex;
+                justify-content: space-between; /* Đẩy các phần tử ra hai đầu */
+                align-items: center;
+            }
+
+            .message-card.message-content-wrapper {
+                display: flex;
+                align-items: center;
+                flex-grow: 1; /* Chiếm không gian còn lại */
+            }
+
+        .message-cardimg {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .message-cardh6 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .message-card .message-content {
+            font-size: 0.9rem;
+            color: #555;
+            margin: 5px 0 0;
+            white-space: normal;
+        }
+
+        .message-card .text-muted {
+            font-size: 0.8rem;
+        }
+
+        .message-card .status-btn {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            transition: background-color 0.3s ease;
+            margin-left: 15px; /* Khoảng cách nhỏ với lề phải */
+        }
+
+            .message-card .status-btn.btn-warning {
+                background: #f39c12;
+                color: #fff;
+            }
+
+            .message-card .status-btn.btn-success {
+                background: #28a745;
+                color: #fff;
+            }
+
+            .message-card .status-btn:hover {
+                opacity: 0.9;
+            }
+
+        .message-card .message-row {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .message-card .status-btn {
+            margin-top: 10px;
+            margin-left: 0;
+        }
+
+
+        /* CSS cho Chat Box (giữ nguyên) */
+        .chat-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .student-list {
+            background: #fff;
+            border-right: 1px solid #ddd;
+            height: 500px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .student-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-bottom: 5px;
+        }
+
+            .student-item:hover {
+                background: #e9ecef;
+            }
+
+            .student-item.active {
+                background: #007bff;
+                color: #fff;
+            }
+
+            .student-item img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-right: 10px;
+            }
+
+        .chat-area {
+            background: #fff;
+            height: 650px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            background: #f1f3f5;
+            display: flex;
+            align-items: center;
+        }
+
+            .chat-header img {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                margin-right: 10px;
+            }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .chat-message {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .chat-message.mentor {
+                align-items: flex-end;
+            }
+
+            .chat-message.student {
+                align-items: flex-start;
+            }
+
+        .chat-bubble {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+            .chat-bubble.mentor {
+                background: #007bff;
+                color: #fff;
+                border-bottom-right-radius: 5px;
+            }
+
+            .chat-bubble.student {
+                background: #e9ecef;
+                color: #333;
+                border-bottom-left-radius: 5px;
+            }
+
+        .chat-message .time {
+            font-size: 0.75rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            background: #f1f3f5;
+            display: flex;
+            align-items: center;
+        }
+
+            .chat-input input {
+                flex: 1;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 20px;
+                margin-right: 10px;
+                outline: none;
+            }
+
+            .chat-input button {
+                padding: 10px 20px;
+                border-radius: 20px;
+                background: #007bff;
+                color: #fff;
+                border: none;
+                transition: background 0.3s ease;
+            }
+
+                .chat-input button:hover {
+                    background: #0056b3;
+                }
+
+        .classroom-card {
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .classroom-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            }
+
+        .exam-table {
+            width: 100%;
+            table-layout: fixed;
+            font-family: 'Roboto', sans-serif;
+        }
+
+            .exam-table th, .exam-table td {
+                padding: 12px 8px;
+                vertical-align: middle;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .exam-table th {
+                background-color: #f8f9fa;
+                font-weight: 600;
+                color: #495057;
+            }
+
+            .exam-table tbody tr:hover {
+                background-color: #f1f3f5;
+            }
+
+            .exam-table .remark-btn {
+                width: 100px;
+                padding: 6px 12px;
+                font-size: 14px;
+                white-space: nowrap;
+            }
+
+        .card-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .course-img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .course-card {
+            transition: transform 0.3s ease;
+        }
+
+            .course-card:hover {
+                transform: translateY(-5px);
+            }
+
+        .course-category {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        .course-students {
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+    @RenderSection("Styles", required: false)
+</head>
+<body class="w3-light-grey">
+    <!-- Top container -->
+    <div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
+        <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();"><i class="fa fa-bars"></i> Menu</button>
+        <span class="w3-bar-item w3-right">Logo</span>
+    </div>
+
+    <!-- Sidebar/menu -->
+    <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar">
+        <br>
+        <div class="w3-container w3-row">
+            <div class="w3-col s4">
+                <img src="~/images/profile.png" class="w3-circle w3-margin-right" style="width:46px">
+            </div>
+            <div class="w3-col s8 w3-bar">
+                <span>Welcome, <strong>@(ViewData["UserName"] ?? "User")</strong></span><br>
+                <a href="#" class="w3-bar-item w3-button"><i class="fa fa-envelope"></i></a>
+                <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user"></i></a>
+                <a href="#" class="w3-bar-item w3-button"><i class="fa fa-cog"></i></a>
+            </div>
+        </div>
+        <hr>
+        <div class="w3-container">
+            <h5>Dashboard</h5>
+        </div>
+        <div class="w3-bar-block">
+            <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i> Close Menu</a>
+            <a class="has-arrow w3-bar-item w3-button" href="javascript:void(0)" onclick="toggleMenu('dashboardMenu')" aria-expanded="false">
+                <i class="fa fa-home"></i>
+                <span class="nav-text">Course</span>
+                <i class="fa fa-caret-down w3-right"></i>
+            </a>
+            <ul id="dashboardMenu" class="w3-hide w3-animate-opacity w3-white w3-card-2" style="margin-left: 20px;">
+                <li><a asp-controller="Course" asp-action="Show" class="w3-bar-item w3-button">My Course</a></li>
+                <li><a asp-controller="Course" asp-action="Create" class="w3-bar-item w3-button">Add Course</a></li>
+                <li><a asp-controller="Quiz" asp-action="Create" class="w3-bar-item w3-button">Add Quiz</a></li>
+            </ul>
+            <a class="has-arrow w3-bar-item w3-button" href="javascript:void(0)" onclick="toggleMenu('studentMenu')" aria-expanded="false">
+                <span class="nav-text">🎓 Student</span>
+                <i class="fa fa-caret-down w3-right"></i>
+            </a>
+            <ul id="studentMenu" class="w3-hide w3-animate-opacity w3-white w3-card-2" style="margin-left: 20px;">
+                <li><a asp-controller="Mentor" asp-action="Index" class="w3-bar-item w3-button">My Student</a></li>
+                <li><a asp-controller="Mentor" asp-action="Grade" class="w3-bar-item w3-button">Grade</a></li>
+            </ul>
+            <a href="/chat/index" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i>Chat Box</a>
+            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-eye fa-fw"></i> Views</a>
+            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-users fa-fw"></i> Traffic</a>
+            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i> Geo</a>
+            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-diamond fa-fw"></i> Orders</a>
+            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bell fa-fw"></i> News</a>
+            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bank fa-fw"></i> General</a>
+            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-history fa-fw"></i> History</a>
+            <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i> Settings</a><br><br>
+        </div>
+    </nav>
+
+    <!-- Overlay effect -->
+    <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+    <!-- Page content -->
+    <div class="w3-main" style="margin-left:300px;margin-top:43px;">
+        @RenderBody()
+
+        @* <!-- Footer --> *@
+        @* <footer class="w3-container w3-padding-16 w3-light-grey"> *@
+        @*     <h4>FOOTER</h4> *@
+        @*     <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p> *@
+        @* </footer> *@
+    </div>
+
+    <script>
+        var mySidebar = document.getElementById("mySidebar");
+        var overlayBg = document.getElementById("myOverlay");
+
+        function w3_open() {
+            if (mySidebar.style.display === 'block') {
+                mySidebar.style.display = 'none';
+                overlayBg.style.display = "none";
+            } else {
+                mySidebar.style.display = 'block';
+                overlayBg.style.display = "block";
+            }
+        }
+
+        function w3_close() {
+            mySidebar.style.display = "none";
+            overlayBg.style.display = "none";
+        }
+
+        function toggleMenu(id) {
+            var menu = document.getElementById(id);
+            if (menu.classList.contains("w3-show")) {
+                menu.classList.remove("w3-show");
+                menu.classList.add("w3-hide");
+            } else {
+                menu.classList.remove("w3-hide");
+                menu.classList.add("w3-show");
+            }
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        var mySidebar = document.getElementById("mySidebar");
+        var overlayBg = document.getElementById("myOverlay");
+
+        function w3_open() {
+            if (mySidebar.style.display === 'block') {
+                mySidebar.style.display = 'none';
+                overlayBg.style.display = "none";
+            } else {
+                mySidebar.style.display = 'block';
+                overlayBg.style.display = "block";
+            }
+        }
+
+        function w3_close() {
+            mySidebar.style.display = "none";
+            overlayBg.style.display = "none";
+        }
+
+        function toggleMenu(id) {
+            var menu = document.getElementById(id);
+            if (menu.classList.contains("w3-show")) {
+                menu.classList.remove("w3-show");
+                menu.classList.add("w3-hide");
+            } else {
+                menu.classList.remove("w3-hide");
+                menu.classList.add("w3-show");
+            }
+        }
+    </script>
+
+    <script src="~/mentor/criteriaDefinitions.js"></script>
+    <script src="~/mentor/examDetails.js"></script>
+    <script src="~/mentor/grade.js"></script>
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

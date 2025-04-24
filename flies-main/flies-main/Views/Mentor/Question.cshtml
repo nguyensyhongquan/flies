@@ -1,0 +1,64 @@
+﻿@{
+    Layout = "~/Views/Shared/_MentorLayout.cshtml";
+}
+@model FliesProject.Models.Entities.Enrollement
+<style>
+    .exam-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+    }
+
+    .exam-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .grade-info {
+    border: 1px solid #e9ecef;
+    }
+
+    .progress {
+    background-color: #e9ecef;
+    }
+
+    .progress-bar {
+    transition: width 0.6s ease;
+    }
+</style>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Danh sách bài kiểm tra</h3>
+        <a href="#" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Quay lại thông tin học viên
+        </a>
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model.Course.Quizzes)
+        {
+            <!-- Bài kiểm tra 1 -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 exam-card">
+                <div class="card-header">
+                    <h5 class="m-0">@item.Title</h5>
+                </div>
+                <div class="card-body">
+                    <div class="grade-info p-2 bg-light rounded mb-3">
+                        <p class="mb-1"><strong>Câu đúng:</strong> @item.QuizQuestions.First().QuizAnswers.Count(q => q.IsCorrect == true)</p>
+                        <p class="mb-1"><strong>Câu sai:</strong> @item.QuizQuestions.First().QuizAnswers.Count(q => q.IsCorrect == false)</p>
+
+                        @* <small class="text-muted d-block mt-1"> *@
+                        @*     8/10 bài học, 4/5 bài kiểm tra *@
+                        @* </small> *@
+                    </div>
+                    @* <div class="text-center mb-3"> *@
+                    @*     <img src="https://via.placeholder.com/150" alt="Bài kiểm tra Listening 1" class="img-fluid" style="max-height: 120px;" loading="lazy"> *@
+                    @* </div> *@
+                    <p class="text-muted mb-0">Ngày làm bài: @item.CreatedAt</p>
+                    @* <p class="text-muted mb-0">Cập nhật: 16/10/2023</p> *@
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+</div>

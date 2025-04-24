@@ -1,0 +1,31 @@
+﻿@{
+    Layout = "~/Views/Shared/_MentorLayout.cshtml";
+}
+<style>
+    .chat-message.other-message {
+        align-items: start;
+    }
+
+    .chat-message.own-message {
+        align-items: end;
+    }
+
+    .chat-bubble{
+        background-color: #00e3e3;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <main class="col-12 p-4">
+            <div id="dynamicContent" class="mt-4">
+                <!-- Nội dung chat sẽ được render bởi JavaScript -->
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Load SignalR client -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.0/signalr.min.js"></script>
+
+<script src="~/mentor/message.js"></script>

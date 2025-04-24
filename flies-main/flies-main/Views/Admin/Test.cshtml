@@ -1,0 +1,87 @@
+﻿@{
+    Layout = "~/Views/Shared/Admin.cshtml";  // hoặc bạn để layout tùy ý
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ChatBot Interface</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="AIcontainer">
+        <h1 class="main-title">Chat AI Example</h1>
+        <div class="chat-container">
+            <div class="chat-title">Chat với AI</div>
+
+            <!-- Khu vực hiển thị tin nhắn -->
+            <div class="chat-messages" id="chatMessages">
+                <div class="message user">Xin chào AI!</div>
+                <div class="message ai">Chào bạn! Mình có thể giúp gì cho bạn hôm nay?</div>
+            </div>
+
+            <div class="input-with-button">
+                <input type="text"
+                       id="userInput"
+                       placeholder="What's your mind..." />
+                <button id="sendBtn" onclick="sendMessage()">
+                    ➤
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="chartCanvas" width="500" height="300" style="display:none;"></canvas>
+
+    <script>
+        // let currentChart = null;
+
+        // Send the user input to the bot
+             async function sendMessage() {
+            const question = document.getElementById("userInput").value.trim();
+            console.log("Button clicked, sending message...");
+             console.log(question);
+            if (!question) {
+                alert("Please enter a question.");
+                return;
+            }
+
+            // document.getElementById("loading").style.display = "block";
+
+            try {
+                const response = await fetch("/api/chat/message", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message: question })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server returned ${response.status}`);
+                }
+
+                const result = await response.json();
+                // document.getElementById("loading").style.display = "none";
+
+                const chat = document.getElementById("chatMessages");
+                chat.innerHTML += `<div class="message user"><strong>You:</strong> ${question}</div>`;
+                chat.innerHTML += `<div class="message ai"><strong>Bot:</strong> ${result.message}</div>`;
+                chat.scrollTop = chat.scrollHeight;
+
+                // Nếu có biểu đồ, vẽ
+                if (result.chartType && result.chartData) {
+                    displayChart(result.chartType, result.chartData);
+                } else {
+                    document.getElementById("chartCanvas").style.display = "none";
+                }
+            } catch (err) {
+                console.error(err);
+                document.getElementById("loading").style.display = "none";
+                alert("Có lỗi xảy ra khi gửi câu hỏi.");
+            }
+        }
+
+    </script>
+</body>
+</html>

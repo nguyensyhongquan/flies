@@ -1,0 +1,439 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+.rounded-circle {
+    transition: transform 0.2s;
+}
+
+.rounded-circle:hover {
+    transform: scale(1.1);
+}
+
+/* Existing styles (keeping unchanged) */
+.quiz-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.quiz-type-select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    width: 100%;
+    transition: border-color 0.3s;
+}
+
+    .quiz-type-select:focus {
+        border-color: #2196F3;
+        outline: none;
+    }
+
+.quiz-input, .quiz-textarea {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    transition: border-color 0.3s;
+}
+
+    .quiz-input:focus, .quiz-textarea:focus {
+        border-color: #2196F3;
+        outline: none;
+    }
+
+.quiz-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.answer-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+    .answer-row input[type="text"] {
+        flex: 1;
+        margin-right: 10px;
+    }
+
+    .answer-row label {
+        margin-left: 10px;
+        font-weight: normal;
+        white-space: nowrap;
+    }
+
+.quiz-button {
+    padding: 10px 20px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+    .quiz-button.green:hover {
+        background-color: #43A047;
+    }
+
+    .quiz-button.gray:hover {
+        background-color: #B0BEC5;
+    }
+
+.quiz-answers h4 {
+    margin-top: 20px;
+    color: #333;
+}
+
+.validation-error {
+    font-size: 0.9em;
+    color: #D32F2F;
+}
+
+/* New styles for profile card */
+.profile-card {
+    background-color: #343a40; /* Dark gray background */
+    color: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 20px;
+}
+
+.profile-info {
+    flex-grow: 1;
+    text-align: center;
+}
+
+    .profile-info h5 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .profile-info small {
+        display: block;
+        font-size: 1rem;
+        color: #adb5bd; /* Lighter gray for role */
+        margin-top: 5px;
+    }
+
+.course-card:hover {
+    transform: scale(1.05);
+}
+
+.course-img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.course-category {
+    font-size: 0.9em;
+    color: gray;
+}
+
+.course-students {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+/* Logo */
+.logo {
+    width: 50px;
+    cursor: pointer;
+}
+
+.add-course-container {
+    display: flex;
+    gap: 30px;
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Phần upload hình ảnh nằm bên trái */
+.image-upload-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 300px; /* Đặt chiều rộng cho cột upload ảnh */
+}
+
+.image-upload-box {
+    width: 100%;
+    height: 200px;
+    border: 2px dashed #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.image-upload-box input[type="file"] {
+    display: none;
+}
+
+/* Phần form nhập liệu nằm bên phải */
+.add-course-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex-grow: 1; /* Chiếm phần còn lại của container */
+}
+
+.add-course-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.add-course-form label {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.add-course-form input,
+.add-course-form select,
+.add-course-form textarea {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    outline: none;
+}
+
+.add-course-form input:focus,
+.add-course-form select:focus,
+.add-course-form textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.2);
+}
+
+/* Title & Description */
+.add-course-form textarea {
+    height: 150px;
+}
+
+/* Nút Preview và Next (đưa ra giữa) */
+.buttons-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+.cancel-btn {
+    background-color: #6c757d; /* màu xám mặc định của Bootstrap secondary */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268;
+    text-decoration: none;
+}
+
+.buttons-container button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: black;
+    color: white;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.buttons-container button:hover {
+    background-color: white;
+    color: black;
+    border: 1px solid black;
+}
+#addQuizPage {
+    margin: 20px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.question-card {
+    background-color: #fff;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+input[type="text"], select {
+    margin: 5px 0;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+#addQuestionPage {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+#addQuestionPage h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: bold;
+}
+
+textarea, input[type="text"], input[type="number"], select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+textarea {
+    height: 100px;
+}
+
+button {
+    margin-top: 10px;
+}
+
+#optionsContainer {
+    margin-top: 15px;
+}
+
+.option-input {
+    margin-bottom: 10px;
+}
+
+/* Quiz Creation Styles */
+.quiz-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.quiz-type-select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+    width: 100%;
+    transition: border-color 0.3s;
+}
+
+    .quiz-type-select:focus {
+        border-color: #2196F3;
+        outline: none;
+    }
+
+.quiz-input, .quiz-textarea {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    transition: border-color 0.3s;
+}
+
+    .quiz-input:focus, .quiz-textarea:focus {
+        border-color: #2196F3;
+        outline: none;
+    }
+
+.quiz-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.answer-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+    .answer-row input[type="text"] {
+        flex: 1;
+        margin-right: 10px;
+    }
+
+    .answer-row label {
+        margin-left: 10px;
+        font-weight: normal;
+        white-space: nowrap;
+    }
+
+.quiz-button {
+    padding: 10px 20px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+    .quiz-button.green:hover {
+        background-color: #43A047;
+    }
+
+    .quiz-button.gray:hover {
+        background-color: #B0BEC5;
+    }
+
+.quiz-answers h4 {
+    margin-top: 20px;
+    color: #333;
+}
+
+.validation-error {
+    font-size: 0.9em;
+    color: #D32F2F;
+}

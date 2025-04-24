@@ -1,0 +1,52 @@
+﻿@{
+    Layout = "~/Views/Shared/_MentorLayout.cshtml";
+}
+@model List<FliesProject.Models.Entities.User>
+
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- Nội dung chính -->
+            <main class="col-12 p-4">
+                <!-- Home Page -->
+                <div id="homePage">
+                    <div class="card p-3 mb-4">
+                        <div class="d-flex align-items-center">
+                            <img src="component/profile.png"
+                            alt="Profile"
+                            class="profile-img" />
+                            <div class="ms-3 flex-grow-1">
+                                <h4>Lê Quang Thức</h4>
+                                <small class="text-muted">Software Engineer</small>
+                                <p class="mb-0">
+                                    A passionate developer who loves coding and learning new
+                                    technologies.
+                                </p>
+                            </div>
+                            <button class="btn btn-primary">Update</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dynamicContent" class="container mt-4">
+                    <div id="classroomListContainer">
+                        <h2>Classroom</h2>
+                        <div class="row mt-4">
+                            @foreach (var item in Model)
+                            {
+                                <div class="col-md-3" onclick="location.href='/mentor/student?mentorId=@item.UserId'">
+                                    <div class="card text-center p-3 mb-4 classroom-card">
+                                        <div class="text-center mb-3">
+                                            <img src="component/classroom1.jpg" alt="Classroom 1" class="img-fluid" style="max-width: 100px; border-radius: 8px;">
+                                        </div>
+                                        <h4>@item.Fullname</h4>
+                                    </div>
+                                </div>
+                        }
+           
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>

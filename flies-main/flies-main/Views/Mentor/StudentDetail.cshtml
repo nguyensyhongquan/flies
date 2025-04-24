@@ -1,0 +1,207 @@
+﻿@{
+    Layout = "~/Views/Shared/_MentorLayout.cshtml";
+}
+@model FliesProject.Models.Entities.Enrollement
+<div class="container-fluid">
+    <div class="row">
+
+        <!-- Nội dung chính -->
+        <main class="col-12 p-4">
+            <!-- Home Page -->
+            <div id="homePage">
+                <div class="card p-3 mb-4">
+                    <div class="d-flex align-items-center">
+                        <img src="component/profile.png"
+                        alt="Profile"
+                        class="profile-img" />
+                        <div class="ms-3 flex-grow-1">
+                            <h4>Lê Quang Thức</h4>
+                            <small class="text-muted">Software Engineer</small>
+                            <p class="mb-0">
+                                A passionate developer who loves coding and learning new
+                                technologies.
+                            </p>
+                        </div>
+                        <button class="btn btn-primary">Update</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dynamicContent" class="mt-4">
+                <div id="studentDetailContainer" class="mt-4">
+                    <div class="container">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h3>Thông tin chi tiết học viên</h3>
+                            <button class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </button>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card mb-4">
+                                    <div class="card-body text-center">
+                                        <img src="~/images/profile.png" alt="Nguyen Van A" class="img-fluid rounded-circle mb-3" style="width: 150px;">
+                                        <h3>@Model.Student.Fullname</h3>
+                                        <p class="text-muted">@Model.Student.Email</p>
+                                        <p><i class="fas fa-phone me-2"></i>@Model.Student.PhoneNumber</p>
+                                        @* <div class="d-flex justify-content-center mt-3"> *@
+                                        @*     <span class="badge bg-info me-2 p-2">Tham gia: 90%</span> *@
+                                        @*     <span class="badge bg-success p-2">Điểm: A</span> *@
+                                        @* </div> *@
+                                    </div>
+                                </div>
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5>Tiến độ học tập</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="progress mb-3" style="height: 30px;">
+                                            <div class="progress-bar bg-success"
+                                            role="progressbar"
+                                            style="width: @ViewBag.Total;"
+                                            aria-valuenow="8"
+                                            aria-valuemin="0"
+                                            aria-valuemax="10">
+                                                @Model.UserCourseProgresses.First().CompletedQuizzes/@Model.UserCourseProgresses.First().TotalQuizzes bài tập
+                                            </div>
+                                        </div>
+                                        @* <div class="progress" style="height: 30px;"> *@
+                                        @*     <div class="progress-bar bg-info" *@
+                                        @*          role="progressbar" *@
+                                        @*          style="width: 90%;" *@
+                                        @*          aria-valuenow="90" *@
+                                        @*          aria-valuemin="0" *@
+                                        @*          aria-valuemax="100"> *@
+                                        @*         Tham gia: 90% *@
+                                        @*     </div> *@
+                                        @* </div> *@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5>Thông tin cá nhân</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-striped">
+                                            <tbody>
+                                                <tr><td><strong>Họ và tên:</strong></td><td>@Model.Student.Fullname</td></tr>
+                                                <tr><td><strong>Ngày sinh:</strong></td><td>@Model.Student.Birthday</td></tr>
+                                                <tr><td><strong>Giới tính:</strong></td><td>@Model.Student.Gender</td></tr>
+                                                <tr><td><strong>Địa chỉ:</strong></td><td>@Model.Student.Address</td></tr>
+                                                <tr><td><strong>Email:</strong></td><td>@Model.Student.Email</td></tr>
+                                                <tr><td><strong>Số điện thoại:</strong></td><td>@Model.Student.PhoneNumber</td></tr>
+                                                <tr><td><strong>Ngày tham gia:</strong></td><td>@Model.StartedAt</td></tr>
+                                                <tr><td><strong>Đăng nhập gần đây:</strong></td><td>@Model.Student.LastLogin</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="card mb-4">
+                                            <div class="card-header d-flex justify-content-between align-items-center">
+                                                <h5>Điểm kiểm tra</h5>
+                                                @if(Model.Course.Quizzes.Count() > 0)
+                                                {
+                                                    <a class="btn btn-primary btn-sm" href="/mentor/question?studentId=@Model.StudentId">
+                                                        <i class="fas fa-file-alt me-1"></i> Xem bài kiểm tra
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="btn btn-primary btn-sm" href="#">
+                                                        <i class="fas fa-file-alt me-1"></i> Xem bài kiểm tra
+                                                    </a>
+                                                }
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped table-hover exam-table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="text-center" style="width: 5%;">#</th>
+                                                                <th style="width: 40%;">Tên bài kiểm tra</th>
+                                                                <th class="text-center" style="width: 15%;">Loại câu hỏi</th>
+                                                                @* <th class="text-center" style="width: 10%;">Điểm</th> *@
+                                                                <th class="text-center" style="width: 15%;">Kết quả</th>
+                                                                @* <th class="text-center" style="width: 15%;">Hành động</th> *@
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach(var quiz in Model.Course.Quizzes)
+                                                            {
+                                                                foreach(var item in quiz.QuizQuestions)
+                                                                {
+                                                                    <tr>
+                                                                        <td class="text-center">1</td>
+                                                                        <td>@item.QuestionText</td>
+                                                                        <td class="text-center">@item.QuestionType</td>
+                                                                        @* <td class="text-center">85/100</td> *@
+                                                                        <td class="text-center">
+                                                                            @if(item.QuizAnswers.First().IsCorrect == true)
+                                                                            {
+                                                                                <p>Correct</p>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <p>InCorrect</p>
+                                                                            }
+                                                                        </td>
+                                                                        @* <td class="text-center"> *@
+                                                                        @*     <button class="btn btn-sm btn-primary remark-btn">Xem/Sửa</button> *@
+                                                                        @* </td> *@
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                            @* <tr> *@
+                                                            @*     <td class="text-center"><strong>TB:</strong></td> *@
+                                                            @*     <td colspan="5"><strong>85.0/100</strong></td> *@
+                                                            @* </tr> *@
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @* <div class="row"> *@
+                                @*     <div class="col-md-12"> *@
+                                @*         <div class="card mb-4"> *@
+                                @*             <div class="card-header"> *@
+                                @*                 <h5>Điểm trung bình quiz</h5> *@
+                                @*             </div> *@
+                                @*             <div class="card-body"> *@
+                                @*                 <table class="table table-striped"> *@
+                                @*                     <tbody> *@
+                                @*                         <tr> *@
+                                @*                             <td class="text-start" style="font-weight: bold;">Điểm trung bình quiz:</td> *@
+                                @*                             <td class="text-end" style="font-weight: bold;">90.0/100</td> *@
+                                @*                         </tr> *@
+                                @*                     </tbody> *@
+                                @*                 </table> *@
+                                @*             </div> *@
+                                @*         </div> *@
+                                @*     </div> *@
+                                @* </div> *@
+                                @* <div class="row"> *@
+                                @*     <div class="col-md-12"> *@
+                                @*         <div class="card mb-4"> *@
+                                @*             <div class="card-header"> *@
+                                @*                 <h5>Ghi chú</h5> *@
+                                @*             </div> *@
+                                @*             <div class="card-body"> *@
+                                @*                 <p class="text-muted">Good student</p> *@
+                                @*             </div> *@
+                                @*         </div> *@
+                                @*     </div> *@
+                                @* </div> *@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
