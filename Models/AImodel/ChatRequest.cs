@@ -7,6 +7,7 @@ namespace FliesProject.Models.AImodel
         [Required]
         public string Message { get; set; }
 
+
         //public string? DatabaseType { get; set; }
 
         //public string? ConnectionString { get; set; }

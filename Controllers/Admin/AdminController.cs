@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using FliesProject.Models.Entities;
 using FliesProject.Extensions;
 using FliesProject.Repositories.GenericRepository;
+using Microsoft.AspNetCore.Authorization;
 namespace FliesProject.Controllers.Admin
 {
+    [Authorize(Policy = "Admin")]
     public class AdminController : Controller
     {
         private readonly IStudentRepository _studentRepository;
@@ -16,7 +18,12 @@ namespace FliesProject.Controllers.Admin
             _userRepository = userRepository;
         }
         // GET: AdminController
+       
         public ActionResult Home()
+        {
+            return View();
+        }
+        public ActionResult AboutStudent()
         {
             return View();
         }

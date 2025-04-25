@@ -1,0 +1,69 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giấy Chứng Nhận</title>
+    <link rel="stylesheet" href="~/css/user/viewcertificate.css" asp-append-version="true">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+</head>
+<body>
+
+    <div class="certificate-container">
+        <div class="certificate-header">
+            <button class="certificate-btn" id="downloadBtn">
+                <i class="bi bi-download"></i> Download
+            </button>
+            <button class="certificate-btn" id="shareBtn">
+                <i class="bi bi-share"></i> Share
+            </button>
+        </div>
+        <div class="certificate-border">
+            <div class="certificate-content">
+                <!-- Logo góc trên -->
+                <div class="certificate-logo">
+                    <img src="~/images/user/logo.jpg" alt="Logo">
+                </div>
+
+                <h1 class="certificate-title">GIẤY CHỨNG NHẬN</h1>
+                <p class="certificate-subtitle">CERTIFICATE OF COMPLETION</p>
+
+                <h2 class="recipient-name">@Model.StudentName</h2>
+                <p class="certificate-text">
+                    Đã hoàn thành khóa học <b>@Model.CourseTitle</b><br>
+                    Has successfully completed the course <b>@Model.CourseTitle</b>
+                </p>
+
+                <div class="certificate-details">
+                    <p>Đà Nẵng, @Model.IssueDate.ToString("dd/MM/yyyy")</p>
+                </div>
+                <div class="certificate-details">
+                    <p>Da Nang, @Model.IssueDate.ToString("dd/MM/yyyy")</p>
+                </div>
+
+                <!-- Chữ ký -->
+                <div class="certificate-footer">
+                    <div class="stamp">
+                        <img src="~/images/user/logo.jpg" alt="Logo">
+                    </div>
+                    <div class="signature">
+                        <p>______________________</p>
+                        <p>GIÁM ĐỐC SẢN XUẤT</p>
+                        <p><i>Chief Delivery Officer</i></p>
+                        <p><b>ĐOÀN HỒNG QUÂN</b></p>
+                    </div>
+                </div>
+
+                <!-- Xác nhận -->
+                <p class="certificate-verification">
+                    Xác nhận bởi thầy thức
+                </p>
+            </div>
+        </div>
+    </div>
+    <script src="~/js/user/certificate.js"></script>
+</body>
+</html>
