@@ -9,77 +9,77 @@ using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
 
-    namespace FliesProject.Controllers.Course
+namespace FliesProject.Controllers.Course
+{
+    public class CourseController : Controller
     {
-        public class CourseController : Controller
+        private readonly IUserRepository _userRepository;
+        private readonly FiliesContext _context;
+
+        public CourseController(IUserRepository userRepository, FiliesContext context)
         {
-            private readonly IUserRepository _userRepository;
-            private readonly FiliesContext _context;
+            _userRepository = userRepository;
+            _context = context;
+        }
 
-            public CourseController(IUserRepository userRepository, FiliesContext context)
+        public async Task<IActionResult> Index()
+        {
+            // Lấy UserId từ Session
+            var userIdStr = HttpContext.Session.GetString("UserId");
+            var userRole = HttpContext.Session.GetString("UserRole")?.ToLower();
+
+            // Kiểm tra đăng nhập và vai trò Mentor
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
             {
-                _userRepository = userRepository;
-                _context = context;
+                return Unauthorized("Vui lòng đăng nhập.");
             }
 
-            public async Task<IActionResult> Index()
+            if (userRole != "mentor")
             {
-                // Lấy UserId từ Session
-                var userIdStr = HttpContext.Session.GetString("UserId");
-                var userRole = HttpContext.Session.GetString("UserRole")?.ToLower();
-
-                // Kiểm tra đăng nhập và vai trò Mentor
-                if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
-                {
-                    return Unauthorized("Vui lòng đăng nhập.");
-                }
-
-                if (userRole != "mentor")
-                {
-                    return Forbid("Chỉ Mentor mới có quyền truy cập.");
-                }
-
-                // Lấy thông tin user từ repository
-                var user = await _userRepository.GetUserByIdAsync(userId);
-                if (user == null)
-                {
-                    return NotFound("Không tìm thấy người dùng.");
-                }
-
-                // Lấy danh sách khóa học của user
-                var courses = _context.Courses
-                    .Where(c => c.CreatedBy == user.UserId)
-                    .ToList();
-
-                // Tạo view model
-                var viewModel = new CourseUserViewModel
-                {
-                    User = user,
-                    Courses = courses
-                };
-
-                ViewData["UserAvatar"] = user.AvatarUrl;
-                return View(viewModel);
+                return Forbid("Chỉ Mentor mới có quyền truy cập.");
             }
 
-            public IActionResult Create()
+            // Lấy thông tin user từ repository
+            var user = await _userRepository.GetUserByIdAsync(userId);
+            if (user == null)
             {
-                // Kiểm tra đăng nhập và vai trò
-                var userIdStr = HttpContext.Session.GetString("UserId");
-                var userRole = HttpContext.Session.GetString("UserRole")?.ToLower();
-
-                if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out _))
-                {
-                    return Unauthorized("Vui lòng đăng nhập.");
-                }
-
-                if (userRole != "mentor")
-                {
-                    return Forbid("Chỉ Mentor mới có quyền tạo khóa học.");
-                }
-
-                return View("CreateCourse");
+                return NotFound("Không tìm thấy người dùng.");
             }
+
+            // Lấy danh sách khóa học của user
+            var courses = _context.Courses
+                .Where(c => c.CreatedBy == user.UserId)
+                .ToList();
+
+            // Tạo view model
+            var viewModel = new CourseUserViewModel
+            {
+                User = user,
+                Courses = courses
+            };
+
+            ViewData["UserAvatar"] = user.AvatarUrl;
+            return View(viewModel);
+        }
+
+        public IActionResult Create()
+        {
+            // Kiểm tra đăng nhập và vai trò
+            var userIdStr = HttpContext.Session.GetString("UserId");
+            var userRole = HttpContext.Session.GetString("UserRole")?.ToLower();
+
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out _))
+            {
+                return Unauthorized("Vui lòng đăng nhập.");
+            }
+
+            if (userRole != "mentor")
+            {
+                return Forbid("Chỉ Mentor mới có quyền tạo khóa học.");
+            }
+
+            return View("CreateCourse");
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -203,221 +203,35 @@ using System.IO;
         }
 
         public async Task<IActionResult> Edit(int id)
+        {
+            var userIdStr = HttpContext.Session.GetString("UserId");
+            var userRole = HttpContext.Session.GetString("UserRole")?.ToLower();
+
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
             {
-                var userIdStr = HttpContext.Session.GetString("UserId");
-                var userRole = HttpContext.Session.GetString("UserRole")?.ToLower();
-
-                if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
-                {
-                    return Unauthorized("Vui lòng đăng nhập.");
-                }
-
-                if (userRole != "mentor")
-                {
-                    return Forbid("Chỉ Mentor mới có quyền chỉnh sửa khóa học.");
-                }
-
-                var course = await _context.Courses.FindAsync(id);
-                if (course == null)
-                {
-                    return NotFound("Khóa học không tồn tại.");
-                }
-
-                if (course.CreatedBy != userId)
-                {
-                    return Forbid("Bạn không có quyền chỉnh sửa khóa học này.");
-                }
-
-                return View("EditCourse", course);
+                return Unauthorized("Vui lòng đăng nhập.");
             }
 
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Edit(int id, FliesProject.Models.Entities.Course course, IFormFile ImageFile)
+            if (userRole != "mentor")
             {
-                var userIdStr = HttpContext.Session.GetString("UserId");
-                var userRole = HttpContext.Session.GetString("UserRole")?.ToLower();
-
-                if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
-                {
-                    return Unauthorized("Vui lòng đăng nhập.");
-                }
-
-                if (userRole != "mentor")
-                {
-                    return Forbid("Chỉ Mentor mới có quyền chỉnh sửa khóa học.");
-                }
-
-                if (id != course.CourseId)
-                {
-                    return BadRequest("ID không hợp lệ.");
-                }
-
-                var existingCourse = await _context.Courses.FindAsync(id);
-                if (existingCourse == null)
-                {
-                    return NotFound("Khóa học không tồn tại.");
-                }
-
-                if (existingCourse.CreatedBy != userId)
-                {
-                    return Forbid("Bạn không có quyền chỉnh sửa khóa học này.");
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return View("EditCourse", course);
-                }
-
-                try
-                {
-                    if (ImageFile != null && ImageFile.Length > 0)
-                    {
-                        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
-                        var fileExtension = Path.GetExtension(ImageFile.FileName).ToLower();
-                        if (!allowedExtensions.Contains(fileExtension))
-                        {
-                            ModelState.AddModelError("ImageFile", "Only image files (.jpg, .jpeg, .png, .gif) are allowed.");
-                            return View("EditCourse", course);
-                        }
-
-                        const int maxFileSize = 5 * 1024 * 1024; // 5MB
-                        if (ImageFile.Length > maxFileSize)
-                        {
-                            ModelState.AddModelError("ImageFile", "File size cannot exceed 5MB.");
-                            return View("EditCourse", course);
-                        }
-
-                        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads");
-                        if (!Directory.Exists(uploadsFolder))
-                        {
-                            Directory.CreateDirectory(uploadsFolder);
-                        }
-
-                        var fileName = Guid.NewGuid().ToString() + fileExtension;
-                        var filePath = Path.Combine(uploadsFolder, fileName);
-
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await ImageFile.CopyToAsync(stream);
-                        }
-
-                        // Xóa ảnh cũ nếu có
-                        if (!string.IsNullOrEmpty(existingCourse.CoursesPicture))
-                        {
-                            var oldFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", existingCourse.CoursesPicture.TrimStart('/'));
-                            if (System.IO.File.Exists(oldFilePath))
-                            {
-                                System.IO.File.Delete(oldFilePath);
-                            }
-                        }
-
-                        existingCourse.CoursesPicture = "/Uploads/" + fileName;
-                    }
-
-                    // Cập nhật thông tin khóa học
-                    existingCourse.Title = course.Title;
-                    existingCourse.Description = course.Description;
-                    existingCourse.Price = course.Price;
-                    existingCourse.Timelimit = course.Timelimit;
-                    existingCourse.CreatedAt = DateTime.Now;
-
-                    _context.Courses.Update(existingCourse);
-                    await _context.SaveChangesAsync();
-
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error: {ex.Message}\nStackTrace: {ex.StackTrace}");
-                    ModelState.AddModelError("", $"Error updating course: {ex.Message}");
-                    return View("EditCourse", course);
-                }
+                return Forbid("Chỉ Mentor mới có quyền chỉnh sửa khóa học.");
             }
 
-            public async Task<IActionResult> Delete(int id)
+            var course = await _context.Courses.FindAsync(id);
+            if (course == null)
             {
-                var userIdStr = HttpContext.Session.GetString("UserId");
-                var userRole = HttpContext.Session.GetString("UserRole")?.ToLower();
-
-                if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
-                {
-                    return Unauthorized("Vui lòng đăng nhập.");
-                }
-
-                if (userRole != "mentor")
-                {
-                    return Forbid("Chỉ Mentor mới có quyền xóa khóa học.");
-                }
-
-                var course = await _context.Courses.FindAsync(id);
-                if (course == null)
-                {
-                    return NotFound("Khóa học không tồn tại.");
-                }
-
-                if (course.CreatedBy != userId)
-                {
-                    return Forbid("Bạn không có quyền xóa khóa học này.");
-                }
-
-                return View("DeleteCourse", course);
+                return NotFound("Khóa học không tồn tại.");
             }
 
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Delete(int id, IFormCollection collection)
+            if (course.CreatedBy != userId)
             {
-                var userIdStr = HttpContext.Session.GetString("UserId");
-                var userRole = HttpContext.Session.GetString("UserRole")?.ToLower();
-
-                if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
-                {
-                    return Unauthorized("Vui lòng đăng nhập.");
-                }
-
-                if (userRole != "mentor")
-                {
-                    return Forbid("Chỉ Mentor mới có quyền xóa khóa học.");
-                }
-
-                var course = await _context.Courses.FindAsync(id);
-                if (course == null)
-                {
-                    return NotFound("Khóa học không tồn tại.");
-                }
-
-                if (course.CreatedBy != userId)
-                {
-                    return Forbid("Bạn không có quyền xóa khóa học này.");
-                }
-
-                try
-                {
-                    // Xóa ảnh nếu có
-                    if (!string.IsNullOrEmpty(course.CoursesPicture))
-                    {
-                        var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", course.CoursesPicture.TrimStart('/'));
-                        if (System.IO.File.Exists(filePath))
-                        {
-                            System.IO.File.Delete(filePath);
-                        }
-                    }
-
-                    _context.Courses.Remove(course);
-                    await _context.SaveChangesAsync();
-
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error: {ex.Message}\nStackTrace: {ex.StackTrace}");
-                    ModelState.AddModelError("", $"Error deleting course: {ex.Message}");
-                    return View("Delete", course);
-                }
+                return Forbid("Bạn không có quyền chỉnh sửa khóa học này.");
             }
 
-        // GET: Course/Manage/{id}
+            return View("EditCourse", course);
+        }
+
+
 
         public async Task<IActionResult> Show()
         {
@@ -427,13 +241,13 @@ using System.IO;
             if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
             {
                 TempData["Error"] = "Please log in.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Home");
             }
 
             if (userRole != "mentor")
             {
                 TempData["Error"] = "Only mentors can manage courses.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "Home");
             }
 
             var courses = await _context.Courses
@@ -450,10 +264,9 @@ using System.IO;
             return View("MyCourse", courses);
         }
 
-        // POST: Course/AddSection
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddSection(int courseId, string title, string description)
+        // GET: Course/Manage/{id}
+        [HttpGet]
+        public async Task<IActionResult> Manage(int id)
         {
             var userIdStr = HttpContext.Session.GetString("UserId");
             var userRole = HttpContext.Session.GetString("UserRole")?.ToLower();
@@ -461,13 +274,76 @@ using System.IO;
             if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
             {
                 TempData["Error"] = "Please log in.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Show");
+            }
+
+            if (userRole != "mentor")
+            {
+                TempData["Error"] = "Only mentors can manage courses.";
+                return RedirectToAction("Show");
+            }
+
+            var course = await _context.Courses
+                .Include(c => c.Sections)
+                    .ThenInclude(s => s.Lessons)
+                .FirstOrDefaultAsync(c => c.CourseId == id && c.CreatedBy == userId);
+
+            if (course == null)
+            {
+                TempData["Error"] = "Course not found or you don't have permission.";
+                return RedirectToAction("Show");
+            }
+
+            var model = new CourseManageViewModel
+            {
+                CourseId = course.CourseId,
+                Title = course.Title,
+                Sections = course.Sections.Select(s => new SectionViewModel
+                {
+                    SectionId = s.SectionId,
+                    Title = s.Title,
+                    Description = s.Description,
+                    Lessons = s.Lessons.Select(l => new LessonViewModel
+                    {
+                        LessonId = l.LessonId,
+                        Title = l.Title,
+                        LessonType = l.VideoUrl == "Quiz" ? "Quiz" : "Content",
+                        VideoUrl = l.VideoUrl,
+                        QuizIds = l.VideoUrl == "Quiz" ? _context.LessonQuizMappings
+                            .Where(m => m.LessonId == l.LessonId)
+                            .Select(m => m.QuizId)
+                            .ToList() : null,
+                        QuizTitles = l.VideoUrl == "Quiz" ? _context.LessonQuizMappings
+                            .Include(m => m.Quiz)
+                            .Where(m => m.LessonId == l.LessonId)
+                            .Select(m => m.Quiz.Title)
+                            .ToList() : null,
+                        Duration = l.Duration,
+                        CreatedAt = l.CreatedAt
+                    }).ToList()
+                }).ToList()
+            };
+
+            return View("Manage", model);
+        }
+
+        // GET: Course/AddSection/{courseId}
+        [HttpGet]
+        public async Task<IActionResult> AddSection(int courseId)
+        {
+            var userIdStr = HttpContext.Session.GetString("UserId");
+            var userRole = HttpContext.Session.GetString("UserRole")?.ToLower();
+
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
+            {
+                TempData["Error"] = "Please log in.";
+                return RedirectToAction("Show");
             }
 
             if (userRole != "mentor")
             {
                 TempData["Error"] = "Only mentors can add sections.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Show");
             }
 
             var course = await _context.Courses
@@ -476,24 +352,62 @@ using System.IO;
             if (course == null)
             {
                 TempData["Error"] = "Course not found or you don't have permission.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Show");
             }
 
-            if (string.IsNullOrWhiteSpace(title))
+            var model = new AddSectionViewModel
+            {
+                CourseId = courseId,
+                CourseTitle = course.Title
+            };
+
+            return View("AddSection", model);
+        }
+
+        // POST: Course/AddSection
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddSection(AddSectionViewModel model)
+        {
+            var userIdStr = HttpContext.Session.GetString("UserId");
+            var userRole = HttpContext.Session.GetString("UserRole")?.ToLower();
+
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
+            {
+                TempData["Error"] = "Please log in.";
+                return RedirectToAction("Show");
+            }
+
+            if (userRole != "mentor")
+            {
+                TempData["Error"] = "Only mentors can add sections.";
+                return RedirectToAction("Show");
+            }
+
+            var course = await _context.Courses
+                .FirstOrDefaultAsync(c => c.CourseId == model.CourseId && c.CreatedBy == userId);
+
+            if (course == null)
+            {
+                TempData["Error"] = "Course not found or you don't have permission.";
+                return RedirectToAction("Show");
+            }
+
+            if (string.IsNullOrWhiteSpace(model.Title))
             {
                 TempData["Error"] = "Section title is required.";
-                return RedirectToAction(nameof(Show), new { id = courseId });
+                return View("AddSection", model);
             }
 
             var maxPosition = await _context.Sections
-                .Where(s => s.CourseId == courseId)
+                .Where(s => s.CourseId == model.CourseId)
                 .MaxAsync(s => (int?)s.Positition) ?? 0;
 
             var section = new Section
             {
-                CourseId = courseId,
-                Title = title,
-                Description = description,
+                CourseId = model.CourseId,
+                Title = model.Title,
+                Description = model.Description,
                 Positition = maxPosition + 1,
                 CreateAt = DateTime.Now
             };
@@ -502,13 +416,12 @@ using System.IO;
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Section added successfully.";
-            return RedirectToAction(nameof(Show), new { id = courseId });
+            return RedirectToAction("Manage", new { id = model.CourseId });
         }
 
-        // POST: Course/AddLesson
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddLesson(int sectionId, string title, string videoUrl, int? duration)
+        // GET: Course/AddLesson/{courseId}
+        [HttpGet]
+        public async Task<IActionResult> AddLesson(int courseId)
         {
             var userIdStr = HttpContext.Session.GetString("UserId");
             var userRole = HttpContext.Session.GetString("UserRole")?.ToLower();
@@ -516,48 +429,260 @@ using System.IO;
             if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
             {
                 TempData["Error"] = "Please log in.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Show");
             }
 
             if (userRole != "mentor")
             {
                 TempData["Error"] = "Only mentors can add lessons.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Show");
+            }
+
+            var course = await _context.Courses
+                .Include(c => c.Sections)
+                .FirstOrDefaultAsync(c => c.CourseId == courseId && c.CreatedBy == userId);
+
+            if (course == null)
+            {
+                TempData["Error"] = "Course not found or you don't have permission.";
+                return RedirectToAction("Show");
+            }
+
+            var model = new AddLessonViewModel
+            {
+                CourseId = courseId,
+                CourseTitle = course.Title,
+                Sections = course.Sections.Select(s => new SectionViewModel
+                {
+                    SectionId = s.SectionId,
+                    Title = s.Title
+                }).ToList(),
+                Quizzes = await _context.Quizzes
+                    .Select(q => new QuizViewModel
+                    {
+                        QuizId = q.QuizId,
+                        Title = q.Title
+                    })
+                    .ToListAsync()
+            };
+
+            return View("AddLesson", model);
+        }
+
+        // POST: Course/AddLesson
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddLesson(AddLessonViewModel model, IFormFile? contentFile)
+        {
+            var userIdStr = HttpContext.Session.GetString("UserId");
+            var userRole = HttpContext.Session.GetString("UserRole")?.ToLower();
+            Console.WriteLine("hiiiiiiiiiiiii");
+            if (string.IsNullOrEmpty(userIdStr) || !int.TryParse(userIdStr, out int userId))
+            {
+                TempData["Error"] = "Please log in.";
+                return RedirectToAction("Show");
+            }
+
+            if (userRole != "mentor")
+            {
+                TempData["Error"] = "Only mentors can add lessons.";
+                return RedirectToAction("Show");
             }
 
             var section = await _context.Sections
                 .Include(s => s.Course)
-                .FirstOrDefaultAsync(s => s.SectionId == sectionId);
+                .FirstOrDefaultAsync(s => s.SectionId == model.SectionId);
 
             if (section == null || section.Course.CreatedBy != userId)
             {
                 TempData["Error"] = "Section not found or you don't have permission.";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Show");
             }
 
-            if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(videoUrl))
+            if (string.IsNullOrWhiteSpace(model.Title) || string.IsNullOrWhiteSpace(model.LessonType))
             {
-                TempData["Error"] = "Lesson title and video URL are required.";
-                return RedirectToAction(nameof(Show), new { id = section.CourseId });
+                TempData["Error"] = "Lesson title and type are required.";
+                await PopulateViewModel(model);
+                return View("AddLesson", model);
+            }
+
+            if (model.LessonType != "Content" && model.LessonType != "Quiz")
+            {
+                TempData["Error"] = "Invalid lesson type.";
+                await PopulateViewModel(model);
+                return View("AddLesson", model);
             }
 
             var lesson = new Lesson
             {
-                SectionId = sectionId,
-                Title = title,
-                VideoUrl = videoUrl,
-                Duration = duration,
+                SectionId = model.SectionId,
+                Title = model.Title,
+                Duration = model.Duration,
                 CreatedAt = DateTime.Now
             };
 
-            _context.Lessons.Add(lesson);
-            await _context.SaveChangesAsync();
+            try
+            {
+                if (model.LessonType == "Quiz")
+                {
+                    if (model.QuizIds == null || !model.QuizIds.Any() || !await _context.Quizzes.AnyAsync(q => model.QuizIds.Contains(q.QuizId)))
+                    {
+                        TempData["Error"] = "At least one valid quiz must be selected.";
+                        await PopulateViewModel(model);
+                        return View("AddLesson", model);
+                    }
+                    lesson.VideoUrl = "Quiz";
 
-            TempData["Success"] = "Lesson added successfully.";
-            return RedirectToAction(nameof(Show), new { id = section.CourseId });
+                }
+                else if (contentFile != null && contentFile.Length > 0)
+                {
+                    Console.WriteLine("conhanfileeeeeeeeeeeeeee");
+                    var allowedExtensions = new[] { ".mp4", ".mov", ".avi", ".pdf", ".doc", ".docx", ".txt" };
+                    var fileExtension = Path.GetExtension(contentFile.FileName).ToLower();
+                    if (!allowedExtensions.Contains(fileExtension))
+                    {
+                        TempData["Error"] = $"Only {string.Join(", ", allowedExtensions)} files are allowed.";
+                        Console.WriteLine("=========loimodel");
+                        await PopulateViewModel(model);
+                        return View("AddLesson", model);
+                    }
+
+                    const int maxFileSize = 50 * 1024 * 1024; // 50MB
+                    if (contentFile.Length > maxFileSize)
+                    {
+                        TempData["Error"] = "File size cannot exceed 50MB.";
+                        await PopulateViewModel(model);
+                        return View("AddLesson", model);
+                    }
+
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Console.WriteLine("ditmemay loi roiupk dc");
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+                    else
+                    {
+                        Console.WriteLine("updauoc");
+                    }
+
+                    // Giữ tên file gốc, xử lý trùng lặp
+                    var fileName = Path.GetFileNameWithoutExtension(contentFile.FileName);
+                    var filePath = Path.Combine(uploadsFolder, contentFile.FileName);
+                    int counter = 1;
+
+                    // Kiểm tra trùng lặp và thêm hậu tố nếu cần
+                    while (System.IO.File.Exists(filePath))
+                    {
+                        fileName = $"{Path.GetFileNameWithoutExtension(contentFile.FileName)}_{counter}";
+                        filePath = Path.Combine(uploadsFolder, $"{fileName}{fileExtension}");
+                        counter++;
+                    }
+
+                    try
+                    {
+                        using (var stream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            await contentFile.CopyToAsync(stream);
+                        }
+                    }
+                    catch (IOException ex)
+                    {
+                        TempData["Error"] = $"Failed to save file: {ex.Message}";
+                        await PopulateViewModel(model);
+                        return View("AddLesson", model);
+                    }
+
+                    lesson.VideoUrl = $"/Uploads/{Path.GetFileName(filePath)}";
+                }
+                else
+                {
+                    Console.WriteLine("url la "+contentFile.Name);
+                    Console.WriteLine("doadai"+contentFile.Length);
+                    Console.WriteLine("kbietnx");
+                    TempData["Error"] = "A file is required for content-based lessons.";
+                    await PopulateViewModel(model);
+                    return View("AddLesson", model);
+                }
+
+                _context.Lessons.Add(lesson);
+                await _context.SaveChangesAsync();
+
+                if (model.LessonType == "Quiz")
+                {
+                    foreach (var quizId in model.QuizIds)
+                    {
+                        var mapping = new LessonQuizMapping
+                        {
+                            LessonId = lesson.LessonId,
+                            QuizId = quizId
+                        };
+                        _context.LessonQuizMappings.Add(mapping);
+                    }
+                    await _context.SaveChangesAsync();
+                }
+
+                TempData["Success"] = "Lesson added successfully.";
+                return RedirectToAction("Manage", new { id = section.CourseId });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error adding lesson: {ex.Message}";
+                await PopulateViewModel(model);
+                return View("AddLesson", model);
+            }
         }
 
-        // GET: Course/DebugSession
+        private async Task PopulateViewModel(AddLessonViewModel model)
+        {
+            model.Sections = await _context.Sections
+                .Where(s => s.CourseId == model.CourseId)
+                .Select(s => new SectionViewModel { SectionId = s.SectionId, Title = s.Title })
+                .ToListAsync();
+            model.Quizzes = await _context.Quizzes
+                .Select(q => new QuizViewModel { QuizId = q.QuizId, Title = q.Title })
+                .ToListAsync();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetQuizDetails(int quizId)
+        {
+            var quiz = await _context.Quizzes
+                .Include(q => q.QuizQuestions)
+                    .ThenInclude(qq => qq.QuizAnswers)
+                .Include(q => q.QuizQuestions)
+                    .ThenInclude(qq => qq.QuizWritingSamples)
+                .FirstOrDefaultAsync(q => q.QuizId == quizId);
+
+            if (quiz == null)
+            {
+                return NotFound();
+            }
+
+            var quizDetails = new QuizDetailsViewModel
+            {
+                Title = quiz.Title,
+                Description = quiz.Content ?? "No description available",
+                Questions = quiz.QuizQuestions?.Select(q => new QuizQuestionViewModel
+                {
+                    Text = q.QuestionText,
+                    Type = q.QuestionType,
+                    MediaUrl = q.MediaUrl,
+                    Answers = q.QuizAnswers?.Select(a => new QuizAnswerViewModel
+                    {
+                        Text = a.AnswerText,
+                        IsCorrect = a.IsCorrect
+                    }).ToList() ?? new List<QuizAnswerViewModel>(),
+                    WritingSamples = q.QuizWritingSamples?.Select(ws => new QuizWritingSampleViewModel
+                    {
+                        Sample = ws.SampleAnswer
+                    }).ToList() ?? new List<QuizWritingSampleViewModel>()
+                }).ToList() ?? new List<QuizQuestionViewModel>()
+            };
+
+            return Json(quizDetails);
+        }
+
+        // GET: Course/DebugSession (for testing)
         [HttpGet]
         public IActionResult DebugSession()
         {
@@ -567,4 +692,6 @@ using System.IO;
         }
     }
 }
+
+
     

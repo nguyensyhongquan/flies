@@ -1,0 +1,239 @@
+﻿@model FliesProject.Models.Entities.ViewModels.AddLessonViewModel
+
+@{
+    ViewData["Title"] = "Add Lesson";
+    Layout = "~/Views/Shared/_MentorLayout.cshtml";
+}
+
+<div id="addLessonPage" class="container py-5">
+    <h2 class="mb-4">Add Lesson to @Model.CourseTitle</h2>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form asp-action="AddLesson" asp-controller="Course" method="post" enctype="multipart/form-data">
+                <input type="hidden" asp-for="CourseId" />
+                <div class="mb-3">
+                    <label asp-for="SectionId" class="form-label">Section</label>
+                    <select asp-for="SectionId" class="form-select" required>
+                        <option value="">Select a section</option>
+                        @foreach (var sec in Model.Sections)
+                        {
+                            <option value="@sec.SectionId">@sec.Title</option>
+                        }
+                    </select>
+                    <span asp-validation-for="SectionId" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label">Lesson Title</label>
+                    <input asp-for="Title" class="form-control" required />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="LessonType" class="form-label">Lesson Type</label>
+                    <select asp-for="LessonType" class="form-select" id="lessonType" onchange="toggleLessonFields()">
+                        <option value="Content">Content (Video/Document)</option>
+                        <option value="Quiz">Quiz</option>
+                    </select>
+                    <span asp-validation-for="LessonType" class="text-danger"></span>
+                </div>
+                <div class="mb-3 file-upload" id="fileUpload">
+                    <label for="contentFile" class="form-label">Upload File</label>
+                    <input type="file" name="contentFile" class="form-control" accept=".mp4,.mov,.avi,.pdf,.doc,.docx,.txt" onchange="displayFileName(this)" />
+                    <small id="fileNameDisplay" class="form-text text-muted"></small>
+                </div>
+                <div class="mb-3 quiz-select d-none" id="quizSelect">
+                    <label for="quizIds" class="form-label">Select Quizzes</label>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start" type="button" id="quizDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Select Quizzes
+                        </button>
+                        <ul class="dropdown-menu w-100" aria-labelledby="quizDropdown">
+                            @foreach (var quiz in Model.Quizzes)
+                            {
+                                <li class="d-flex align-items-center justify-content-between p-2">
+                                    <label class="me-2">
+                                        <input type="checkbox" name="QuizIds" value="@quiz.QuizId" /> @quiz.Title
+                                    </label>
+                                    <button type="button" class="btn btn-sm btn-info preview-quiz" data-quiz-id="@quiz.QuizId">Preview</button>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="mb-3 duration-field" id="durationField">
+                    <label asp-for="Duration" class="form-label">Duration (minutes)</label>
+                    <input asp-for="Duration" class="form-control" type="number" min="0" />
+                    <span asp-validation-for="Duration" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Lesson</button>
+                <a asp-action="Manage" asp-controller="Course" asp-route-id="@Model.CourseId" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Quiz Preview -->
+    <div class="modal fade" id="quizPreviewModal" tabindex="-1" aria-labelledby="quizPreviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="quizPreviewModalLabel">Quiz Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 id="quizTitle"></h6>
+                    <p id="quizDescription" class="text-muted"></p>
+                    <h6>Questions:</h6>
+                    <div id="quizQuestions" class="accordion"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toastr Notifications -->
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            toastr.success('@TempData["Success"]');
+        </script>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <script>
+            toastr.error('@TempData["Error"]');
+        </script>
+    }
+    @section Styles {
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+        <style>
+            .card {
+                border-radius: 10px;
+            }
+
+            .form-control, .form-select, .dropdown-menu {
+                border-radius: 5px;
+            }
+
+            .btn-primary, .btn-secondary, .btn-outline-secondary {
+                border-radius: 50px;
+                padding: 8px 20px;
+            }
+
+            .dropdown-menu {
+                max-height: 200px;
+                overflow-y: auto;
+            }
+
+            .accordion-button:not(.collapsed) {
+                background-color: #f8f9fa;
+                color: #000;
+            }
+
+            .accordion-item {
+                margin-bottom: 10px;
+                border-radius: 5px;
+            }
+        </style>
+    }
+
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+        <script>
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "5000"
+            };
+
+            function toggleLessonFields() {
+                const lessonType = document.getElementById('lessonType').value;
+                const fileUpload = document.getElementById('fileUpload');
+                const quizSelect = document.getElementById('quizSelect');
+                const durationField = document.getElementById('durationField');
+
+                if (lessonType === 'Quiz') {
+                    fileUpload.classList.add('d-none');
+                    quizSelect.classList.remove('d-none');
+                    durationField.classList.add('d-none');
+                } else {
+                    fileUpload.classList.remove('d-none');
+                    quizSelect.classList.add('d-none');
+                    durationField.classList.remove('d-none');
+                }
+            }
+
+            function displayFileName(input) {
+                const fileNameDisplay = document.getElementById('fileNameDisplay');
+                if (input.files && input.files[0]) {
+                    console.log('ngaymai', input.fileNameDisplay);
+                    fileNameDisplay.textContent = input.files[0].name;
+                } else {
+                    fileNameDisplay.textContent = '';
+                }
+            }
+
+            $(document).ready(function () {
+                $('.preview-quiz').click(function () {
+                    const quizId = $(this).data('quiz-id');
+                    $.ajax({
+                        url: '@Url.Action("GetQuizDetails", "Course")',
+                        type: 'GET',
+                        data: { quizId: quizId },
+                        success: function (data) {
+                            $('#quizTitle').text(data.title);
+                            $('#quizDescription').text(data.description);
+                            $('#quizQuestions').empty();
+
+                            data.questions.forEach((question, index) => {
+                                let answersHtml = '';
+                                if (question.type !== 'Writing') {
+                                    answersHtml = question.answers && question.answers.length > 0
+                                        ? question.answers.map(answer => `
+                                            <li>${answer.text} ${answer.isCorrect ? '<span style="color: green;">(Correct)</span>' : ''}</li>
+                                        `).join('')
+                                        : '<li>No answers available</li>';
+                                }
+
+                                let writingSamplesHtml = '';
+                                if (question.type === 'Writing') {
+                                    writingSamplesHtml = question.writingSamples && question.writingSamples.length > 0
+                                        ? question.writingSamples.map(sample => `<li>${sample.sample}</li>`).join('')
+                                        : '<li>No sample answers available</li>';
+                                }
+
+                                const questionHtml = `
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading${index}">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">
+                                                ${question.text}
+                                            </button>
+                                        </h2>
+                                        <div id="collapse${index}" class="accordion-collapse collapse" aria-labelledby="heading${index}">
+                                            <div class="accordion-body">
+                                                <p><strong>Type:</strong> ${question.type}</p>
+                                                ${question.mediaUrl ? `<p><strong>Media:</strong> <a href="${question.mediaUrl}" target="_blank">View Media</a></p>` : ''}
+                                                ${question.type !== 'Writing' ? `<h6>Answers:</h6><ul>${answersHtml}</ul>` : ''}
+                                                ${question.type === 'Writing' ? `<h6>Sample Answers:</h6><ul>${writingSamplesHtml}</ul>` : ''}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                                $('#quizQuestions').append(questionHtml);
+                            });
+
+                            $('#quizPreviewModal').modal('show');
+                        },
+                        error: function () {
+                            toastr.error('Failed to load quiz details.');
+                        }
+                    });
+                });
+            });
+        </script>
+        <partial name="_ValidationScriptsPartial" />
+    }

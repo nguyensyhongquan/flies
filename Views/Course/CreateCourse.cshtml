@@ -12,11 +12,12 @@
             <div class="image-upload-container">
                 <label class="image-upload-box">
                     <input type="file" name="ImageFile" accept="image/*" class="form-control" id="imageInput" />
-                    <span>Upload Image</span>
+                    <span class="upload-text">Upload Image</span>
+                    <img id="imagePreview" src="#" alt="Image Preview" />
                 </label>
-                <img id="imagePreview" src="#" alt="Image Preview" style="display: none; max-width: 200px; margin-top: 10px;" />
                 <span class="text-danger" asp-validation-for="CoursesPicture"></span>
             </div>
+
 
             <!-- Course form -->
             <div class="add-course-form">
@@ -56,25 +57,32 @@
     </form>
 </div>
 
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/mentor/mentor.css" asp-append-version="true" />
+}
+
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
     <script>
         document.getElementById('imageInput').addEventListener('change', function (event) {
-            console.log('Image input changed');
             const file = event.target.files[0];
             const preview = document.getElementById('imagePreview');
+            const uploadText = document.querySelector('.upload-text');
+
             if (file) {
-                console.log('File selected:', file.name);
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     preview.src = e.target.result;
                     preview.style.display = 'block';
+                    uploadText.style.display = 'none';
                 };
                 reader.readAsDataURL(file);
             } else {
                 preview.src = '#';
                 preview.style.display = 'none';
+                uploadText.style.display = 'block';
             }
         });
     </script>
+
 }

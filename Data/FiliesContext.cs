@@ -47,6 +47,8 @@ public partial class FiliesContext : DbContext
 
     public virtual DbSet<UserCourseProgress> UserCourseProgresses { get; set; }
 
+    public virtual DbSet<LessonQuizMapping> LessonQuizMappings { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 
     {
@@ -469,6 +471,19 @@ public partial class FiliesContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("username");
         });
+        modelBuilder.Entity<LessonQuizMapping>()
+            .HasKey(lqm => new { lqm.LessonId, lqm.QuizId });
+
+        // Configure relationships
+        modelBuilder.Entity<LessonQuizMapping>()
+            .HasOne(lqm => lqm.Lesson)
+            .WithMany()
+            .HasForeignKey(lqm => lqm.LessonId);
+
+        modelBuilder.Entity<LessonQuizMapping>()
+            .HasOne(lqm => lqm.Quiz)
+            .WithMany()
+            .HasForeignKey(lqm => lqm.QuizId);
 
         modelBuilder.Entity<UserCourseProgress>(entity =>
         {

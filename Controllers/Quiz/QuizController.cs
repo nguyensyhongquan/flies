@@ -109,6 +109,9 @@ namespace FliesProject.Controllers
 
             // Log ModelState errors for debugging
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+
+
+
             Console.WriteLine("ModelState Errors: " + string.Join(", ", errors));
             return View(quiz);
         }

@@ -12,56 +12,84 @@
     </div>
 }
 else
-{
-    <div class="card mb-4 p-3 border-0 shadow-sm custom-profile-card">
-        <div class="d-flex align-items-center">
-            <img src="@Url.Content(Model.User.AvatarUrl ?? "~/images/profile.png")"
-                 alt="Avatar"
-                 class="avatar-img me-3" />
-            <div class="flex-grow-1">
-                <h5 class="fw-bold mb-1">@Model.User.Fullname</h5>
-                <small class="text-muted">@Model.User.Role</small>
+{   
+
+<div class="w3-container">
+    <!-- Thông tin user -->
+    <div class="w3-card w3-white w3-padding w3-margin-bottom">
+        <div class="w3-row">
+            <div class="w3-col s2">
+                <img src="@Url.Content(Model.User.AvatarUrl ?? "~/images/defaultAva.jpg")" 
+                     class="w3-circle" style="width:80px;height:80px;object-fit:cover;" />
             </div>
-            <a href="@Url.Action("Create", "Course")" class="btn btn-primary">Tạo khóa học mới</a>
+            <div class="w3-col s6 w3-padding">
+                <h4 class="w3-margin-bottom">@Model.User.Fullname</h4>
+                <p class="w3-text-grey">@Model.User.Role</p>
+            </div>
+            <div class="w3-col s4 w3-right-align w3-padding-16">
+                <a href="@Url.Action("Create", "Course")" class="w3-button w3-blue w3-round">Tạo khóa học mới</a>
+            </div>
         </div>
     </div>
 
-    <h2 class="mb-3">Khóa học của tôi</h2>
-    <div class="row" id="courseList">
-        @if (Model.Courses != null && Model.Courses.Any())
-        {
-            @foreach (var course in Model.Courses)
+    <!-- Danh sách khóa học -->
+    <h3 class="w3-text-teal">Khóa học của tôi</h3>
+
+    @if (Model.Courses != null && Model.Courses.Any())
+    {
+        <div class="w3-row-padding">
+            @for (int i = 0; i < Model.Courses.Count(); i++)
             {
-                <div class="col-md-4 mb-4">
-                    <div class="card">
+                var course = Model.Courses[i];
+                <div class="w3-quarter w3-margin-bottom">
+                    <div class="w3-card w3-white">
                         @if (!string.IsNullOrEmpty(course.CoursesPicture))
                         {
-                            <img src="@Url.Content(course.CoursesPicture)" class="card-img-top" alt="@course.Title" style="height: 200px; object-fit: cover;" />
+                            <img src="@Url.Content(course.CoursesPicture)" style="width:100%;height:180px;object-fit:cover;">
                         }
                         else
                         {
-                            <img src="~/images/course.jpg" class="card-img-top" alt="No image" style="height: 200px; object-fit: cover;" />
+                            <img src="~/images/course.jpg" style="width:100%;height:180px;object-fit:cover;">
                         }
-                        <div class="card-body">
-                            <h5 class="card-title">@course.Title</h5>
-                            <p class="card-text">@course.Description</p>
-                            <p class="card-text"><strong>Price:</strong> @String.Format("{0:C}", course.Price)</p>
-                            <p class="card-text"><strong>Timelimit:</strong> @course.Timelimit hours</p>
-                            <div class="d-flex justify-content-between">
-                                <a href="@Url.Action("Details", "Course", new { id = course.CourseId })" class="btn btn-primary">View Details</a>
-                                <a href="@Url.Action("Edit", "Course", new { id = course.CourseId })" class="btn btn-warning">Edit</a>
-                                <a href="@Url.Action("Delete", "Course", new { id = course.CourseId })" class="btn btn-danger">Delete</a>
+                        <div class="w3-container">
+                            <h5 class="w3-margin-top">@course.Title</h5>
+                            <p class="w3-small">@course.Description</p>
+                            <p><strong>Giá:</strong> @String.Format("{0:C}", course.Price)</p>
+                            <p><strong>Thời lượng:</strong> @course.Timelimit giờ</p>
+                            <div class="w3-bar">
+                                <a href="@Url.Action("Details", "Course", new { id = course.CourseId })" class="w3-button w3-small w3-green">Xem</a>
+                                <a href="@Url.Action("Edit", "Course", new { id = course.CourseId })" class="w3-button w3-small w3-orange">Sửa</a>
+                                <a href="@Url.Action("Delete", "Course", new { id = course.CourseId })" class="w3-button w3-small w3-red">Xóa</a>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                @* Dòng mới sau mỗi 4 khóa học *@
+                @if ((i + 1) % 4 == 0)
+                {
+                    <div class="w3-clear"></div>
+                }
             }
-        }
-        else
-        {
-            <div class="alert alert-info" role="alert">
-                Bạn chưa có khóa học nào. <a href="@Url.Action("Create", "Course")" class="alert-link">Tạo khóa học mới</a> ngay!
-            </div>
-        }
-    </div>
+        </div>
+    }
+    else
+    {
+        <div class="w3-panel w3-pale-yellow w3-border">
+            <p>Bạn chưa có khóa học nào. <a href="@Url.Action("Create", "Course")">Tạo khóa học mới</a> ngay!</p>
+        </div>
+    }
+</div>
+}
+
+@section Styles {
+<style>
+    .avatar-img {
+       width: 80px;
+       height: 80px;
+       object-fit: cover;
+       border-radius: 50%;
+       border: 2px solid #dee2e6;
+       }
+</style>
 }

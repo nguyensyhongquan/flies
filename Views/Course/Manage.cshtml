@@ -5,124 +5,129 @@
     Layout = "~/Views/Shared/_MentorLayout.cshtml";
 }
 
-<div id="manageCoursePage" class="container">
-    <h2 class="my-4">Manage Course: @Model.Title</h2>
-
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success">@TempData["Success"]</div>
-    }
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger">@TempData["Error"]</div>
-    }
-
-    <!-- Add Section Form -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h3>Add New Section</h3>
-        </div>
-        <div class="card-body">
-            <form asp-action="AddSection" asp-controller="Course" method="post">
-                <input type="hidden" name="courseId" value="@Model.CourseId" />
-                <div class="form-group">
-                    <label for="title">Section Title</label>
-                    <input type="text" name="title" class="form-control" required />
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea name="description" class="form-control"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Add Section</button>
-            </form>
-        </div>
-    </div>
+<div id="manageCoursePage" class="container py-5">
+    <h2 class="mb-4">Manage Course: @Model.Title</h2>
 
     <!-- Sections and Lessons -->
     <div class="sections-list">
         @if (Model.Sections.Any())
         {
-            @foreach (var sec in Model.Sections)
-            {
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <h4>@sec.Title</h4>
-                        <p>@sec.Description</p>
-                    </div>
-                    <div class="card-body">
-                        <!-- Add Lesson Form -->
-                        <div class="mb-3">
-                            <h5>Add New Lesson</h5>
-                            <form asp-action="AddLesson" asp-controller="Course" method="post">
-                                <input type="hidden" name="sectionId" value="@sec.SectionId" />
-                                <div class="form-group">
-                                    <label for="title">Lesson Title</label>
-                                    <input type="text" name="title" class="form-control" required />
-                                </div>
-                                <div class="form-group">
-                                    <label for="videoUrl">Video URL</label>
-                                    <input type="text" name="videoUrl" class="form-control" required />
-                                </div>
-                                <div class="form-group">
-                                    <label for="duration">Duration (minutes)</label>
-                                    <input type="number" name="duration" class="form-control" min="0" />
-                                </div>
-                                <button type="submit" class="btn btn-primary">Add Lesson</button>
-                            </form>
-                        </div>
-
-                        <!-- Lessons List -->
-                        @if (sec.Lessons.Any())
-                        {
-                            <h5>Lessons</h5>
-                            <ul class="list-group">
-                                @foreach (var lesson in sec.Lessons)
+            <div class="accordion" id="sectionsAccordion">
+                @foreach (var sec in Model.Sections)
+                {
+                    <div class="accordion-item mb-3">
+                        <h2 class="accordion-header" id="sectionHeader-@sec.SectionId">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#sectionCollapse-@sec.SectionId" aria-expanded="true" aria-controls="sectionCollapse-@sec.SectionId">
+                                <span class="fs-4 fw-bold">@sec.Title</span>
+                            </button>
+                        </h2>
+                        <div id="sectionCollapse-@sec.SectionId" class="accordion-collapse collapse show" aria-labelledby="sectionHeader-@sec.SectionId" data-bs-parent="#sectionsAccordion">
+                            <div class="accordion-body">
+                                @if (!string.IsNullOrEmpty(sec.Description))
                                 {
-                                    <li class="list-group-item">
-                                        <strong>@lesson.Title</strong>
-                                        <p>Video: <a href="@lesson.VideoUrl" target="_blank">@lesson.VideoUrl</a></p>
-                                        @if (lesson.Duration.HasValue)
-                                        {
-                                            <p>Duration: @lesson.Duration minutes</p>
-                                        }
-                                        <p>Created: @lesson.CreatedAt?.ToString("g")</p>
-                                    </li>
+                                    <p class="text-muted">@sec.Description</p>
                                 }
-                            </ul>
-                        }
-                        else
-                        {
-                            <p>No lessons in this section.</p>
-                        }
+                                @if (sec.Lessons.Any())
+                                {
+                                    <h6>Lessons</h6>
+                                    <ul class="list-group mb-3">
+                                        @foreach (var lesson in sec.Lessons)
+                                        {
+                                            <li class="list-group-item">
+                                                <strong>@lesson.Title</strong> (@lesson.LessonType)
+                                                @if (lesson.LessonType == "Quiz")
+                                                {
+                                                    <p><strong>Quizzes:</strong> @(lesson.QuizTitles != null ? string.Join(", ", lesson.QuizTitles) : "None")</p>
+                                                }
+                                                else
+                                                {
+                                                    <p><strong>Content:</strong> <a href="@lesson.VideoUrl" target="_blank">View Content</a></p>
+                                                    if (lesson.Duration.HasValue)
+                                                    {
+                                                        <p><strong>Duration:</strong> @lesson.Duration minutes</p>
+                                                    }
+                                                }
+                                                <p><strong>Created:</strong> @lesson.CreatedAt?.ToString("g")</p>
+                                            </li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    <p class="text-muted">No lessons in this section.</p>
+                                }
+                            </div>
+                        </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
         }
         else
         {
             <div class="alert alert-info">No sections found. Add a section to get started!</div>
         }
+
+        <!-- Navigation Buttons -->
+        <div class="mt-3">
+            <a asp-action="AddSection" asp-controller="Course" asp-route-courseId="@Model.CourseId" class="btn btn-primary me-2">Add Section</a>
+            @if (Model.Sections.Any())
+            {
+                <a asp-action="AddLesson" asp-controller="Course" asp-route-courseId="@Model.CourseId" class="btn btn-primary">Add Lesson</a>
+            }
+        </div>
+
+        <a asp-action="Show" asp-controller="Course" class="btn btn-secondary mt-3">Back to My Courses</a>
     </div>
 
-    <a asp-action="Index" asp-controller="Course" class="btn btn-secondary mt-3">Back to My Courses</a>
+    <!-- Toastr Notifications -->
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            toastr.success('@TempData["Success"]');
+        </script>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <script>
+            toastr.error('@TempData["Error"]');
+        </script>
+    }
 </div>
 
 @section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
     <style>
-        .sections-list .card {
-            margin-bottom: 20px;
+        .accordion-button {
+            font-size: 1.5rem;
+            font-weight: 600;
         }
 
-        .list-group-item {
-            margin-bottom: 10px;
-        }
-
-        .form-group {
+        .accordion-item {
+            border-radius: 10px;
             margin-bottom: 15px;
         }
 
-        .btn-primary {
-            margin-top: 10px;
+        .list-group-item {
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary, .btn-secondary {
+            border-radius: 50px;
+            padding: 8px 20px;
         }
     </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "5000"
+        };
+    </script>
 }

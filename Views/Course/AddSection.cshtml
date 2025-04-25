@@ -1,0 +1,76 @@
+﻿@model FliesProject.Models.Entities.ViewModels.AddSectionViewModel
+
+@{
+    ViewData["Title"] = "AddSection";
+    Layout = "~/Views/Shared/_MentorLayout.cshtml";
+}
+
+<div id="addSectionPage" class="container py-5">
+    <h2 class="mb-4">Add Section to @Model.CourseTitle</h2>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <form asp-action="AddSection" asp-controller="Course" method="post">
+                <input type="hidden" asp-for="CourseId" />
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label">Section Title</label>
+                    <input asp-for="Title" class="form-control" required />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Section</button>
+                <a asp-action="Manage" asp-controller="Course" asp-route-id="@Model.CourseId" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toastr Notifications -->
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            toastr.success('@TempData["Success"]');
+        </script>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <script>
+            toastr.error('@TempData["Error"]');
+        </script>
+    }
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <style>
+        .card {
+            border-radius: 10px;
+        }
+
+        .form-control, .form-select {
+            border-radius: 5px;
+        }
+
+        .btn-primary, .btn-secondary {
+            border-radius: 50px;
+            padding: 8px 20px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "5000"
+        };
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}

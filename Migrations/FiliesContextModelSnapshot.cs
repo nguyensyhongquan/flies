@@ -99,7 +99,7 @@ namespace FliesProject.Migrations
                         .HasColumnType("varchar(255)")
                         .HasColumnName("courses_picture");
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasColumnName("created_at")
@@ -110,15 +110,14 @@ namespace FliesProject.Migrations
                         .HasColumnName("created_by");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("description");
 
-                    b.Property<decimal>("Price")
+                    b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18, 2)")
                         .HasColumnName("price");
 
-                    b.Property<int>("Timelimit")
+                    b.Property<int?>("Timelimit")
                         .HasColumnType("int")
                         .HasColumnName("timelimit");
 
@@ -272,6 +271,21 @@ namespace FliesProject.Migrations
                     b.HasIndex("SectionId");
 
                     b.ToTable("Lessons");
+                });
+
+            modelBuilder.Entity("FliesProject.Models.Entities.LessonQuizMapping", b =>
+                {
+                    b.Property<int>("LessonId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuizId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LessonId", "QuizId");
+
+                    b.HasIndex("QuizId");
+
+                    b.ToTable("LessonQuizMappings");
                 });
 
             modelBuilder.Entity("FliesProject.Models.Entities.Quiz", b =>
@@ -794,6 +808,25 @@ namespace FliesProject.Migrations
                         .HasConstraintName("FK__Lessons__section__36B12243");
 
                     b.Navigation("Section");
+                });
+
+            modelBuilder.Entity("FliesProject.Models.Entities.LessonQuizMapping", b =>
+                {
+                    b.HasOne("FliesProject.Models.Entities.Lesson", "Lesson")
+                        .WithMany()
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FliesProject.Models.Entities.Quiz", "Quiz")
+                        .WithMany()
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+
+                    b.Navigation("Quiz");
                 });
 
             modelBuilder.Entity("FliesProject.Models.Entities.QuizAnswer", b =>
