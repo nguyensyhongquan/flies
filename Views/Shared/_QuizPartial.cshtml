@@ -1,0 +1,97 @@
+﻿@model FliesProject.ViewModel.QuizViewModel
+
+@if (Model != null)
+{
+    <div class="quiz-container p-4 bg-light rounded" id="quizContainer">
+        <h5 class="mb-4">@Model.Quiz.Title <span class="badge bg-primary">@Model.Quiz.QuizType</span></h5>
+
+        @if (ViewBag.QuizResult != null)
+        {
+            var result = ViewBag.QuizResult as FliesProject.ViewModel.QuizResultViewModel;
+            <div class="alert alert-@(result.Score >= 80 ? "success" : "warning")">
+                <h5>Kết quả Quiz</h5>
+                <p>Điểm số: @result.Score%</p>
+                @if (result.Score >= 80)
+                {
+                    <p>Chúc mừng! Bạn đã hoàn thành quiz này.</p>
+                }
+                else
+                {
+                    <p>Bạn cần đạt ít nhất 80% để hoàn thành. Vui lòng thử lại.</p>
+                }
+                <a asp-action="CourseDetail" asp-controller="UsersCourse" asp-route-id="@Model.CourseId" asp-route-lessonId="@Model.LessonId" class="btn btn-primary mt-3">Quay lại khóa học</a>
+            </div>
+        }
+        else
+        {
+            <form asp-action="SubmitQuiz" asp-controller="UsersCourse" method="post">
+                <input type="hidden" name="quizId" value="@Model.Quiz.QuizId" />
+                <input type="hidden" name="courseId" value="@Model.CourseId" />
+                <input type="hidden" name="lessonId" value="@Model.LessonId" />
+
+                @{
+                    int questionIndex = 1;
+                }
+                @foreach (var question in Model.Quiz.QuizQuestions)
+                {
+                    // Bỏ qua câu hỏi writing
+                    if (question.QuestionType.ToLower() == "writing")
+                    {
+                        continue;
+                    }
+                    <div class="mb-4 p-3 bg-white rounded shadow-sm">
+                        <h6 class="mb-3">Câu hỏi @questionIndex: @question.QuestionText</h6>
+                        @if (!string.IsNullOrEmpty(question.MediaUrl))
+                        {
+                            <img src="@question.MediaUrl" alt="Question media" class="img-fluid mb-3" style="max-width: 300px;" />
+                        }
+
+                        @switch (question.QuestionType.ToLower())
+                        {
+                            case "true_false":
+                            case "single_choice":
+                                <div class="form-check">
+                                    @foreach (var answer in question.QuizAnswers)
+                                    {
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio"
+                                                   name="Answers[@question.QuestionId]"
+                                                   id="answer_@answer.AnswerId"
+                                                   value="@answer.AnswerId" required />
+                                            <label class="form-check-label" for="answer_@answer.AnswerId">
+                                                @answer.AnswerText
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                                break;
+
+                            case "multiple_choice":
+                                <div class="form-check">
+                                    @foreach (var answer in question.QuizAnswers)
+                                    {
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox"
+                                                   name="Answers[@question.QuestionId]"
+                                                   id="answer_@answer.AnswerId"
+                                                   value="@answer.AnswerId" />
+                                            <label class="form-check-label" for="answer_@answer.AnswerId">
+                                                @answer.AnswerText
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                                break;
+                        }
+                    </div>
+                    questionIndex++;
+                }
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Nộp bài</button>
+                    <a asp-action="CourseDetail" asp-controller="UsersCourse" asp-route-id="@Model.CourseId" asp-route-lessonId="@Model.LessonId" class="btn btn-secondary ms-2">Hủy</a>
+                </div>
+            </form>
+        }
+    </div>
+}

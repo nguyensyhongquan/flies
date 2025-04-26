@@ -3,9 +3,9 @@ using FliesProject.Models.Entities;
 using FliesProject.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Models.Shared;
-using MySqlX.XDevAPI;
 using System.Security.Claims;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace FliesProject.Controllers.CoursePurchase
 {
@@ -309,96 +309,59 @@ namespace FliesProject.Controllers.CoursePurchase
         [HttpPost]
         public async Task<IActionResult> MarkLessonComplete(int lessonId)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Login", "Home");
-            }
-
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-            // Lấy thông tin bài học
-            var lesson = await _dbContext.Lessons
-                .Include(l => l.Section)
-                .FirstOrDefaultAsync(l => l.LessonId == lessonId);
-
-            if (lesson == null)
-            {
-                return NotFound();
-            }
-
-            // Lấy thông tin ghi danh của người dùng
+            // Kiểm tra enrollment với điều kiện lessonId thuộc một section của course
             var enrollment = await _dbContext.Enrollements
-                .FirstOrDefaultAsync(e => e.CourseId == lesson.Section.CourseId && e.StudentId == userId);
+                .Include(e => e.Course)
+                    .ThenInclude(c => c.Sections)
+                        .ThenInclude(s => s.Lessons)
+                .FirstOrDefaultAsync(e => e.StudentId == userId
+                    && e.Course.Sections.Any(s => s.Lessons.Any(l => l.LessonId == lessonId)));
 
             if (enrollment == null)
             {
-                return Forbid();
+                return Json(new { success = false, message = "Not enrolled in this course or lesson not found" });
             }
 
-            // Kiểm tra xem bài học đã được đánh dấu hoàn thành chưa
-            var existingCompletion = await _dbContext.LessonCompletions
-                .FirstOrDefaultAsync(lc => lc.EnrollementId == enrollment.EnrollementId && lc.LessonId == lessonId);
-
-            UserCourseProgress courseProgress = null;
-
-
-            if (existingCompletion == null)
+            var lessonCompletion = new LessonCompletion
             {
-                // Thêm mới nếu chưa có
-                var lessonCompletion = new LessonCompletion
+                EnrollementId = enrollment.EnrollementId,
+                LessonId = lessonId,
+                CompletedAt = DateTime.Now
+            };
+            _dbContext.LessonCompletions.Add(lessonCompletion);
+
+            var courseProgress = await _dbContext.UserCourseProgresses
+                .FirstOrDefaultAsync(p => p.EnrollementId == enrollment.EnrollementId);
+
+            if (courseProgress != null)
+            {
+                courseProgress.CompletedLessons = await _dbContext.LessonCompletions
+                    .CountAsync(lc => lc.EnrollementId == enrollment.EnrollementId);
+                courseProgress.ProgressPercentage = (decimal?)CalculateProgressPercentage(
+                    courseProgress.CompletedLessons,
+                    courseProgress.TotalLessons,
+                    courseProgress.CompletedQuizzes,
+                    courseProgress.TotalQuizzes);
+                courseProgress.UpdatedAt = DateTime.Now;
+                _dbContext.UserCourseProgresses.Update(courseProgress);
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                progressData = new
                 {
-                    EnrollementId = enrollment.EnrollementId,
-                    LessonId = lessonId,
-                    CompletedAt = DateTime.Now
-                };
-
-                _dbContext.LessonCompletions.Add(lessonCompletion);
-
-                // Cập nhật tiến độ khóa học
-                courseProgress = await _dbContext.UserCourseProgresses
-                   .FirstOrDefaultAsync(p => p.EnrollementId == enrollment.EnrollementId);
-
-                if (courseProgress != null)
-                {
-                    courseProgress.CompletedLessons = (courseProgress.CompletedLessons ?? 0) + 1;
-
-                    // Tính toán phần trăm hoàn thành
-                    decimal totalItems = courseProgress.TotalLessons + courseProgress.TotalQuizzes;
-                    decimal completedItems = (courseProgress.CompletedLessons ?? 0) + (courseProgress.CompletedQuizzes ?? 0);
-                    courseProgress.ProgressPercentage = (completedItems / totalItems) * 100;
-                    courseProgress.UpdatedAt = DateTime.Now;
+                    progressPercentage = courseProgress?.ProgressPercentage ?? 0,
+                    completedLessons = courseProgress?.CompletedLessons ?? 0,
+                    totalLessons = courseProgress?.TotalLessons ?? 0,
+                    completedQuizzes = courseProgress?.CompletedQuizzes ?? 0,
+                    totalQuizzes = courseProgress?.TotalQuizzes ?? 0
                 }
-
-                await _dbContext.SaveChangesAsync();
-            }
-            else
-            {
-                // Nếu đã hoàn thành rồi, chỉ cần lấy thông tin tiến độ hiện tại
-                courseProgress = await _dbContext.UserCourseProgresses
-                    .FirstOrDefaultAsync(p => p.EnrollementId == enrollment.EnrollementId);
-            }
-
-            // Kiểm tra nếu là AJAX request
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                // Trả về JSON response với dữ liệu tiến độ
-                return Json(new
-                {
-                    success = true,
-                    message = "Lesson marked as complete",
-                    progressData = new
-                    {
-                        progressPercentage = courseProgress?.ProgressPercentage,
-                        completedLessons = courseProgress?.CompletedLessons,
-                        totalLessons = courseProgress?.TotalLessons,
-                        completedQuizzes = courseProgress?.CompletedQuizzes,
-                        totalQuizzes = courseProgress?.TotalQuizzes
-                    }
-                });
-            }
-
-            // Chuyển hướng đến trang chi tiết khóa học
-            return RedirectToAction("CourseDetail", new { id = lesson.Section.CourseId });
+            });
         }
 
         [HttpPost]
@@ -448,5 +411,287 @@ namespace FliesProject.Controllers.CoursePurchase
 
             return 0; // Or handle this case appropriately
         }
+
+        [HttpGet]
+        public async Task<IActionResult> StartQuiz(int courseId, int quizId, int lessonId)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            // Kiểm tra quyền truy cập khóa học
+            var enrollment = await _dbContext.Enrollements
+                .FirstOrDefaultAsync(e => e.CourseId == courseId && e.StudentId == userId);
+
+            if (enrollment == null)
+            {
+                return Forbid();
+            }
+
+            // Lấy thông tin quiz
+            var quiz = await _dbContext.Quizzes
+                .Include(q => q.QuizQuestions)
+                    .ThenInclude(qq => qq.QuizAnswers)
+                .FirstOrDefaultAsync(q => q.QuizId == quizId);
+
+            if (quiz == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new QuizViewModel
+            {
+                Quiz = quiz,
+                CourseId = courseId,
+                LessonId = lessonId
+            };
+
+            ViewBag.ShowQuiz = true;
+            ViewBag.QuizViewModel = viewModel;
+
+            // Lấy thông tin khóa học để hiển thị danh sách lesson
+            var courseDetailViewModel = await GetCourseDetailViewModel(courseId, lessonId, userId);
+            return View("CourseDetail", courseDetailViewModel);
+        }
+
+        // Action để nộp bài quiz
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitQuiz(int quizId, int courseId, int lessonId, Dictionary<int, string[]> Answers)
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+            // Kiểm tra quyền truy cập
+            var enrollment = await _dbContext.Enrollements
+                .FirstOrDefaultAsync(e => e.CourseId == courseId && e.StudentId == userId);
+
+            if (enrollment == null)
+            {
+                return Forbid();
+            }
+
+            // Lấy thông tin quiz
+            var quiz = await _dbContext.Quizzes
+                .Include(q => q.QuizQuestions)
+                    .ThenInclude(qq => qq.QuizAnswers)
+                .FirstOrDefaultAsync(q => q.QuizId == quizId);
+
+            if (quiz == null)
+            {
+                return NotFound();
+            }
+
+            // Chấm điểm (bỏ qua câu hỏi writing)
+            int totalQuestions = quiz.QuizQuestions.Count(q => q.QuestionType.ToLower() != "writing");
+            int correctAnswers = 0;
+
+            foreach (var question in quiz.QuizQuestions)
+            {
+                // Bỏ qua câu hỏi writing
+                if (question.QuestionType.ToLower() == "writing")
+                {
+                    continue;
+                }
+
+                if (Answers.ContainsKey(question.QuestionId))
+                {
+                    var userAnswerIds = Answers[question.QuestionId].Select(int.Parse).ToList();
+                    var correctAnswerIds = question.QuizAnswers
+                        .Where(a => a.IsCorrect)
+                        .Select(a => a.AnswerId)
+                        .ToList();
+
+                    if (question.QuestionType.ToLower() == "multiple_choice")
+                    {
+                        if (userAnswerIds.OrderBy(id => id).SequenceEqual(correctAnswerIds.OrderBy(id => id)))
+                        {
+                            correctAnswers++;
+                        }
+                    }
+                    else // true_false or single_choice
+                    {
+                        if (userAnswerIds.Count == 1 && correctAnswerIds.Contains(userAnswerIds[0]))
+                        {
+                            correctAnswers++;
+                        }
+                    }
+                }
+            }
+
+            // Tính điểm
+            int score = totalQuestions > 0 ? (int)((correctAnswers / (double)totalQuestions) * 100) : 0;
+
+            // Lưu tiến độ nếu đạt >= 80%
+            if (score >= 80)
+            {
+                var quizCompletion = new QuizCompletion
+                {
+                    EnrollementId = enrollment.EnrollementId,
+                    QuizId = quizId,
+                    Score = score,
+                    CompletedAt = DateTime.Now
+                };
+                _dbContext.QuizCompletions.Add(quizCompletion);
+
+                // Cập nhật tiến độ khóa học
+                var courseProgress = await _dbContext.UserCourseProgresses
+                    .FirstOrDefaultAsync(p => p.EnrollementId == enrollment.EnrollementId);
+
+                if (courseProgress != null)
+                {
+                    courseProgress.CompletedQuizzes = await _dbContext.QuizCompletions
+                        .CountAsync(qc => qc.EnrollementId == enrollment.EnrollementId);
+                    courseProgress.ProgressPercentage = (decimal?)CalculateProgressPercentage(
+                        courseProgress.CompletedLessons,
+                        courseProgress.TotalLessons,
+                        courseProgress.CompletedQuizzes,
+                        courseProgress.TotalQuizzes);
+                    courseProgress.UpdatedAt = DateTime.Now;
+                    _dbContext.UserCourseProgresses.Update(courseProgress);
+                }
+
+                await _dbContext.SaveChangesAsync();
+            }
+
+            // Chuẩn bị view model cho kết quả
+            var quizViewModel = new QuizViewModel
+            {
+                Quiz = quiz,
+                CourseId = courseId,
+                LessonId = lessonId
+            };
+
+            var resultViewModel = new QuizResultViewModel
+            {
+                Score = score,
+                CourseProgress = await _dbContext.UserCourseProgresses
+                    .FirstOrDefaultAsync(p => p.EnrollementId == enrollment.EnrollementId)
+            };
+
+            ViewBag.ShowQuiz = true;
+            ViewBag.QuizViewModel = quizViewModel;
+            ViewBag.QuizResult = resultViewModel;
+
+            // Lấy thông tin khóa học để hiển thị danh sách lesson
+            var courseDetailViewModel = await GetCourseDetailViewModel(courseId, lessonId, userId);
+            return View("CourseDetail", courseDetailViewModel);
+        }
+
+        // Phương thức GetCourseDetailViewModel
+        private async Task<CourseDetailViewModel> GetCourseDetailViewModel(int courseId, int lessonId, int userId)
+        {
+            var course = await _dbContext.Courses
+                .Include(c => c.Sections)
+                    .ThenInclude(s => s.Lessons)
+                .FirstOrDefaultAsync(c => c.CourseId == courseId);
+
+            if (course == null)
+            {
+                throw new Exception("Course not found");
+            }
+
+            var enrollment = await _dbContext.Enrollements
+                .FirstOrDefaultAsync(e => e.CourseId == courseId && e.StudentId == userId);
+
+            if (enrollment == null)
+            {
+                throw new Exception("User not enrolled in this course");
+            }
+
+            var courseProgress = await _dbContext.UserCourseProgresses
+                .FirstOrDefaultAsync(p => p.EnrollementId == enrollment.EnrollementId);
+
+            if (courseProgress == null)
+            {
+                int totalLessons = course.Sections.Sum(s => s.Lessons.Count);
+                int totalQuizzes = await _dbContext.LessonQuizMappings
+                    .Where(lq => lq.Lesson.Section.CourseId == courseId)
+                    .Select(lq => lq.QuizId)
+                    .CountAsync();
+
+                courseProgress = new UserCourseProgress
+                {
+                    EnrollementId = enrollment.EnrollementId,
+                    CompletedLessons = 0,
+                    CompletedQuizzes = 0,
+                    TotalLessons = totalLessons,
+                    TotalQuizzes = totalQuizzes,
+                    ProgressPercentage = 0,
+                    UpdatedAt = DateTime.Now
+                };
+                _dbContext.UserCourseProgresses.Add(courseProgress);
+                await _dbContext.SaveChangesAsync();
+            }
+
+            var completedLessons = await _dbContext.LessonCompletions
+                .Where(lc => lc.EnrollementId == enrollment.EnrollementId)
+                .Select(lc => lc.LessonId)
+                .ToListAsync();
+
+            var completedLessonsDict = completedLessons.ToDictionary(id => id, id => true);
+
+            var completedQuizzes = await _dbContext.QuizCompletions
+                .Where(qc => qc.EnrollementId == enrollment.EnrollementId)
+                .Select(qc => qc.QuizId)
+                .ToListAsync();
+
+            var completedQuizzesDict = completedQuizzes.ToDictionary(id => id, id => true);
+
+            var currentUser = await _dbContext.Users.FindAsync(userId);
+
+            var comments = await _dbContext.QuizComments
+                .Where(c => c.LessonId == lessonId && c.ParentCommentId == null)
+                .Include(c => c.User)
+                .Include(c => c.InverseParentComment)
+                    .ThenInclude(r => r.User)
+                .OrderByDescending(c => c.CreatedAt)
+                .ToListAsync();
+
+            var allLessonIds = course.Sections.SelectMany(s => s.Lessons).Select(l => l.LessonId).ToList();
+            var lessonQuizMappings = await _dbContext.LessonQuizMappings
+                .Where(lq => allLessonIds.Contains(lq.LessonId))
+                .Include(lq => lq.Quiz)
+                .ToListAsync();
+
+            var lessonQuizzes = new Dictionary<int, List<Quiz>>();
+            foreach (var mapping in lessonQuizMappings)
+            {
+                if (!lessonQuizzes.ContainsKey(mapping.LessonId))
+                {
+                    lessonQuizzes[mapping.LessonId] = new List<Quiz>();
+                }
+                lessonQuizzes[mapping.LessonId].Add(mapping.Quiz);
+            }
+
+            return new CourseDetailViewModel
+            {
+                Course = course,
+                UserId = userId,
+                MentorId = course.CreatedBy,
+                Enrollement = enrollment,
+                CourseProgress = courseProgress,
+                CompletedLessonIds = completedLessonsDict,
+                CompletedQuizIds = completedQuizzesDict,
+                LessonQuizzes = lessonQuizzes,
+                Comments = comments,
+                CurrentLessonId = lessonId,
+                CurrentUserAvatar = currentUser?.AvatarUrl
+            };
+        }
+        // Hàm hỗ trợ tính phần trăm tiến độ
+        private double CalculateProgressPercentage(int? completedLessons, int totalLessons, int? completedQuizzes, int totalQuizzes)
+        {
+            // Gán giá trị mặc định là 0 nếu null
+            int completedLessonsValue = completedLessons ?? 0;
+            int completedQuizzesValue = completedQuizzes ?? 0;
+
+            int totalItems = totalLessons + totalQuizzes;
+            int completedItems = completedLessonsValue + completedQuizzesValue;
+
+            return totalItems > 0 ? (double)completedItems / totalItems * 100 : 0;
+        }
+
+
+
+
+
     }
 }

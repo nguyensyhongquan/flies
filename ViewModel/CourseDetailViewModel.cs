@@ -20,5 +20,6 @@ namespace FliesProject.ViewModel
         public string NewCommentText { get; set; }
         public int CurrentLessonId { get; set; }
         public string CurrentUserAvatar { get; set; } // Add this property
+                                                      
     }
 }
