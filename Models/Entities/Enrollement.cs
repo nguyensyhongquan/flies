@@ -27,6 +27,8 @@ public partial class Enrollement
 
     public virtual User Mentor { get; set; } = null!;
 
+    public virtual ICollection<QuizCompletion> QuizCompletions { get; set; } = new List<QuizCompletion>();
+
     public virtual User Student { get; set; } = null!;
 
     public virtual ICollection<UserCourseProgress> UserCourseProgresses { get; set; } = new List<UserCourseProgress>();

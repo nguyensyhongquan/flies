@@ -18,4 +18,6 @@ public partial class Lesson
     public DateTime? CreatedAt { get; set; }
 
     public virtual Section Section { get; set; } = null!;
+
+    public virtual ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
 }

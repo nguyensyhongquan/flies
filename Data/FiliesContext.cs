@@ -7,16 +7,13 @@ namespace FliesProject.Data;
 
 public partial class FiliesContext : DbContext
 {
-    private readonly IConfiguration _configuration;
-    public FiliesContext(IConfiguration configuration)
+    public FiliesContext()
     {
-        _configuration = configuration;
     }
 
-    public FiliesContext(DbContextOptions<FiliesContext> options, IConfiguration configuration)
+    public FiliesContext(DbContextOptions<FiliesContext> options)
         : base(options)
     {
-        _configuration = configuration;
     }
 
     public virtual DbSet<Certificate> Certificates { get; set; }
@@ -29,11 +26,15 @@ public partial class FiliesContext : DbContext
 
     public virtual DbSet<Lesson> Lessons { get; set; }
 
+    public virtual DbSet<Notification> Notifications { get; set; }
+
     public virtual DbSet<Quiz> Quizzes { get; set; }
 
     public virtual DbSet<QuizAnswer> QuizAnswers { get; set; }
 
     public virtual DbSet<QuizComment> QuizComments { get; set; }
+
+    public virtual DbSet<QuizCompletion> QuizCompletions { get; set; }
 
     public virtual DbSet<QuizQuestion> QuizQuestions { get; set; }
 
@@ -47,18 +48,9 @@ public partial class FiliesContext : DbContext
 
     public virtual DbSet<UserCourseProgress> UserCourseProgresses { get; set; }
 
-    public virtual DbSet<LessonQuizMapping> LessonQuizMappings { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
-            optionsBuilder.UseSqlServer(connectionString);
-        }
-    }
-
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=Nahinchu.;Database=Filies;Trusted_Connection=True;TrustServerCertificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -67,6 +59,8 @@ public partial class FiliesContext : DbContext
             entity.HasKey(e => e.CertificateId).HasName("PK__certific__E2256D31A590BF5D");
 
             entity.ToTable("certificates");
+
+            entity.HasIndex(e => e.EnrollementId, "IX_certificates_enrollement_id");
 
             entity.HasIndex(e => e.CertificateCode, "UQ__certific__2283DB56680C4652").IsUnique();
 
@@ -94,6 +88,8 @@ public partial class FiliesContext : DbContext
         modelBuilder.Entity<Course>(entity =>
         {
             entity.HasKey(e => e.CourseId).HasName("PK__Courses__8F1EF7AEF665063E");
+
+            entity.HasIndex(e => e.CreatedBy, "IX_Courses_created_by");
 
             entity.HasIndex(e => e.Title, "UQ__Courses__E52A1BB3465A0473").IsUnique();
 
@@ -139,6 +135,7 @@ public partial class FiliesContext : DbContext
                     {
                         j.HasKey("CourseId", "QuizId").HasName("PK__course_q__5DC9F290822D7D88");
                         j.ToTable("course_quizzes");
+                        j.HasIndex(new[] { "QuizId" }, "IX_course_quizzes_quiz_id");
                         j.IndexerProperty<int>("CourseId").HasColumnName("course_id");
                         j.IndexerProperty<int>("QuizId").HasColumnName("quiz_id");
                     });
@@ -149,6 +146,8 @@ public partial class FiliesContext : DbContext
             entity.HasKey(e => e.TransactionId).HasName("PK__course_t__85C600AF9A588E4E");
 
             entity.ToTable("course_transactions");
+
+            entity.HasIndex(e => e.EnrollementId, "IX_course_transactions_enrollement_id");
 
             entity.Property(e => e.TransactionId).HasColumnName("transaction_id");
             entity.Property(e => e.Amount)
@@ -174,6 +173,12 @@ public partial class FiliesContext : DbContext
             entity.HasKey(e => e.EnrollementId).HasName("PK__enrollem__DD53F5C65C591217");
 
             entity.ToTable("enrollements");
+
+            entity.HasIndex(e => e.CourseId, "IX_enrollements_course_id");
+
+            entity.HasIndex(e => e.MentorId, "IX_enrollements_mentor_id");
+
+            entity.HasIndex(e => e.StudentId, "IX_enrollements_student_id");
 
             entity.Property(e => e.EnrollementId).HasColumnName("enrollement_id");
             entity.Property(e => e.CourseId).HasColumnName("course_id");
@@ -212,6 +217,8 @@ public partial class FiliesContext : DbContext
         {
             entity.HasKey(e => e.LessonId).HasName("PK__Lessons__6421F7BE3D82A984");
 
+            entity.HasIndex(e => e.SectionId, "IX_Lessons_section_id");
+
             entity.Property(e => e.LessonId).HasColumnName("lesson_id");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(getdate())")
@@ -232,6 +239,45 @@ public partial class FiliesContext : DbContext
                 .HasForeignKey(d => d.SectionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Lessons__section__36B12243");
+
+            entity.HasMany(d => d.Quizzes).WithMany(p => p.Lessons)
+                .UsingEntity<Dictionary<string, object>>(
+                    "LessonQuizMapping",
+                    r => r.HasOne<Quiz>().WithMany().HasForeignKey("QuizId"),
+                    l => l.HasOne<Lesson>().WithMany().HasForeignKey("LessonId"),
+                    j =>
+                    {
+                        j.HasKey("LessonId", "QuizId");
+                        j.ToTable("LessonQuizMappings");
+                        j.HasIndex(new[] { "QuizId" }, "IX_LessonQuizMappings_QuizId");
+                    });
+        });
+
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            entity.HasKey(e => e.NotificationId).HasName("PK__Notifica__20CF2E12E2E65729");
+
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.IsRead).HasDefaultValue(false);
+            entity.Property(e => e.IsUrgent).HasDefaultValue(false);
+            entity.Property(e => e.Link).HasMaxLength(500);
+            entity.Property(e => e.NotificationType).HasMaxLength(50);
+            entity.Property(e => e.ReadAt).HasColumnType("datetime");
+            entity.Property(e => e.Status)
+                .HasMaxLength(50)
+                .HasDefaultValue("active");
+            entity.Property(e => e.Title).HasMaxLength(255);
+
+            entity.HasOne(d => d.Sender).WithMany(p => p.NotificationSenders)
+                .HasForeignKey(d => d.SenderId)
+                .HasConstraintName("FK__Notificat__Sende__31B762FC");
+
+            entity.HasOne(d => d.User).WithMany(p => p.NotificationUsers)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Notificat__UserI__32AB8735");
         });
 
         modelBuilder.Entity<Quiz>(entity =>
@@ -255,7 +301,7 @@ public partial class FiliesContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("media_url");
             entity.Property(e => e.Price)
-                .HasDefaultValue(0.00m)
+                .HasDefaultValue(0.0m)
                 .HasColumnType("decimal(18, 2)")
                 .HasColumnName("price");
             entity.Property(e => e.QuizType)
@@ -272,6 +318,8 @@ public partial class FiliesContext : DbContext
             entity.HasKey(e => e.AnswerId).HasName("PK__quiz_ans__3372431828929A23");
 
             entity.ToTable("quiz_answers");
+
+            entity.HasIndex(e => e.QuestionId, "IX_quiz_answers_question_id");
 
             entity.Property(e => e.AnswerId).HasColumnName("answer_id");
             entity.Property(e => e.AnswerText)
@@ -291,6 +339,12 @@ public partial class FiliesContext : DbContext
             entity.HasKey(e => e.CommentId).HasName("PK__quiz_com__E7957687EBCCD996");
 
             entity.ToTable("quiz_comments");
+
+            entity.HasIndex(e => e.ParentCommentId, "IX_quiz_comments_parent_comment_id");
+
+            entity.HasIndex(e => e.QuizId, "IX_quiz_comments_quiz_id");
+
+            entity.HasIndex(e => e.UserId, "IX_quiz_comments_user_id");
 
             entity.Property(e => e.CommentId).HasColumnName("comment_id");
             entity.Property(e => e.CommentText)
@@ -319,11 +373,32 @@ public partial class FiliesContext : DbContext
                 .HasConstraintName("FK__quiz_comm__user___5BE2A6F2");
         });
 
+        modelBuilder.Entity<QuizCompletion>(entity =>
+        {
+            entity.HasKey(e => e.CompletionId).HasName("PK__QuizComp__77FA708FB742F983");
+
+            entity.ToTable("QuizCompletion");
+
+            entity.Property(e => e.CompletedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Enrollement).WithMany(p => p.QuizCompletions)
+                .HasForeignKey(d => d.EnrollementId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_QuizCompletion_Enrollement");
+
+            entity.HasOne(d => d.Quiz).WithMany(p => p.QuizCompletions)
+                .HasForeignKey(d => d.QuizId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_QuizCompletion_Quiz");
+        });
+
         modelBuilder.Entity<QuizQuestion>(entity =>
         {
             entity.HasKey(e => e.QuestionId).HasName("PK__quiz_que__2EC21549F2CA8ABD");
 
             entity.ToTable("quiz_questions");
+
+            entity.HasIndex(e => e.QuizId, "IX_quiz_questions_quiz_id");
 
             entity.Property(e => e.QuestionId).HasColumnName("question_id");
             entity.Property(e => e.CreatedAt)
@@ -350,6 +425,10 @@ public partial class FiliesContext : DbContext
             entity.HasKey(e => e.QuiztransactionId).HasName("PK__quiz_tra__6BB96EFAB4B23D22");
 
             entity.ToTable("quiz_transactions");
+
+            entity.HasIndex(e => e.QuizId, "IX_quiz_transactions_quiz_id");
+
+            entity.HasIndex(e => e.UserId, "IX_quiz_transactions_user_id");
 
             entity.Property(e => e.QuiztransactionId).HasColumnName("quiztransaction_id");
             entity.Property(e => e.Amount)
@@ -379,6 +458,8 @@ public partial class FiliesContext : DbContext
 
             entity.ToTable("quiz_writing_samples");
 
+            entity.HasIndex(e => e.QuestionId, "IX_quiz_writing_samples_question_id");
+
             entity.Property(e => e.SampleId).HasColumnName("sample_id");
             entity.Property(e => e.QuestionId).HasColumnName("question_id");
             entity.Property(e => e.SampleAnswer).HasColumnName("sample_answer");
@@ -392,6 +473,8 @@ public partial class FiliesContext : DbContext
         modelBuilder.Entity<Section>(entity =>
         {
             entity.HasKey(e => e.SectionId).HasName("PK__Sections__F842676A9F6AE810");
+
+            entity.HasIndex(e => e.CourseId, "IX_Sections_course_id");
 
             entity.Property(e => e.SectionId).HasColumnName("section_id");
             entity.Property(e => e.CourseId).HasColumnName("course_id");
@@ -431,7 +514,7 @@ public partial class FiliesContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("avatar_url");
             entity.Property(e => e.Balance)
-                .HasDefaultValue(0.00m)
+                .HasDefaultValue(0.0m)
                 .HasColumnType("decimal(18, 2)");
             entity.Property(e => e.Birthday)
                 .HasColumnType("datetime")
@@ -471,25 +554,14 @@ public partial class FiliesContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("username");
         });
-        modelBuilder.Entity<LessonQuizMapping>()
-            .HasKey(lqm => new { lqm.LessonId, lqm.QuizId });
-
-        // Configure relationships
-        modelBuilder.Entity<LessonQuizMapping>()
-            .HasOne(lqm => lqm.Lesson)
-            .WithMany()
-            .HasForeignKey(lqm => lqm.LessonId);
-
-        modelBuilder.Entity<LessonQuizMapping>()
-            .HasOne(lqm => lqm.Quiz)
-            .WithMany()
-            .HasForeignKey(lqm => lqm.QuizId);
 
         modelBuilder.Entity<UserCourseProgress>(entity =>
         {
             entity.HasKey(e => e.ProgressId).HasName("PK__user_cou__49B3D8C1F7704A82");
 
             entity.ToTable("user_course_progress");
+
+            entity.HasIndex(e => e.EnrollementId, "IX_user_course_progress_enrollement_id");
 
             entity.Property(e => e.ProgressId).HasColumnName("progress_id");
             entity.Property(e => e.CompletedLessons)
@@ -500,7 +572,7 @@ public partial class FiliesContext : DbContext
                 .HasColumnName("completed_quizzes");
             entity.Property(e => e.EnrollementId).HasColumnName("enrollement_id");
             entity.Property(e => e.ProgressPercentage)
-                .HasDefaultValue(0.00m)
+                .HasDefaultValue(0.0m)
                 .HasColumnType("decimal(5, 2)")
                 .HasColumnName("progress_percentage");
             entity.Property(e => e.TotalLessons).HasColumnName("total_lessons");
