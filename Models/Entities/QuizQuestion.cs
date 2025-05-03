@@ -22,4 +22,6 @@ public partial class QuizQuestion
     public virtual ICollection<QuizAnswer> QuizAnswers { get; set; } = new List<QuizAnswer>();
 
     public virtual ICollection<QuizWritingSample> QuizWritingSamples { get; set; } = new List<QuizWritingSample>();
+
+    public virtual ICollection<QuizWritingSubmission> QuizWritingSubmissions { get; set; } = new List<QuizWritingSubmission>();
 }

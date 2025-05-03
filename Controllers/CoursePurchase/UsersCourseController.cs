@@ -455,13 +455,18 @@ namespace FliesProject.Controllers.CoursePurchase
         // Action để nộp bài quiz
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SubmitQuiz(int quizId, int courseId, int lessonId, Dictionary<int, string[]> Answers)
+        public async Task<IActionResult> SubmitQuiz(QuizSubmitViewModel model)
         {
+            if (model == null)
+            {
+                return BadRequest("Invalid quiz submission data");
+            }
+
             var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
             // Kiểm tra quyền truy cập
             var enrollment = await _dbContext.Enrollements
-                .FirstOrDefaultAsync(e => e.CourseId == courseId && e.StudentId == userId);
+                .FirstOrDefaultAsync(e => e.CourseId == model.CourseId && e.StudentId == userId);
 
             if (enrollment == null)
             {
@@ -472,28 +477,75 @@ namespace FliesProject.Controllers.CoursePurchase
             var quiz = await _dbContext.Quizzes
                 .Include(q => q.QuizQuestions)
                     .ThenInclude(qq => qq.QuizAnswers)
-                .FirstOrDefaultAsync(q => q.QuizId == quizId);
+                .FirstOrDefaultAsync(q => q.QuizId == model.QuizId);
 
             if (quiz == null)
             {
                 return NotFound();
             }
 
-            // Chấm điểm (bỏ qua câu hỏi writing)
-            int totalQuestions = quiz.QuizQuestions.Count(q => q.QuestionType.ToLower() != "writing");
-            int correctAnswers = 0;
+              // Đảm bảo dictionary không null để tránh lỗi
+    if (model.Answers == null) model.Answers = new Dictionary<int, string[]>();
+    if (model.WritingAnswers == null) model.WritingAnswers = new Dictionary<int, string>();
+    
+    // Kiểm tra trùng lặp writing submission trước khi xử lý
+    foreach (var question in quiz.QuizQuestions.Where(q => q.QuestionType.ToLower() == "writing"))
+    {
+                var existingSubmission = await _dbContext.QuizWritingSubmissions
+                .Include(ws => ws.Question)
+                .FirstOrDefaultAsync(ws => ws.QuestionId == question.QuestionId && ws.UserId == userId);
 
-            foreach (var question in quiz.QuizQuestions)
-            {
-                // Bỏ qua câu hỏi writing
-                if (question.QuestionType.ToLower() == "writing")
+                if (existingSubmission != null)
                 {
-                    continue;
+                    // Nếu đã nộp bài writing, truyền dữ liệu vào ViewBag
+                    ViewBag.WritingSubmission = existingSubmission;
+                    break;
                 }
+       }
 
-                if (Answers.ContainsKey(question.QuestionId))
+    // Chấm điểm (bỏ qua câu hỏi writing)
+    int totalQuestions = quiz.QuizQuestions.Count(q => q.QuestionType.ToLower() != "writing");
+    int correctAnswers = 0;
+    List<QuizWritingSubmission> writingSubmissions = new List<QuizWritingSubmission>();
+    bool hasWritingSubmissions = false;
+    
+    // Dictionary để lưu thông tin chi tiết về câu trả lời
+    Dictionary<int, bool> questionResultsDict = new Dictionary<int, bool>();
+    Dictionary<int, string[]> userAnswersDict = new Dictionary<int, string[]>();
+
+    foreach (var question in quiz.QuizQuestions)
+    {
+        // Xử lý câu hỏi writing
+        if (question.QuestionType.ToLower() == "writing")
+        {
+            if (model.WritingAnswers.ContainsKey(question.QuestionId))
+            {
+                var submission = new QuizWritingSubmission
                 {
-                    var userAnswerIds = Answers[question.QuestionId].Select(int.Parse).ToList();
+                    QuestionId = question.QuestionId,
+                    UserId = userId,
+                    SubmissionText = model.WritingAnswers[question.QuestionId],
+                    SubmittedAt = DateTime.Now
+                };
+                _dbContext.QuizWritingSubmissions.Add(submission);
+                writingSubmissions.Add(submission);
+                hasWritingSubmissions = true;
+            }
+            continue;
+        }
+
+                // Xử lý câu hỏi trắc nghiệm
+                bool isCorrect = false;
+                string[] userAnswerArray = new string[0];
+
+                // Xử lý câu hỏi trắc nghiệm
+                if (model.Answers.ContainsKey(question.QuestionId))
+                {
+
+                    userAnswerArray = model.Answers[question.QuestionId];
+                    userAnswersDict[question.QuestionId] = userAnswerArray;
+
+                    var userAnswerIds = userAnswerArray.Select(int.Parse).ToList();
                     var correctAnswerIds = question.QuizAnswers
                         .Where(a => a.IsCorrect)
                         .Select(a => a.AnswerId)
@@ -511,13 +563,31 @@ namespace FliesProject.Controllers.CoursePurchase
                         if (userAnswerIds.Count == 1 && correctAnswerIds.Contains(userAnswerIds[0]))
                         {
                             correctAnswers++;
+                            isCorrect = true;
                         }
                     }
                 }
+                // Lưu kết quả của câu hỏi này
+                questionResultsDict[question.QuestionId] = isCorrect;
             }
 
             // Tính điểm
             int score = totalQuestions > 0 ? (int)((correctAnswers / (double)totalQuestions) * 100) : 0;
+
+            // Lưu bài writing submissions bất kể điểm số
+            if (hasWritingSubmissions == true)
+            {
+                await _dbContext.SaveChangesAsync();
+
+                // Truy vấn lại để lấy thông tin đầy đủ
+                writingSubmissions = await _dbContext.QuizWritingSubmissions
+                    .Include(w => w.Question)
+                    .Where(w => w.UserId == userId &&
+                        writingSubmissions.Select(ws => ws.QuestionId).Contains(w.QuestionId) &&
+                        w.SubmittedAt.Date == DateTime.Now.Date)
+                    .OrderByDescending(w => w.SubmittedAt)
+                    .ToListAsync();
+            }
 
             // Lưu tiến độ nếu đạt >= 80%
             if (score >= 80)
@@ -525,7 +595,7 @@ namespace FliesProject.Controllers.CoursePurchase
                 var quizCompletion = new QuizCompletion
                 {
                     EnrollementId = enrollment.EnrollementId,
-                    QuizId = quizId,
+                    QuizId = model.QuizId,
                     Score = score,
                     CompletedAt = DateTime.Now
                 };
@@ -555,15 +625,18 @@ namespace FliesProject.Controllers.CoursePurchase
             var quizViewModel = new QuizViewModel
             {
                 Quiz = quiz,
-                CourseId = courseId,
-                LessonId = lessonId
+                CourseId = model.CourseId,
+                LessonId = model.LessonId
             };
 
             var resultViewModel = new QuizResultViewModel
             {
                 Score = score,
                 CourseProgress = await _dbContext.UserCourseProgresses
-                    .FirstOrDefaultAsync(p => p.EnrollementId == enrollment.EnrollementId)
+                    .FirstOrDefaultAsync(p => p.EnrollementId == enrollment.EnrollementId),
+                WritingSubmissions = writingSubmissions,
+                 QuestionResults = questionResultsDict,  // Thêm kết quả đúng/sai của từng câu
+                UserAnswers = userAnswersDict           // Thêm câu trả lời của người dùng
             };
 
             ViewBag.ShowQuiz = true;
@@ -571,10 +644,9 @@ namespace FliesProject.Controllers.CoursePurchase
             ViewBag.QuizResult = resultViewModel;
 
             // Lấy thông tin khóa học để hiển thị danh sách lesson
-            var courseDetailViewModel = await GetCourseDetailViewModel(courseId, lessonId, userId);
+            var courseDetailViewModel = await GetCourseDetailViewModel(model.CourseId, model.LessonId, userId);
             return View("CourseDetail", courseDetailViewModel);
         }
-
         // Phương thức GetCourseDetailViewModel
         private async Task<CourseDetailViewModel> GetCourseDetailViewModel(int courseId, int lessonId, int userId)
         {

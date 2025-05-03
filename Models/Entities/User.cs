@@ -52,4 +52,6 @@ public partial class User
     public virtual ICollection<QuizComment> QuizComments { get; set; } = new List<QuizComment>();
 
     public virtual ICollection<QuizTransaction> QuizTransactions { get; set; } = new List<QuizTransaction>();
+
+    public virtual ICollection<QuizWritingSubmission> QuizWritingSubmissions { get; set; } = new List<QuizWritingSubmission>();
 }

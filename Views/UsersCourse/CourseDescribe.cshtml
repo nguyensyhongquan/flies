@@ -990,7 +990,7 @@
     <script>
         function showPurchaseConfirmation(courseId) {
             $.ajax({
-                url: '/Course/ConfirmPurchase/' + courseId,
+                url: '/UsersCourse/ConfirmPurchase/' + courseId,
                 type: 'GET',
                 success: function (result) {
                     $('#modalContent').html(result);

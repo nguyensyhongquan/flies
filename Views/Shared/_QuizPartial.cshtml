@@ -10,17 +10,98 @@
             var result = ViewBag.QuizResult as FliesProject.ViewModel.QuizResultViewModel;
             <div class="alert alert-@(result.Score >= 80 ? "success" : "warning")">
                 <h5>Kết quả Quiz</h5>
-                <p>Điểm số: @result.Score%</p>
-                @if (result.Score >= 80)
+
+                <!-- Phần hiển thị điểm số trắc nghiệm -->
+                @if (Model.Quiz.QuizQuestions.Any(q => q.QuestionType.ToLower() != "writing"))
                 {
-                    <p>Chúc mừng! Bạn đã hoàn thành quiz này.</p>
+                    <p>Điểm số: <strong>@result.Score%</strong></p>
+                    @if (result.Score >= 80)
+                    {
+                        <p>Chúc mừng! Bạn đã hoàn thành quiz này.</p>
+                    }
+                    else
+                    {
+                        <p>Bạn cần đạt ít nhất 80% để hoàn thành. Vui lòng thử lại.</p>
+                    }
                 }
-                else
-                {
-                    <p>Bạn cần đạt ít nhất 80% để hoàn thành. Vui lòng thử lại.</p>
-                }
-                <a asp-action="CourseDetail" asp-controller="UsersCourse" asp-route-id="@Model.CourseId" asp-route-lessonId="@Model.LessonId" class="btn btn-primary mt-3">Quay lại khóa học</a>
             </div>
+
+            <!-- Phần hiển thị chi tiết kết quả từng câu -->
+            <div class="detail-results mb-4">
+                <h6 class="mb-3">Chi tiết kết quả:</h6>
+
+                @{
+                    int questionIndex = 1;
+                }
+
+                @foreach (var question in Model.Quiz.QuizQuestions.OrderBy(q => q.QuestionId))
+                {
+                    @if (question.QuestionType.ToLower() != "writing")
+                    {
+                        bool isAnswered = result.UserAnswers.ContainsKey(question.QuestionId);
+                        bool isCorrect = result.QuestionResults.ContainsKey(question.QuestionId) && result.QuestionResults[question.QuestionId];
+
+                        <div class="mb-4 p-3 bg-white rounded shadow-sm @(isCorrect ? "border-success" : "border-danger")" style="border-left: 5px solid @(isCorrect ? "#28a745" : "#dc3545");">
+                            <h6 class="mb-3">
+                                Câu @questionIndex: @question.QuestionText
+                                @if (isCorrect)
+                                {
+                                    <span class="badge bg-success ms-2">Đúng</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger ms-2">Sai</span>
+                                }
+                            </h6>
+
+                            @if (!string.IsNullOrEmpty(question.MediaUrl))
+                            {
+                                <img src="@question.MediaUrl" alt="Question media" class="img-fluid mb-3" style="max-width: 300px;" />
+                            }
+
+                            <div class="answers-list">
+                                @foreach (var answer in question.QuizAnswers)
+                                {
+                                    bool isSelected = isAnswered && result.UserAnswers[question.QuestionId].Contains(answer.AnswerId.ToString());
+                                    bool isCorrectAnswer = answer.IsCorrect;
+
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox"
+                                               checked="@isSelected" disabled />
+                                        <label class="form-check-label @(isCorrectAnswer ? "text-success fw-bold" : "") @(isSelected && !isCorrectAnswer ? "text-danger" : "")">
+                                            @answer.AnswerText
+                                            @if (isCorrectAnswer)
+                                            {
+                                                <i class="bi bi-check-circle-fill text-success ms-1"></i>
+                                            }
+                                            @if (isSelected && !isCorrectAnswer)
+                                            {
+                                                <i class="bi bi-x-circle-fill text-danger ms-1"></i>
+                                            }
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                        questionIndex++;
+                    }
+                }
+            </div>
+
+
+
+            @if (ViewBag.WritingSubmission != null)
+            {
+                <div class="alert alert-info">
+                    <h6>Bạn đã nộp bài viết cho câu hỏi này</h6>
+                    <p><strong>Câu hỏi:</strong> @ViewBag.WritingSubmission.Question.QuestionText</p>
+                    <div class="border p-3 rounded bg-light">
+                        <p><strong>Bài viết đã nộp:</strong> @ViewBag.WritingSubmission.SubmissionText</p>
+                    </div>
+                    <p><strong>Điểm:</strong> @(ViewBag.WritingSubmission.Score != null ? ViewBag.WritingSubmission.Score + "/100" : "Chưa chấm")</p>
+                    <a asp-action="CourseDetail" asp-controller="UsersCourse" asp-route-id="@Model.CourseId" asp-route-lessonId="@Model.LessonId" class="btn btn-primary mt-3">Quay lại khóa học</a>
+                </div>
+            }
         }
         else
         {
@@ -29,16 +110,18 @@
                 <input type="hidden" name="courseId" value="@Model.CourseId" />
                 <input type="hidden" name="lessonId" value="@Model.LessonId" />
 
+                @if (ViewBag.ErrorMessage != null)
+                {
+                    <div class="alert alert-danger">@ViewBag.ErrorMessage</div>
+                }
+            
                 @{
                     int questionIndex = 1;
                 }
                 @foreach (var question in Model.Quiz.QuizQuestions)
                 {
-                    // Bỏ qua câu hỏi writing
-                    if (question.QuestionType.ToLower() == "writing")
-                    {
-                        continue;
-                    }
+                
+
                     <div class="mb-4 p-3 bg-white rounded shadow-sm">
                         <h6 class="mb-3">Câu hỏi @questionIndex: @question.QuestionText</h6>
                         @if (!string.IsNullOrEmpty(question.MediaUrl))
@@ -80,6 +163,15 @@
                                             </label>
                                         </div>
                                     }
+                                </div>
+                                break;
+
+                            case "writing":
+                                <div class="form-group">
+                                    <label for="writing_@question.QuestionId">Bài viết của bạn (tối đa 5000 ký tự):</label>
+                                    <textarea class="form-control" id="writing_@question.QuestionId"
+                                              name="WritingAnswers[@question.QuestionId]"
+                                              rows="6" maxlength="5000" required></textarea>
                                 </div>
                                 break;
                         }
